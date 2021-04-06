@@ -30,6 +30,10 @@ app.post("/send-email", async (req, res) => {
     res.send({ status: "ok" });
 });
 
+app.get("/test", async (req, res) => {
+    res.send({ status: "ok" });
+});
+
 app.listen(port, () => console.log(`App running on port ${port}`));
 
 
