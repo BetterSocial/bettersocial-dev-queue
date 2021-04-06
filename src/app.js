@@ -8,6 +8,7 @@ const { router } = require('bull-board')
 const { sendNewEmail } = require("./queues/email-queue");
 
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(logger("dev"));
 app.use(express.json({ limit: "50mb" }));
@@ -29,7 +30,7 @@ app.post("/send-email", async (req, res) => {
     res.send({ status: "ok" });
 });
 
-app.listen(3000, () => console.log("App running on port 3000"));
+app.listen(port, () => console.log(`App running on port ${port}`));
 
 
 // https://devcenter.heroku.com/articles/node-redis-workers
