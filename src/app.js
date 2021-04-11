@@ -33,6 +33,7 @@ app.post("/send-email", async (req, res) => {
 app.get("/test", async (req, res) => {
   res.send({ status: "ok" });
 });
+
 app.post("/webhook", async (req, res) => {
   let data = {
     body: req.body,
@@ -41,6 +42,11 @@ app.post("/webhook", async (req, res) => {
   console.log(data);
   res.send(data);
 });
+
+app.post("/hook", (req, res) => {
+  console.log('res hook ',req.body) // Call your action on the request here
+  res.status(200).end() // Responding is important
+})
 
 app.listen(port, () => console.log(`App running on port ${port}`));
 
