@@ -17,6 +17,8 @@ app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+const setHook = require("./webhook/setData");
+const getHook = require("./webhook/getData");
 // for bull admin
 app.use("/admin/queues", router);
 
@@ -34,19 +36,13 @@ app.get("/test", async (req, res) => {
   res.send({ status: "ok" });
 });
 
-app.post("/webhook", async (req, res) => {
-  let data = {
-    body: req.body,
-    header: req.headers,
-  };
-  console.log(data);
-  res.send(data);
-});
+app.post("/webhook", setHook);
+app.get("/webhook", getHook);
 
 app.post("/hook", (req, res) => {
-  console.log('res hook ',req.body) // Call your action on the request here
-  res.status(200).end() // Responding is important
-})
+  console.log("res hook ", req.body); // Call your action on the request here
+  res.status(200).end(); // Responding is important
+});
 
 app.listen(port, () => console.log(`App running on port ${port}`));
 
