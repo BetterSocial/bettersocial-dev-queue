@@ -36,10 +36,10 @@ app.get("/test", async (req, res) => {
   res.send({ status: "ok" });
 });
 
-app.post("/webhook", setHook);
-app.get("/webhook", getHook);
-
 app.post("/hook", setHook);
+app.get("/hook", getHook);
+
+// app.post("/hook", setHook);
 
 app.listen(port, () => console.log(`App running on port ${port}`));
 
