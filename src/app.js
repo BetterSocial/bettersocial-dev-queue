@@ -19,6 +19,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const setHook = require("./webhook/setData");
 const getHook = require("./webhook/getData");
+const { createQueueNews } = require("./webhook/setNews");
 // for bull admin
 app.use("/admin/queues", router);
 
@@ -37,6 +38,7 @@ app.get("/test", async (req, res) => {
 });
 
 app.post("/hook", setHook);
+app.post("/message-posted", createQueueNews);
 app.get("/hook", getHook);
 
 // app.post("/hook", setHook);
