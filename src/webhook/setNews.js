@@ -22,7 +22,7 @@ const createQueueNews = async (req, res) => {
 
     if (data.body[0].new[0].message) {
       if(testIfValidURL(data.body[0].new[0].message)) {
-        const getJob = await newsQueue.add({ body: data.body[0].new[0] }, options);
+        const getJob = await newsQueue.add({ body: data.body[0].new[0].message }, options);
         return res.status(200).json({
           code: 200,
           status: `success created news with job id : ${getJob.id}`,
