@@ -20,7 +20,7 @@ const createQueueNews = async (req, res) => {
     };
     let rawdata = fs.readFileSync("hook.json");
     let data = JSON.parse(rawdata);
-
+    console.log(data);
     if (data.body[0].new[0].message) {
       if(testIfValidURL(data.body[0].new[0].message)) {
         const getJob = await newsQueue.add({ body: data.body[0].new[0].message }, options);
