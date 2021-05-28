@@ -17,9 +17,12 @@ const createQueueNews = async (req, res) => {
     const options = {
       jobId: uuidv4()
     };
-    if (req.body.message) {
-      if(testIfValidURL(req.body.message)) {
-        const getJob = await newsQueue.add({ body: req.body }, options);
+    let rawdata = fs.readFileSync("hook.json");
+    let data = JSON.parse(rawdata);
+
+    if (data.body[0].new[0].message) {
+      if(testIfValidURL(data.body[0].new[0].message)) {
+        const getJob = await newsQueue.add({ body: data.body[0].new[0] }, options);
         return res.status(200).json({
           code: 200,
           status: `success created news with job id : ${getJob.id}`,
