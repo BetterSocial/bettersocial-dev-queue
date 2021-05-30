@@ -10,17 +10,18 @@ function testIfValidURL(str) {
 }
 
 const createQueueNews = async (req, res) => {
+  const fs = require("fs");
+  let rawdata = fs.readFileSync("hook.json");
+  let data = JSON.parse(rawdata);
+  console.info(data);
   try {
     const { v4: uuidv4 } = require('uuid');
     const Queue = require('bull');
-    const fs = require("fs");
+
     const newsQueue = new Queue('newsQueue', process.env.REDIS_URL);
     const options = {
       jobId: uuidv4()
     };
-    let rawdata = fs.readFileSync("hook.json");
-    let data = JSON.parse(rawdata);
-    console.log(data);
     if (data.body[0].new[0].message) {
       if(testIfValidURL(data.body[0].new[0].message)) {
         const getJob = await newsQueue.add({ body: data.body[0].new[0].message }, options);
