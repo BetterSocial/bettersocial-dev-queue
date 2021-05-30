@@ -14,6 +14,8 @@ const createQueueNews = async (req, res) => {
   let rawdata = fs.readFileSync("hook.json");
   let data = JSON.parse(rawdata);
   console.info(data);
+  console.info(req);
+  console.info(res);
   try {
     const { v4: uuidv4 } = require('uuid');
     const Queue = require('bull');
