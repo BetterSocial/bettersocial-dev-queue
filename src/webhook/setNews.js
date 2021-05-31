@@ -10,9 +10,6 @@ function testIfValidURL(str) {
 }
 
 const createQueueNews = async (req, res) => {
-  // const fs = require("fs");
-  // let rawdata = fs.readFileSync("hook.json");
-  // let data = JSON.parse(rawdata);
   console.info(`dari request ${req.body}`);
   console.info(res.body);
   try {
