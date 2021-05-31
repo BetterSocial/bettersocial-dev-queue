@@ -51,34 +51,31 @@ const saveNewsLink = async (data) => {
   }
 }
 
-const newsJob = (job) => {
+const newsJob = async (job, done) => {
   try {
-    console.info('news job is working! with id' + job.id);
-    console.info('data' + job.data);
-    console.info('body' + job.data.body);
+    console.info('news job is working! with id ' + job.id);
     const axios = require('axios');
     const cheerio = require('cheerio');
-    axios.get(JSON.stringify(job.data.body)).then(async resp => {
-      const domain_page_id = await getDomainId(resp);
-      const $ = cheerio.load(resp.data);
-      const site_name = $('meta[property="og:site_name"]').attr('content') || "";
-      const title = $("title").text();
-      const image = $('meta[property="og:image"]').attr('content') || "";
-      const description = $('meta[property="og:description"]').attr('content') || "";
-      const news_url = $('meta[property="og:url"]').attr('content') || "";
-      const keyword = $('meta[name="keywords"]').attr('content') || "";
-      const author = $('meta[name="author"]').attr('content') || "";
+    const crawls = await axios.get(job.data.body);
+    const domain_page_id = await getDomainId(crawls);
+    const $ = cheerio.load(crawls.data);
+    const site_name = $('meta[property="og:site_name"]').attr('content') || "";
+    const title = $("title").text();
+    const image = $('meta[property="og:image"]').attr('content') || "";
+    const description = $('meta[property="og:description"]').attr('content') || "";
+    const news_url = $('meta[property="og:url"]').attr('content') || "";
+    const keyword = $('meta[name="keywords"]').attr('content') || "";
+    const author = $('meta[name="author"]').attr('content') || "";
 
-      const data = {
-        domain_page_id, title, site_name, image, description, news_url, keyword, author
-      };
+    const data = {
+      domain_page_id, title, site_name, image, description, news_url, keyword, author
+    };
+    const result = await saveNewsLink(data);
 
-      const result = await saveNewsLink(data);
-
-      console.info(result);
-    });
+    console.info(result);
+    done(null , result);
   } catch (error) {
-    return error;
+    done(null , error);
   }
 }
 
