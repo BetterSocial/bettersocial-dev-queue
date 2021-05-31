@@ -54,6 +54,8 @@ const saveNewsLink = async (data) => {
 const newsJob = (job) => {
   try {
     console.info('news job is working! with id' + job.id);
+    console.info('data' + job.data);
+    console.info('body' + job.data.body);
     const axios = require('axios');
     const cheerio = require('cheerio');
     axios.get(JSON.stringify(job.data.body)).then(async resp => {
