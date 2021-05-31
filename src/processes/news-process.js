@@ -54,9 +54,11 @@ const saveNewsLink = async (data) => {
 const newsJob = (job) => {
   try {
     console.info('news job is working! with id' + job.id);
+    console.info('data' + job.data);
+    console.info('body' + job.data.body);
     const axios = require('axios');
     const cheerio = require('cheerio');
-    axios.get(job.data.body).then(async resp => {
+    axios.get(JSON.stringify(job.data.body)).then(async resp => {
       const domain_page_id = await getDomainId(resp);
       const $ = cheerio.load(resp.data);
       const site_name = $('meta[property="og:site_name"]').attr('content') || "";
