@@ -10,8 +10,7 @@ function testIfValidURL(str) {
 }
 
 const createQueueNews = async (req, res) => {
-  console.info(`dari request ${req.body}`);
-  console.info(res.body);
+  console.info(`request ${req.body[0].new[0].message}`);
   try {
     const { v4: uuidv4 } = require('uuid');
     const Queue = require('bull');
@@ -26,7 +25,7 @@ const createQueueNews = async (req, res) => {
         return res.status(200).json({
           code: 200,
           status: `success created news with job id : ${getJob.id}`,
-          data: req.body,
+          data: req.body[0].new[0].message,
         });
       } else {
         throw new Error('url is invalid');
