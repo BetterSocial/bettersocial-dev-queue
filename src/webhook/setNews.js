@@ -13,7 +13,7 @@ const createQueueNews = async (req, res) => {
   // const fs = require("fs");
   // let rawdata = fs.readFileSync("hook.json");
   // let data = JSON.parse(rawdata);
-  console.info(req.body);
+  console.info(`dari request ${req.body}`);
   console.info(res.body);
   try {
     const { v4: uuidv4 } = require('uuid');
@@ -23,13 +23,13 @@ const createQueueNews = async (req, res) => {
     const options = {
       jobId: uuidv4()
     };
-    if (res.body[0].new[0].message) {
-      if(testIfValidURL(res.body[0].new[0].message)) {
-        const getJob = await newsQueue.add({ body: res.body[0].new[0].message }, options);
+    if (req.body[0].new[0].message) {
+      if(testIfValidURL(req.body[0].new[0].message)) {
+        const getJob = await newsQueue.add({ body: req.body[0].new[0].message }, options);
         return res.status(200).json({
           code: 200,
           status: `success created news with job id : ${getJob.id}`,
-          data: res.body,
+          data: req.body,
         });
       } else {
         throw new Error('url is invalid');
