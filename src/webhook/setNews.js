@@ -1,12 +1,12 @@
 function testIfValidURL(str) {
-  const pattern = new RegExp('^https?:\\/\\/' + // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-    '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+  const urlRegex = /(https?:\/\/[^ ]*)/;
+  const urlValidation = str.match(urlRegex);
 
-  return !!pattern.test(str);
+  if (urlValidation) {
+    return str.match(urlRegex)[1]
+  } else {
+    return false
+  }
 }
 
 const createQueueNews = async (req, res) => {
@@ -20,19 +20,15 @@ const createQueueNews = async (req, res) => {
       const options = {
         jobId: uuidv4()
       };
-      if (bodyData) {
-        if(testIfValidURL(bodyData)) {
-          const getJob = await newsQueue.add({ body: bodyData }, options);
-          return res.status(200).json({
-            code: 200,
-            status: `success created news with job id : ${getJob.id}`,
-            data: bodyData,
-          });
-        } else {
-          throw new Error('url is invalid');
-        }
+      if (testIfValidURL(bodyData)) {
+        const getJob = await newsQueue.add({ body: testIfValidURL(bodyData) }, options);
+        return res.status(200).json({
+          code: 200,
+          status: `success created news with job id : ${getJob.id}`,
+          data: bodyData,
+        });
       } else {
-        throw new Error('url is required');
+        throw new Error('url is invalid');
       }
     } catch (error) {
       return res.status(500).json({
@@ -46,7 +42,7 @@ const createQueueNews = async (req, res) => {
     return res.status(200).json({
       code: 200,
       status: "ok",
-      data: "Webhook running",
+      data: "Job running",
     });
   }
 }
