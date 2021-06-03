@@ -1,32 +1,46 @@
-const getDomainId = async (resp) => {
+const validateDomain = async (resp) => {
   try {
-    const { v4: uuidv4 } = require('uuid');
     const { DomainPage } = require("../databases/models");
     const getDomain = await DomainPage.findOne({
       where: { domain_name: resp.request.host }
     })
-    let domain_page_id
+    let domain_id
+    let name
+    let info
     if (getDomain) {
-      domain_page_id = getDomain.dataValues.domain_page_id;
+      domain_id = getDomain.dataValues.domain_page_id;
+      name = getDomain.dataValues.domain_name;
+      info = getDomain.dataValues.description;
     } else {
+      const axios = require('axios');
+      const cheerio = require('cheerio');
+      const crawls = await axios.get(`${resp.request.protocol}//${resp.request.host}`);
+      const $ = cheerio.load(crawls.data);
+      const logo = $('meta[property="og:image"]').attr('content') || "";
+      const description = $('meta[property="og:description"]').attr('content') || "";
+      const { v4: uuidv4 } = require('uuid');
       const data = {
         domain_page_id: uuidv4(),
         domain_name: resp.request.host,
-        logo: '',
+        logo, description,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
-      const saveDomain = await DomainPage.create(data);
-      domain_page_id = saveDomain.dataValues.domain_page_id
+
+      await DomainPage.create(data);
+
+      domain_id = data.domain_page_id;
+      name = data.domain_name;
+      info = data.description;
     }
 
-    return domain_page_id
+    return { domain_id, name, info }
   } catch (error) {
     return error
   }
 }
 
-const saveNewsLink = async (data) => {
+const saveNewsLink = async (data, name, info) => {
   try {
     const { NewsLink } = require("../databases/models");
     const findNewsLink = await NewsLink.findOne({
@@ -37,11 +51,24 @@ const saveNewsLink = async (data) => {
       message = 'url news not unique'
     } else {
       const { v4: uuidv4 } = require('uuid');
+      const { postToGetstream } = require('./domain-process');
+
       data.news_link_id = uuidv4();
       data.created_at = new Date().toISOString();
       data.updated_at = new Date().toISOString();
       data.url = data.news_url;
+
       await NewsLink.create(data)
+
+      const site_name = data.site_name
+      const activity = {
+        domain: {
+          name, site_name, info
+        },
+        content: data
+      }
+
+      await postToGetstream(activity);
       message = 'created'
     }
 
@@ -57,7 +84,10 @@ const newsJob = async (job, done) => {
     const axios = require('axios');
     const cheerio = require('cheerio');
     const crawls = await axios.get(job.data.body);
-    const domain_page_id = await getDomainId(crawls);
+    const getDomain = await validateDomain(crawls);
+    const domain_page_id = getDomain.domain_id;
+    const name = getDomain.name;
+    const info = getDomain.info;
     const $ = cheerio.load(crawls.data);
     const site_name = $('meta[property="og:site_name"]').attr('content') || "";
     const title = $("title").text();
@@ -70,7 +100,8 @@ const newsJob = async (job, done) => {
     const data = {
       domain_page_id, title, site_name, image, description, news_url, keyword, author
     };
-    const result = await saveNewsLink(data);
+
+    const result = await saveNewsLink(data, name, info);
 
     console.info(result);
     done(null , result);
