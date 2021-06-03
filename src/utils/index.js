@@ -1,3 +1,4 @@
 module.exports = {
-  ...require('./constant')
+  ...require('./constant'),
+  ...require('./custom'),
 }
