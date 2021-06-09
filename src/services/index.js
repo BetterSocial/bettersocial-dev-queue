@@ -1,3 +1,4 @@
 module.exports = {
-  ...require('./postStream')
+  ...require('./postStream'),
+  ...require('./updateStream')
 }
