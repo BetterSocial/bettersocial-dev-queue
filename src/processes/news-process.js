@@ -96,7 +96,7 @@ const saveNewsLink = async (data, name, info, id_feed, logo, created_domain) => 
       }
 
       await postToGetstream(activity);
-      await putMainFeed(id_feed, logo, created_domain, data);
+      await putMainFeed(id_feed, name, logo, created_domain, data);
       message = 'created'
     }
 
