@@ -61,6 +61,7 @@ const putMainFeed = async (id, name, logo, created, data) => {
       }
     }
     await putStream(id, set);
+    console.info(`updated main_feed:${id}`)
   } catch (error) {
     console.info(error)
   }
