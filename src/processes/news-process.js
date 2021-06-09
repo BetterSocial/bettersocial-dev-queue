@@ -7,10 +7,14 @@ const validateDomain = async (resp) => {
     let domain_id
     let name
     let info
+    let domain_image
+    let created_domain
     if (getDomain) {
       domain_id = getDomain.dataValues.domain_page_id;
       name = getDomain.dataValues.domain_name;
       info = getDomain.dataValues.description;
+      domain_image = getDomain.dataValues.logo;
+      created_domain = getDomain.dataValues.created_at;
     } else {
       const axios = require('axios');
       const cheerio = require('cheerio');
@@ -32,15 +36,37 @@ const validateDomain = async (resp) => {
       domain_id = data.domain_page_id;
       name = data.domain_name;
       info = data.description;
+      domain_image = data.logo;
+      created_domain = data.created_at;
     }
 
-    return { domain_id, name, info }
+    return { domain_id, name, info, domain_image, created_domain }
   } catch (error) {
     return error
   }
 }
 
-const saveNewsLink = async (data, name, info) => {
+const putMainFeed = async (id, name, logo, created, data) => {
+  const { putStream } = require('../services');
+  try {
+    const set = {
+      og: {
+        domain: name,
+        date: created,
+        domainImage: logo,
+        title: data.title,
+        description: data.description,
+        image: data.image,
+        url: data.news_url,
+      }
+    }
+    await putStream(id, set);
+  } catch (error) {
+    console.info(error)
+  }
+}
+
+const saveNewsLink = async (data, name, info, id_feed, logo, created_domain) => {
   try {
     const { NewsLink } = require("../databases/models");
     const findNewsLink = await NewsLink.findOne({
@@ -69,6 +95,7 @@ const saveNewsLink = async (data, name, info) => {
       }
 
       await postToGetstream(activity);
+      await putMainFeed(id_feed, logo, created_domain, data);
       message = 'created'
     }
 
@@ -88,6 +115,8 @@ const newsJob = async (job, done) => {
     const domain_page_id = getDomain.domain_id;
     const name = getDomain.name;
     const info = getDomain.info;
+    const logo = getDomain.domain_image;
+    const created_domain = getDomain.created_domain;
     const $ = cheerio.load(crawls.data);
     const site_name = $('meta[property="og:site_name"]').attr('content') || "";
     const title = $("title").text();
@@ -101,7 +130,7 @@ const newsJob = async (job, done) => {
       domain_page_id, title, site_name, image, description, news_url, keyword, author
     };
 
-    const result = await saveNewsLink(data, name, info);
+    const result = await saveNewsLink(data, name, info, job.data.id_feed, logo, created_domain);
 
     console.info(result);
     done(null , result);
