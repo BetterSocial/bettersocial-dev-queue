@@ -67,8 +67,9 @@ const putMainFeed = async (id, name, logo, created, data) => {
   }
 }
 
-const saveNewsLink = async (data, name, info, id_feed, logo, created_domain) => {
+const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
   try {
+    const id_feed = job.id_feed
     const { NewsLink } = require("../databases/models");
     const findNewsLink = await NewsLink.findOne({
       where: { news_url: data.news_url }
@@ -97,12 +98,45 @@ const saveNewsLink = async (data, name, info, id_feed, logo, created_domain) => 
 
       await postToGetstream(activity);
       await putMainFeed(id_feed, name, logo, created_domain, data);
+      await saveCounterPost(job.id_user)
       message = 'created'
     }
 
     return message
   } catch (error) {
     return error
+  }
+}
+
+const saveCounterPost = async (user_id) => {
+  const moment = require("moment")
+  const { v4: uuidv4 } = require('uuid');
+  try {
+    const date = moment(new Date()).format("YYYY-MM-DD");
+
+    const data = {}
+    data.id_statistic = uuidv4();
+    data.created_at = new Date().toISOString();
+    data.updated_at = new Date().toISOString();
+    data.user_id = user_id;
+    data.counter = 1;
+    data.date = date;
+
+    const { StatisticPost } = require("../databases/models");
+    const findPostToday = await StatisticPost.count({
+      where : { user_id, date }
+    });
+    if (findPostToday) {
+      await StatisticPost.increment(
+        { counter: +1 },
+        { where: { user_id, date } }
+      );
+    } else {
+      await StatisticPost.create(data);
+    }
+    console.info("counter created");
+  } catch (error) {
+    console.info(error);
   }
 }
 
@@ -131,8 +165,7 @@ const newsJob = async (job, done) => {
       domain_page_id, title, site_name, image, description, news_url, keyword, author
     };
 
-    const result = await saveNewsLink(data, name, info, job.data.id_feed, logo, created_domain);
-
+    const result = await saveNewsLink(data, name, info, job.data, logo, created_domain);
     console.info(result);
     done(null , result);
   } catch (error) {
