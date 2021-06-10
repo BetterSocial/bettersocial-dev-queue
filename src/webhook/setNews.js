@@ -11,7 +11,8 @@ function testIfValidURL(str) {
 
 const createQueueNews = async (req, res) => {
   const bodyData = req.body[0]?.new[0]?.message
-  const bodyIdData = req.body[0]?.new[0]?.id || false
+  const id_feed = req.body[0]?.new[0]?.id || false
+  const user_id = req.body[0]?.new[0]?.actor?.id || null
   if (bodyData) {
     try {
       const { v4: uuidv4 } = require('uuid');
@@ -19,10 +20,11 @@ const createQueueNews = async (req, res) => {
 
       const newsQueue = new Queue('newsQueue', process.env.REDIS_URL);
       const options = {
-        jobId: uuidv4()
+        jobId: uuidv4(),
+        removeOnComplete: true,
       };
       if (testIfValidURL(bodyData)) {
-        const getJob = await newsQueue.add({ body: testIfValidURL(bodyData), id_feed: bodyIdData }, options);
+        const getJob = await newsQueue.add({ body: testIfValidURL(bodyData), id_feed, user_id }, options);
         return res.status(200).json({
           code: 200,
           status: `success created news with job id : ${getJob.id}`,
