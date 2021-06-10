@@ -98,7 +98,7 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
 
       await postToGetstream(activity);
       await putMainFeed(id_feed, name, logo, created_domain, data);
-      await saveCounterPost(job.id_user)
+      await saveCounterPost(job.user_id)
       message = 'created'
     }
 
