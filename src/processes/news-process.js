@@ -50,6 +50,7 @@ const putMainFeed = async (id, name, logo, created, data) => {
   const { putStream } = require('../services');
   try {
     const set = {
+      post_type: 2,
       og: {
         domain: name,
         date: created,
