@@ -1,22 +1,15 @@
-const Bull = require("bull");
-const { emailProcess } = require("../processes/email-process");
-const { setQueues, BullAdapter } = require("bull-board");
+// const { emailProcess } = require("../processes/email-process");
+// const { setQueues, BullAdapter } = require("bull-board");
+// const { emailQueue } = require('../config');
 
-// https://optimalbits.github.io/bull
+// setQueues([new BullAdapter(emailQueue)]);
 
-const emailQueue = new Bull("email", {
-  // redis: "redis://127.0.0.1:6379",
-  redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
-});
+// emailQueue.process(emailProcess);
 
-setQueues([new BullAdapter(emailQueue)]);
+// const sendNewEmail = (data) => {
+//   emailQueue.add(data, {
+//     attempts: 5,
+//   });
+// };
 
-emailQueue.process(emailProcess);
-
-const sendNewEmail = (data) => {
-  emailQueue.add(data, {
-    attempts: 5,
-  });
-};
-
-module.exports = { sendNewEmail };
+// module.exports = { sendNewEmail };

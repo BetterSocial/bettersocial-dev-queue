@@ -1,4 +1,3 @@
-const { Job } = require("bull");
 const nodemailer = require("nodemailer");
 
 const emailProcess = async (job) => {

@@ -16,9 +16,8 @@ const createQueueNews = async (req, res) => {
   if (bodyData) {
     try {
       const { v4: uuidv4 } = require('uuid');
-      const Queue = require('bull');
 
-      const newsQueue = new Queue('newsQueue', process.env.REDIS_URL);
+      const { newsQueue } = require('../config')
       const options = {
         jobId: uuidv4(),
         removeOnComplete: true,
