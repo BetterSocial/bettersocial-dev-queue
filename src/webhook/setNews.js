@@ -10,6 +10,10 @@ function testIfValidURL(str) {
 }
 
 const createQueueNews = async (req, res) => {
+  // for local test in postman uncomment this line
+  // const bodyData = req.body.message
+  // const id_feed = req.body.id || false
+  // const user_id = req.body.actor_id || null
   const bodyData = req.body[0]?.new[0]?.message
   const id_feed = req.body[0]?.new[0]?.id || false
   const user_id = req.body[0]?.new[0]?.actor?.id || null
@@ -17,7 +21,10 @@ const createQueueNews = async (req, res) => {
     try {
       const { v4: uuidv4 } = require('uuid');
 
-      const { newsQueue } = require('../config')
+      const { newsQueue } = require('../config');
+      /*
+        @description options bull queue ref https://www.npmjs.com/package/bull
+      */
       const options = {
         jobId: uuidv4(),
         removeOnComplete: true,
