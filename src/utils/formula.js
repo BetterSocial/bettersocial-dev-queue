@@ -37,8 +37,8 @@ const weightPostLongComments = (longC, impr, wlongC) => {
   @description formula for variable WS_updown
 */
 const upDownScoreWilsonScore = (impr, sUpDwon, zUpDown, evUpDown) => {
-  evUpDownPercentage = evUpDown / 100;
-  result = ((sUpDwon + (zUpDown ** 2 / (2 * impr))) / (1 + (zUpDown ** 2) / impr)) / evUpDown_percentage;
+  const evUpDownPercentage = evUpDown / 100;
+  const result = ((sUpDwon + (zUpDown ** 2 / (2 * impr))) / (1 + (zUpDown ** 2) / impr)) / evUpDownPercentage;
 
   return result;
 }
@@ -57,9 +57,9 @@ const DurationScoreWilsonScore = (impr, duration, zValueDurationDist, durationDi
 /*
   @description formula for variable WS_nonBP
 */
-const nonBpScoreWilsonScore = (bp, impr, z_nonbp, ev_nonbp) => {
-  ev_nonbp = ev_nonbp / 100;
-  return (((1 - (bp / impr)) + (z_nonbp ** 2 / (2 * impr))) / (1 + (z_nonbp ** 2) / impr)) / ev_nonbp;
+const nonBpScoreWilsonScore = (bp, impr, zNonbp, evNonBp) => {
+  evNonBp = evNonBp / 100;
+  return (((1 - (bp / impr)) + (zNonbp ** 2 / (2 * impr))) / (1 + (zNonbp ** 2) / impr)) / evNonBp;
 }
 
 /*
@@ -77,6 +77,7 @@ const postPerformanceScore = (pPerf, pLongC) => {
 }
 
 module.exports = {
-  postCountScore, postScore, upDownScoreWilsonScore, DurationScoreWilsonScore,
+  postCountScore, postScore, weightPostLongComments,
+  upDownScoreWilsonScore, DurationScoreWilsonScore,
   nonBpScoreWilsonScore, upDownScore, postPerformanceScore
 }

@@ -1,5 +1,8 @@
 
-const { postCountScore, postScore, nonBpScoreWilsonScore, convertString } = require('../../utils')
+const {
+  convertString,
+  postCountScore, postScore, weightPostLongComments, upDownScoreWilsonScore
+} = require('../../utils')
 
 describe('testing custom utils ', () => {
   it('string to be slug', () => {
@@ -46,8 +49,14 @@ describe('testing utils formula post score ', () => {
   });
 });
 
-describe('testing utils formula non bp wilson score ', () => {
-  it('post count score to be 0.000999002995', () => {
-    expect(nonBpScoreWilsonScore(5, 5, 0.1, 99.90)).toBe(0.000999002995);
+describe('testing utils formula weight post long coments ', () => {
+  it('weight post long coments to be 1.008', () => {
+    expect(weightPostLongComments(2, 250, 1)).toBe(1.008);
+  });
+});
+
+describe('testing utils formula up down score wilson score ', () => {
+  it('up down score wilson score to be 0.823874038813621', () => {
+    expect(upDownScoreWilsonScore(1, 0, 3, 54.62)).toBe(0.823874038813621);
   });
 });
