@@ -10,43 +10,73 @@ const postCountScore = (totalPostLastWeek, maxAmountPostWeekly) => {
 /*
   @description formula for variable p_perf
 */
-const postScore = (impr, ws_nonbp, ww_nonbp, ws_d, ww_d, ws_updown, ww_updown) => {
+const postScore = (impr, wsNonBp, wwNonBp, wsD, wwD, wsUpdown, wwUpdown) => {
   let p_pref = 1;
   let result_p_pref;
 
   if (impr < 5) {
     result_p_pref = p_pref
-  } else if(impr < 50) {
-    result_p_pref = p_pref * (ws_nonbp ** ww_nonbp) * (ws_d ** ww_d);
+  } else if (impr < 50) {
+    result_p_pref = p_pref * (wsNonBp ** wwNonBp) * (wsD ** wwD);
   } else {
-    result_p_pref = p_pref * (ws_nonbp ** ww_nonbp) * (ws_d ** ww_d) * (ws_updown ** ww_updown);
+    result_p_pref = p_pref * (wsNonBp ** ww_nonbp) * (ws_d ** ww_d) * (wsUpdown ** wwUpdown);
   }
 
   return result_p_pref
 }
 
 /*
-  @description formula for variable WS_nonBP
+  @description formula for variable p_longC
 */
-const nonBpScoreWilsonScore = (bp, impr, z_nonbp,	ev_nonbp) => {
-  ev_nonbp = ev_nonbp / 100;
-  return (((1-(bp/impr)) + (z_nonbp**2/(2*impr))) / (1+(z_nonbp**2)/impr)) /  ev_nonbp;
+const weightPostLongComments = (longC, impr, wlongC) => {
+  // weight rewarding if a post has long comments (>80char)
+  return (1 + (longC / impr)) ** wlongC;
 }
 
 /*
-  @description formula for variable s_updown
+  @description formula for variable WS_updown
 */
-const upDownScore = (impr, upvote, downvote, w_down, w_n) => {
-  return ((-impr * w_down) + upvote + (downvote*w_down) + w_n * (impr - upvote - downvote)) / (impr * (1-w_down));
+const upDownScoreWilsonScore = (impr, sUpDwon, zUpDown, evUpDown) => {
+  evUpDownPercentage = evUpDown / 100;
+  result = ((sUpDwon + (zUpDown ** 2 / (2 * impr))) / (1 + (zUpDown ** 2) / impr)) / evUpDown_percentage;
+
+  return result;
+}
+/*
+  @description formula for variable WS_D
+*/
+const DurationScoreWilsonScore = (impr, duration, zValueDurationDist, durationDistributionPercentage) => {
+  duration_distribution = durationDistributionPercentage / 100;
+  if (impr == 0) {
+    return 1;
+  } else {
+    return ((((duration / impr) + (zValueDurationDist ** 2 / (2 * impr))) / (1 + (zValueDurationDist ** 2) / impr)) / duration_distribution);
+  }
+}
+
+/*
+  @description formula for variable WS_nonBP
+*/
+const nonBpScoreWilsonScore = (bp, impr, z_nonbp, ev_nonbp) => {
+  ev_nonbp = ev_nonbp / 100;
+  return (((1 - (bp / impr)) + (z_nonbp ** 2 / (2 * impr))) / (1 + (z_nonbp ** 2) / impr)) / ev_nonbp;
+}
+
+/*
+  @description formula for variable sUpDwon
+*/
+const upDownScore = (impr, upvote, downvote, wDown, wN) => {
+  return ((-impr * wDown) + upvote + (downvote * wDown) + wN * (impr - upvote - downvote)) / (impr * (1 - wDown));
 }
 
 /*
   @description formula for variable p3
 */
-const postPerformanceScore = (p_perf, p_longC) => {
-  return p_perf * p_longC
+const postPerformanceScore = (pPerf, pLongC) => {
+  return pPerf * pLongC
 }
 
 module.exports = {
-  postCountScore, postScore, upDownScore, postPerformanceScore
+  postCountScore, postScore, upDownScoreWilsonScore, DurationScoreWilsonScore,
+  nonBpScoreWilsonScore, upDownScore, postPerformanceScore
 }

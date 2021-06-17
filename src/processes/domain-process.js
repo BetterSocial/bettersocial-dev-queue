@@ -1,5 +1,5 @@
 const { postStream } = require("../services");
-const { DOMAIN, convertDotToSlug, postCountScore } = require('../utils')
+const { DOMAIN, convertString, postCountScore } = require('../utils')
 const postToGetstream = async (activity) => {
   const { v4: uuidv4 } = require('uuid');
   try {
@@ -13,7 +13,7 @@ const postToGetstream = async (activity) => {
     activity.verb = "post"
     // activity.to = ['domain:all'];
 
-    const result = await postStream(DOMAIN, convertDotToSlug(activity.domain.name, '.', '-'), activity);
+    const result = await postStream(DOMAIN, convertString(activity.domain.name, '.', '-'), activity);
     console.info('success post to getstream');
     return result
   } catch (error) {
