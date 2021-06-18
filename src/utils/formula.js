@@ -46,10 +46,10 @@ const upDownScoreWilsonScore = (impr, sUpDwon, zUpDown, evUpDown) => {
   @description formula for variable WS_D
 */
 const DurationScoreWilsonScore = (impr, duration, zValueDurationDist, durationDistributionPercentage) => {
-  duration_distribution = durationDistributionPercentage / 100;
-  if (impr == 0) {
+  if (impr === 0) {
     return 1;
   } else {
+    duration_distribution = durationDistributionPercentage / 100;
     return ((((duration / impr) + (zValueDurationDist ** 2 / (2 * impr))) / (1 + (zValueDurationDist ** 2) / impr)) / duration_distribution);
   }
 }
@@ -58,8 +58,12 @@ const DurationScoreWilsonScore = (impr, duration, zValueDurationDist, durationDi
   @description formula for variable WS_nonBP
 */
 const nonBpScoreWilsonScore = (bp, impr, zNonbp, evNonBp) => {
-  evNonBp = evNonBp / 100;
-  return (((1 - (bp / impr)) + (zNonbp ** 2 / (2 * impr))) / (1 + (zNonbp ** 2) / impr)) / evNonBp;
+  if (impr === 0) {
+    return 1
+  } else {
+    evNonBp = evNonBp / 100;
+    return (((1 - (bp / impr)) + (zNonbp ** 2 / (2 * impr))) / (1 + (zNonbp ** 2) / impr)) / evNonBp;
+  }
 }
 
 /*
