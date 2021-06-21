@@ -46,7 +46,10 @@ const postPerformanceScoreProcess = async () => {
   const wsupdown = upDownScoreWilsonScore(impression, sUpDown, Z_UPDOWN, EV_UPDOWN_PERCENTAGE);
   const result = postScore(impression, wsnonbp, WW_NON_BP, wsd, WW_D, wsupdown, WW_UP_DOWN);
 
-  console.info(result);
+  console.info(`post performance score : ${result}`);
+  return { post_performance_comments_score: result }
 }
 
-getValueFromDb();
+module.exports = {
+  postPerformanceScoreProcess
+}

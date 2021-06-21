@@ -49,6 +49,7 @@ const validateDomain = async (resp) => {
 const putMainFeed = async (job, name, logo, created, data) => {
   const { putStream } = require('../services');
   const { setPostScore } = require('../processes/domain-process')
+  const { postPerformanceScoreProcess } = require('../processes/post-perfomance-process')
   const score = await setPostScore(job.user_id)
   try {
     const set = {
@@ -61,7 +62,7 @@ const putMainFeed = async (job, name, logo, created, data) => {
         description: data.description,
         image: data.image,
         url: data.news_url,
-      },...score
+      },...score,...postPerformanceScoreProcess
     }
     await putStream(job.id_feed, set);
     console.info(`updated main_feed:${job.id_feed}`)
