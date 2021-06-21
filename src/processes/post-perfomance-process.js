@@ -3,9 +3,21 @@ const {
   upDownScoreWilsonScore, upDownScore
 } = require("../utils")
 
-require('dotenv').config()
+const getValueFromDb = async () => {
+  const { PostBlocked, PostUpVoted, PostDownVoted } = require("../databases/models");
+  const db = require("../databases/models");
+  const bp = await PostBlocked.count();
+  const upvote = await PostUpVoted.count();
+  const downvote = await PostDownVoted.count();
+  const query = `select sum(sp.counter) as impression from statistic_post sp`;
+  const [res, _] = await db.sequelize.query(query);
+  const impression = res[0]?.impression || 0;
 
-const postPerformanceScoreProcess = () => {
+  return { bp, impression, upvote ,downvote };
+}
+
+const postPerformanceScoreProcess = async () => {
+  const { bp, impression, upvote, downvote } = await getValueFromDb();
   const WW_NON_BP = process.env.WW_NON_BP;
   const WW_D = process.env.WW_D;
   const WW_UP_DOWN = process.env.WW_UP_DOWN;
@@ -17,11 +29,7 @@ const postPerformanceScoreProcess = () => {
   const EV_UPDOWN_PERCENTAGE = process.env.EV_UPDOWN_PERCENTAGE;
   const W_DOWN = process.env.W_DOWN;
   const W_N = process.env.W_N;
-  const bp = 2 // dummy data
-  const impression = 10 // dummy data
   const duration = 10 //dummy data
-  const upvote = 11;
-  const downvote = 11;
   /*
     @description block point get from table post_blocked
   */
@@ -41,4 +49,4 @@ const postPerformanceScoreProcess = () => {
   console.info(result);
 }
 
-postPerformanceScoreProcess();
+getValueFromDb();
