@@ -2,25 +2,22 @@ const {
   postScore, nonBpScoreWilsonScore, DurationScoreWilsonScore,
   upDownScoreWilsonScore, upDownScore
 } = require("../utils")
-
+require("dotenv").config();
 const getValueFromDb = async () => {
-  const { PostBlocked, PostUpVoted, PostDownVoted } = require("../databases/models");
-  const db = require("../databases/models");
-  const bp = await PostBlocked.count();
-  const upvote = await PostUpVoted.count();
-  const downvote = await PostDownVoted.count();
-  const query = `select sum(sp.counter) as impression from statistic_post sp`;
-  const [res, _] = await db.sequelize.query(query);
-  const impression = res[0]?.impression || 0;
+  const { PostStatistic, StatisticPost } = require("../databases/models");
+  const bp = await PostStatistic.sum('block_count');
+  const upvote = await PostStatistic.sum('upvote_count');
+  const downvote = await PostStatistic.sum('downvote_count');
+  const impression = await StatisticPost.sum('counter');
 
   return { bp, impression, upvote ,downvote };
 }
 
 const postPerformanceScoreProcess = async () => {
   const { bp, impression, upvote, downvote } = await getValueFromDb();
-  const WW_NON_BP = process.env.WW_NON_BP;
+  const WW_NON_BP = process.env.WW_NONBP;
   const WW_D = process.env.WW_D;
-  const WW_UP_DOWN = process.env.WW_UP_DOWN;
+  const WW_UP_DOWN = process.env.WW_UPDOWN;
   const Z_NON_BP = process.env.Z_NONBP;
   const EV_NON_BP = process.env.EV_NONBP_PERCENTAGE;
   const Z_D = process.env.Z_D;
