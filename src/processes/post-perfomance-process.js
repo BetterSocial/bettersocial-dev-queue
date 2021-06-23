@@ -1,11 +1,11 @@
 const {
-  postScore, nonBpScoreWilsonScore, DurationScoreWilsonScore,
+  postScore, nonBpScoreWilsonScore, durationScoreWilsonScore,
   upDownScoreWilsonScore, upDownScore
 } = require("../utils")
 require("dotenv").config();
-const getValueFromDb = async () => {
-  const { PostStatistic, StatisticPost } = require("../databases/models");
-  const bp = await PostStatistic.sum('block_count');
+const getValueFromDb = async (user_id) => {
+  const { PostStatistic, StatisticPost, UserBlockedUser } = require("../databases/models");
+  const bp = await UserBlockedUser.count({ where: { user_id_blocked: user_id }});
   const upvote = await PostStatistic.sum('upvote_count');
   const downvote = await PostStatistic.sum('downvote_count');
   const impression = await StatisticPost.sum('counter');
@@ -13,9 +13,9 @@ const getValueFromDb = async () => {
   return { bp, impression, upvote, downvote };
 }
 
-const postPerformanceScoreProcess = async () => {
+const postPerformanceScoreProcess = async (user_id) => {
   try {
-    const { bp, impression, upvote, downvote } = await getValueFromDb();
+    const { bp, impression, upvote, downvote } = await getValueFromDb(user_id);
     const WW_NON_BP = process.env.WW_NONBP;
     const WW_D = process.env.WW_D;
     const WW_UP_DOWN = process.env.WW_UPDOWN;
@@ -27,6 +27,8 @@ const postPerformanceScoreProcess = async () => {
     const EV_UPDOWN_PERCENTAGE = process.env.EV_UPDOWN_PERCENTAGE;
     const W_DOWN = process.env.W_DOWN;
     const W_N = process.env.W_N;
+    const DUR_MIN = process.env.DUR_MIN;
+    const DUR_MARG = process.env.DUR_MARG;
     const duration = 10 //dummy data
     /*
       @description block point get from table post_blocked
@@ -35,7 +37,7 @@ const postPerformanceScoreProcess = async () => {
     /*
       @description
     */
-    const wsd = DurationScoreWilsonScore(impression, duration, Z_D, EV_D_PERCENTAGE);
+    const wsd = durationScoreWilsonScore(impression, duration, Z_D, EV_D_PERCENTAGE);
     /*
       @description upvote = Sum of Upvote-Points of a Post
       downvote = Sum of Downvote-Points of a Post

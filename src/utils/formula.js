@@ -45,7 +45,7 @@ const upDownScoreWilsonScore = (impr, sUpDown, zUpDown, evUpDown) => {
 /*
   @description formula for variable WS_D
 */
-const DurationScoreWilsonScore = (impr, duration, zValueDurationDist, durationDistributionPercentage) => {
+const durationScoreWilsonScore = (impr, duration, zValueDurationDist, durationDistributionPercentage) => {
   if (impr === 0) {
     return 1;
   } else {
@@ -80,8 +80,22 @@ const postPerformanceScore = (pPerf, pLongC) => {
   return pPerf * pLongC
 }
 
+/*
+  @description
+  D_bench:
+  Benchmark a post impression has to reach so that it’s counted as #D
+  Benchmark untuk ‘durasi diharapkan’ dari post kalau postnya menarik
+  =dur_min+dur_marg*#W
+  #dur_min, dur_marg --> constant values
+  #  #W: jumlah kata dalam postnya (jgn termasuk kata2 dalam link, cuma yg ngetip dari user)
+*/
+const dBench = (dur_min, dur_marg, W) => {
+  return dur_min + dur_marg * W
+}
+
 module.exports = {
   postCountScore, postScore, weightPostLongComments,
-  upDownScoreWilsonScore, DurationScoreWilsonScore,
-  nonBpScoreWilsonScore, upDownScore, postPerformanceScore
+  upDownScoreWilsonScore, durationScoreWilsonScore,
+  nonBpScoreWilsonScore, upDownScore, postPerformanceScore,
+  dBench
 }
