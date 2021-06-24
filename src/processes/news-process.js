@@ -51,7 +51,7 @@ const putMainFeed = async (job, name, logo, created, data) => {
   const { setPostScore } = require('../processes/domain-process');
   const { postPerformanceScoreProcess } = require('../processes/post-perfomance-process');
   const score = await setPostScore(job.user_id);
-  const performanceScore = await postPerformanceScoreProcess(job.user_id);
+  const performanceScore = await postPerformanceScoreProcess(job);
   try {
     const set = {
       post_type: 2,

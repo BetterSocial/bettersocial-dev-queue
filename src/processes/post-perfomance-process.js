@@ -1,21 +1,42 @@
 const {
   postScore, nonBpScoreWilsonScore, durationScoreWilsonScore,
-  upDownScoreWilsonScore, upDownScore
-} = require("../utils")
+  upDownScoreWilsonScore, upDownScore, dBench
+} = require("../utils");
 require("dotenv").config();
-const getValueFromDb = async (user_id) => {
-  const { PostStatistic, StatisticPost, UserBlockedUser } = require("../databases/models");
+
+const getValueFromDb = async (post_id, user_id) => {
+  const { PostStatistic, StatisticPost, UserBlockedUser, PostViewTime } = require("../databases/models");
   const bp = await UserBlockedUser.count({ where: { user_id_blocked: user_id }});
   const upvote = await PostStatistic.sum('upvote_count');
   const downvote = await PostStatistic.sum('downvote_count');
   const impression = await StatisticPost.sum('counter');
+  const postImpression = await PostViewTime.findOne({ where: { post_id, user_id } });
+  let postImprValue;
+  if (postImpression) {
+    postImprValue = postImpression.dataValues.view_time;
+  }else {
+    postImprValue = 0;
+  }
 
-  return { bp, impression, upvote, downvote };
+  return { bp, impression, upvote, downvote, postImprValue };
 }
 
-const postPerformanceScoreProcess = async (user_id) => {
+const validatePostMessage = (str) => {
+  const urlRegex = /(https?:\/\/[^ ]*)/;
+  const urlValidation = str.match(urlRegex);
+
+  if (urlValidation) {
+    return 0
+  } else {
+    return str.length
+  }
+}
+
+const postPerformanceScoreProcess = async (job) => {
   try {
-    const { bp, impression, upvote, downvote } = await getValueFromDb(user_id);
+    const {
+      bp, impression, upvote, downvote, postImprValue
+    } = await getValueFromDb(job.id_feed, job.user_id);
     const WW_NON_BP = process.env.WW_NONBP;
     const WW_D = process.env.WW_D;
     const WW_UP_DOWN = process.env.WW_UPDOWN;
@@ -29,7 +50,13 @@ const postPerformanceScoreProcess = async (user_id) => {
     const W_N = process.env.W_N;
     const DUR_MIN = process.env.DUR_MIN;
     const DUR_MARG = process.env.DUR_MARG;
-    const duration = 10 //dummy data
+    const D_BENCH = dBench(DUR_MIN, DUR_MARG, validatePostMessage(job.body))
+    let duration;
+    if(postImprValue > D_BENCH) {
+      duration = 1
+    } else {
+      duration = 0
+    }
     /*
       @description block point get from table post_blocked
     */
