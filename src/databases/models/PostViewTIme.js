@@ -18,8 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
       },
-      start_time: DataTypes.DATE,
-      end_time: DataTypes.DATE,
+      user_id: DataTypes.STRING,
       view_time: DataTypes.BIGINT,
     },
     {

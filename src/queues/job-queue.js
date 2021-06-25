@@ -3,7 +3,7 @@ const { handlerFailure, handlerCompleted, handlerStalled } = require('./handler'
 
 const { newsQueue  } = require('../config')
 
-const initNewsQueue = () => {
+const initQueue = () => {
   console.info('newsQueue job is working!');
   newsQueue.process(newsJob);
   newsQueue.on('failed', handlerFailure);
@@ -11,4 +11,4 @@ const initNewsQueue = () => {
   newsQueue.on('stalled', handlerStalled);
 }
 
-initNewsQueue();
+initQueue();
