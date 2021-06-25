@@ -2,6 +2,17 @@ const convertString = (str, from, to) => {
   return str.split(from).join(to)
 }
 
+const checkIfValidURL = (str) => {
+  const urlRegex = /(https?:\/\/[^ ]*)/;
+  const urlValidation = str.match(urlRegex);
+
+  if (urlValidation) {
+    return str.match(urlRegex)[1]
+  } else {
+    return false
+  }
+}
+
 const dateCreted = {
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString()
@@ -19,5 +30,5 @@ const getToken = (req) => {
 }
 
 module.exports = {
-  convertString, dateCreted, getToken
+  convertString, dateCreted, getToken, checkIfValidURL
 }

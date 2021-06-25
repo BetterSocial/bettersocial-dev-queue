@@ -1,6 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { DomainPage, NewsLink, StatisticPost } = require("../databases/models");
+const { dateCreted } = require("../utils");
 
 const validateDomain = async (resp) => {
   try {
@@ -27,9 +28,7 @@ const validateDomain = async (resp) => {
       const data = {
         domain_page_id: uuidv4(),
         domain_name: resp.request.host,
-        logo, description,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        logo, description, ...dateCreted
       }
 
       await DomainPage.create(data);
@@ -86,18 +85,16 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
       const { postToGetstream } = require('./domain-process');
 
       data.news_link_id = uuidv4();
-      data.created_at = new Date().toISOString();
-      data.updated_at = new Date().toISOString();
       data.url = data.news_url;
 
-      await NewsLink.create(data)
+      await NewsLink.create({...data, ...dateCreted})
 
       const site_name = data.site_name
       const activity = {
         domain: {
           name, site_name, info, image:logo
         },
-        content: data
+        content: {...data, ...dateCreted}
       }
 
       await postToGetstream(activity, job.user_id);
@@ -120,8 +117,6 @@ const saveCounterPost = async (user_id) => {
 
     const data = {}
     data.id_statistic = uuidv4();
-    data.created_at = new Date().toISOString();
-    data.updated_at = new Date().toISOString();
     data.user_id = user_id;
     data.counter = 1;
     data.date = date;
@@ -138,7 +133,7 @@ const saveCounterPost = async (user_id) => {
         { where: { user_id, date } }
       );
     } else {
-      await StatisticPost.create(data);
+      await StatisticPost.create({...data, ...dateCreted});
     }
     console.info("counter created");
   } catch (error) {

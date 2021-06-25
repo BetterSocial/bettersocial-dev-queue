@@ -38,7 +38,8 @@ app.get("/test", async (req, res) => {
 });
 
 // app.post("/hook", setHook);
-app.post("/message-posted", createQueueNews);
+app.post("/api/v1/news/message-posted", createQueueNews);
+app.post("/api/v1/feed/viewpost", createQueueNews);
 // app.get("/hook", getHook);
 
 // app.post("/hook", setHook);

@@ -1,14 +1,3 @@
-function testIfValidURL(str) {
-  const urlRegex = /(https?:\/\/[^ ]*)/;
-  const urlValidation = str.match(urlRegex);
-
-  if (urlValidation) {
-    return str.match(urlRegex)[1]
-  } else {
-    return false
-  }
-}
-
 const createQueueNews = async (req, res) => {
   // for local test in postman uncomment this line
   // const bodyData = req.body.message
@@ -20,7 +9,7 @@ const createQueueNews = async (req, res) => {
   if (bodyData) {
     try {
       const { v4: uuidv4 } = require('uuid');
-
+      const { checkIfValidURL } = require('../utils');
       const { newsQueue } = require('../config');
       /*
         @description options bull queue ref https://www.npmjs.com/package/bull
@@ -29,8 +18,8 @@ const createQueueNews = async (req, res) => {
         jobId: uuidv4(),
         removeOnComplete: true,
       };
-      if (testIfValidURL(bodyData)) {
-        const getJob = await newsQueue.add({ body: testIfValidURL(bodyData), id_feed, user_id }, options);
+      if (checkIfValidURL(bodyData)) {
+        const getJob = await newsQueue.add({ body: checkIfValidURL(bodyData), id_feed, user_id }, options);
         return res.status(200).json({
           code: 200,
           status: `success created news with job id : ${getJob.id}`,
