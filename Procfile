@@ -1,2 +1,2 @@
 web: npm start
-queue: node src/queues/news-queue.js
+queue: node src/queues/job-queue.js

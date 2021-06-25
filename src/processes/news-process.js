@@ -1,6 +1,9 @@
+const axios = require('axios');
+const cheerio = require('cheerio');
+const { DomainPage, NewsLink, StatisticPost } = require("../databases/models");
+
 const validateDomain = async (resp) => {
   try {
-    const { DomainPage } = require("../databases/models");
     const getDomain = await DomainPage.findOne({
       where: { domain_name: resp.request.host }
     })
@@ -16,8 +19,6 @@ const validateDomain = async (resp) => {
       domain_image = getDomain.dataValues.logo;
       created_domain = getDomain.dataValues.created_at;
     } else {
-      const axios = require('axios');
-      const cheerio = require('cheerio');
       const crawls = await axios.get(`${resp.request.protocol}//${resp.request.host}`);
       const $ = cheerio.load(crawls.data);
       const logo = $('meta[property="og:image"]').attr('content') || "";
@@ -74,7 +75,6 @@ const putMainFeed = async (job, name, logo, created, data) => {
 
 const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
   try {
-    const { NewsLink } = require("../databases/models");
     const findNewsLink = await NewsLink.findOne({
       where: { news_url: data.news_url }
     })
@@ -126,7 +126,6 @@ const saveCounterPost = async (user_id) => {
     data.counter = 1;
     data.date = date;
 
-    const { StatisticPost } = require("../databases/models");
     const findPostToday = await StatisticPost.count({
       where : { user_id, date }
     });
@@ -150,9 +149,6 @@ const saveCounterPost = async (user_id) => {
 const newsJob = async (job, done) => {
   try {
     console.info('news job is working! with id ' + job.id);
-    const axios = require('axios');
-    const cheerio = require('cheerio');
-
     /*
       @description crawls data from url post getstream
     */
