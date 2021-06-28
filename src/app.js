@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // const getHook = require("./webhook/getData");
 // const setHook = require("./webhook/setData");
 const { createQueueNews } = require("./webhook/setNews");
-const { createQueuePostTime } = require("./services");
+const { createQueuePostTime, refreshPostViewTime } = require("./services");
 // for bull admin
 // app.use("/admin/queues", router);
 
@@ -40,7 +40,7 @@ app.get("/test", async (req, res) => {
 
 // app.post("/hook", setHook);
 app.post("/api/v1/news/message-posted", createQueueNews);
-app.post("/api/v1/feed/viewpost", createQueuePostTime);
+app.get("/api/v1/feed/refresh-post-view-time", refreshPostViewTime);
 // app.get("/hook", getHook);
 
 // app.post("/hook", setHook);
