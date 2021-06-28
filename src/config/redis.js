@@ -8,15 +8,11 @@ const newsQueue = new Bull('newsQueue', {
 //   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
 // });
 
-const addQueuePostTime = new Bull('addQueuePostTime', {
-  redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
-});
-
-const updateQueuePostTime = new Bull('updateQueuePostTime', {
+const postTimeQueue = new Bull('addQueuePostTime', {
   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
 });
 
 module.exports = {
-  newsQueue, addQueuePostTime, updateQueuePostTime
+  newsQueue, postTimeQueue
 }
 

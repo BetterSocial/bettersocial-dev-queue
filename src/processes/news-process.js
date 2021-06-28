@@ -143,7 +143,7 @@ const saveCounterPost = async (user_id) => {
 
 const newsJob = async (job, done) => {
   try {
-    console.info('news job is working! with id ' + job.id);
+    console.info('running job news! with id ' + job.id);
     /*
       @description crawls data from url post getstream
     */
