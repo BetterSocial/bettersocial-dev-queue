@@ -5,15 +5,15 @@ const {
 require("dotenv").config();
 
 const getValueFromDb = async (post_id, user_id) => {
-  const { PostStatistic, StatisticPost, UserBlockedUser, PostViewTime } = require("../databases/models");
+  const { PostStatistic, StatisticPost, UserBlockedUser, VwPostTime } = require("../databases/models");
   const bp = await UserBlockedUser.count({ where: { user_id_blocked: user_id }});
   const upvote = await PostStatistic.sum('upvote_count');
   const downvote = await PostStatistic.sum('downvote_count');
   const impression = await StatisticPost.sum('counter');
-  const postImpression = await PostViewTime.findOne({ where: { post_id, user_id } });
+  const postImpression = await VwPostTime.findOne({ where: { post_id } });
   let postImprValue;
   if (postImpression) {
-    postImprValue = postImpression.dataValues.view_time;
+    postImprValue = postImpression.dataValues.average;
   }else {
     postImprValue = 0;
   }
