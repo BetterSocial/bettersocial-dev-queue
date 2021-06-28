@@ -40,7 +40,6 @@ app.get("/test", async (req, res) => {
 
 // app.post("/hook", setHook);
 app.post("/api/v1/news/message-posted", createQueueNews);
-app.post("/api/v1/feed/viewpost", createQueuePostTime);
 app.get("/api/v1/feed/refresh-post-view-time", refreshPostViewTime);
 // app.get("/hook", getHook);
 
