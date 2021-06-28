@@ -1,4 +1,5 @@
 module.exports = {
   ...require('./postStream'),
-  ...require('./updateStream')
+  ...require('./updateStream'),
+  ...require('./createPostTime')
 }
