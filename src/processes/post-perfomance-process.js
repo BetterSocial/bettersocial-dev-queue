@@ -10,7 +10,7 @@ const getValueFromDb = async (post_id, user_id) => {
   const upvote = await PostStatistic.sum('upvote_count');
   const downvote = await PostStatistic.sum('downvote_count');
   const impression = await StatisticPost.sum('counter');
-  const postImpression = await VwPostTime.findOne({ where: { post_id } });
+  const postImpression = await VwPostTime.findOne({ where: { post_id }, attributes: ['post_id', 'average'] });
   let postImprValue;
   if (postImpression) {
     postImprValue = postImpression.dataValues.average;
