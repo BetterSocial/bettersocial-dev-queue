@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // const getHook = require("./webhook/getData");
 // const setHook = require("./webhook/setData");
 const { createQueueNews } = require("./webhook/setNews");
-const { createQueuePostTime, refreshPostViewTime } = require("./services");
+const { refreshPostViewTime } = require("./services");
 // for bull admin
 // app.use("/admin/queues", router);
 
