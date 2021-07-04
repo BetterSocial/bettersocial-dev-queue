@@ -9,7 +9,7 @@ const createQueueNews = async (req, res) => {
   if (bodyData) {
     try {
       const { v4: uuidv4 } = require('uuid');
-      const { checkIfValidURL } = require('../utils');
+      const { checkIfValidURL, successResponse, errorResponse } = require('../utils');
       const { newsQueue } = require('../config');
       /*
         @description options bull queue ref https://www.npmjs.com/package/bull
@@ -19,29 +19,18 @@ const createQueueNews = async (req, res) => {
         removeOnComplete: true,
       };
       if (checkIfValidURL(bodyData)) {
-        const getJob = await newsQueue.add({ body: checkIfValidURL(bodyData), id_feed, user_id }, options);
-        return res.status(200).json({
-          code: 200,
-          status: `success created news with job id : ${getJob.id}`,
-          data: bodyData,
-        });
+        const getJob = await newsQueue.add({
+          body: checkIfValidURL(bodyData), id_feed, user_id }, options
+        );
+        return successResponse(res, `success created news with job id : ${getJob.id}`, bodyData)
       } else {
         throw new Error('url is invalid');
       }
     } catch (error) {
-      return res.status(500).json({
-        code: 500,
-        data: null,
-        message: "Internal server error",
-        error: error.toString(),
-      });
+      return errorResponse(res, error.toString(), 500);
     }
   } else {
-    return res.status(200).json({
-      code: 200,
-      status: "ok",
-      data: "Job running",
-    });
+    return successResponse(res, "ok", "Job running")
   }
 }
 
