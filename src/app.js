@@ -1,50 +1,29 @@
-require("dotenv").config();
 const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-// const { router } = require("bull-board");
-// const { sendNewEmail } = require("./queues/email-queue");
+const cors = require('cors')
+const compress = require('compression')
+const methodOverride = require('method-override')
+const helmet = require('helmet')
+const routing = require("./routes");
+const { notFoundHandler, errorHandler } = require("./utils");
 
 const app = express();
-const port = process.env.PORT || 3000;
-
-app.use(logger("dev"));
+app.use(compress()); // gzip compression
+app.use(methodOverride()); // lets you use HTTP verbs
+app.use(helmet()); // secure apps by setting various HTTP headers
+app.use(cors()); // enable cors
+app.options('*', cors()); // cors setup
+app.use(logger("combined"));
 app.use(express.json({ limit: "50mb" }));
-app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
-
-// const getHook = require("./webhook/getData");
-// const setHook = require("./webhook/setData");
-const { createQueueNews } = require("./webhook/setNews");
-const { refreshPostViewTime } = require("./services");
-// for bull admin
-// app.use("/admin/queues", router);
-
-// post from api
-// app.post("/send-email", async (req, res) => {
-//   const { message, ...restBody } = req.body;
-//   await sendNewEmail({
-//     ...restBody,
-//     html: `<p>${message}</p>`,
-//   });
-//   res.send({ status: "ok" });
-// });
-
-app.get("/test", async (req, res) => {
-  res.send({ status: "ok" });
+app.get('/favicon.ico', (_req, res) => {
+  res.status(204)
+  res.end()
 });
+app.use(routing); // routing
+app.use(notFoundHandler); // 404 handler
+app.use(errorHandler); // error handlerr
 
-// app.post("/hook", setHook);
-app.post("/api/v1/news/message-posted", createQueueNews);
-app.get("/api/v1/feed/refresh-post-view-time", refreshPostViewTime);
-// app.get("/hook", getHook);
-
-// app.post("/hook", setHook);
-
-app.listen(port, () => console.log(`App running on port ${port}`));
-
-// https://devcenter.heroku.com/articles/node-redis-workers
+module.exports = app;

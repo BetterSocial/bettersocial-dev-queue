@@ -1,5 +1,5 @@
 # user-api
-User Services API
+Queue Services API
 
 ## Setting Up
 
@@ -12,5 +12,5 @@ After clone the project
 ## Run the App
 
 ```
-    node app.js
+    npm run dev
 ```
