@@ -6,10 +6,10 @@ const createQueueNews = async (req, res) => {
   const bodyData = req.body[0]?.new[0]?.message
   const id_feed = req.body[0]?.new[0]?.id || false
   const user_id = req.body[0]?.new[0]?.actor?.id || null
+  const { checkIfValidURL, successResponse, errorResponse } = require('../utils');
   if (bodyData) {
     try {
       const { v4: uuidv4 } = require('uuid');
-      const { checkIfValidURL, successResponse, errorResponse } = require('../utils');
       const { newsQueue } = require('../config');
       /*
         @description options bull queue ref https://www.npmjs.com/package/bull
