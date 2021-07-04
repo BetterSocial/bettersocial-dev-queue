@@ -30,7 +30,13 @@ const postScore = (impr, wsNonBp, wwNonBp, wsD, wwD, wsUpdown, wwUpdown) => {
 */
 const weightPostLongComments = (longC, impr, wlongC) => {
   // weight rewarding if a post has long comments (>80char)
-  return (1 + (longC / impr)) ** wlongC;
+  let pLongC
+  if(impr === 0) {
+    pLongC = 1;
+  } else {
+    pLongC = (1 + (longC / impr)) ** wlongC;
+  }
+  return pLongC;
 }
 
 /*
@@ -140,7 +146,7 @@ const averagePostScore = (postPerformanceScore, countPosts) => {
   if (countPosts == 0) {
     return 1;
   } else {
-    return (postPerformanceScore + (10 - min(10, countPosts))) / 10;
+    return (postPerformanceScore + (10 - Math.min(10, countPosts))) / 10;
   }
 }
 
@@ -155,7 +161,7 @@ const multiplicationFromQualityCriteriaScore = (wEdu, eduEmail, wEmail, wTwitter
   } else {
     verifiedEdu = wEdu ** 0;
   }
-  const veridiedEmail = wEmail ** (min(3, email) ** 0.25);
+  const veridiedEmail = wEmail ** (Math.min(3, email) ** 0.25);
   if (followerTwitter > 200) {
     twitter = wTwitter ** 1;
   } else {
@@ -233,7 +239,7 @@ const previousInteractionScore = (prevInteract, prevD, prevUc, prevPre) => {
 /*
   @description formula for variable Rec
 */
-const previousInteractionScore = (ageOfPost, expirationSetting) => {
+const RecencyScore = (ageOfPost, expirationSetting) => {
   if (expirationSetting == 1) {
     return 1 - 0.007 * ageOfPost;
   } else if (expirationSetting == 7) {
@@ -248,7 +254,7 @@ const previousInteractionScore = (ageOfPost, expirationSetting) => {
 /*
   @description formula for variable t
 */
-const previousInteractionScore = (expirationSetting, postDateTime, nowDateTime) => {
+const ageOfPost = (expirationSetting, postDateTime, nowDateTime) => {
   diffDays = (Date.parse(nowDateTime) - Date.parse(postDateTime)) / 60 / 60 / 24;
 
   if(expirationSetting == "forever") {
@@ -258,9 +264,22 @@ const previousInteractionScore = (expirationSetting, postDateTime, nowDateTime) 
   }
 }
 
+const ageScore = (age) => {
+  let resultAgeScore
+  if (age < 365) {
+    resultAgeScore = 0.4 + 0.6 * (age / 365)
+  } else {
+    resultAgeScore = 1
+  }
+
+  return resultAgeScore
+}
+
 module.exports = {
   postCountScore, postScore, weightPostLongComments,
   upDownScoreWilsonScore, durationScoreWilsonScore,
   nonBpScoreWilsonScore, upDownScore, postPerformanceScore,
-  dBench
+  dBench, userScore, userScoreWithoutFollower, followerScore, followersQuality,
+  blockedPerPostImpression, blockpointsPerImpression, averagePostScore, ageScore,
+  multiplicationFromQualityCriteriaScore
 }
