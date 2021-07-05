@@ -5,8 +5,9 @@ const { dateCreted } = require("../utils");
 
 const validateDomain = async (resp) => {
   try {
+    const removeWww = resp.request.host.replace("www.", "");
     const getDomain = await DomainPage.findOne({
-      where: { domain_name: resp.request.host }
+      where: { domain_name: removeWww }
     })
     let domain_id;
     let name;
@@ -27,7 +28,7 @@ const validateDomain = async (resp) => {
       const { v4: uuidv4 } = require('uuid');
       const data = {
         domain_page_id: uuidv4(),
-        domain_name: resp.request.host,
+        domain_name: removeWww,
         logo, description, ...dateCreted
       }
 
