@@ -1,16 +1,16 @@
-const testFunc = async () => {
+const userScoreProcess = async (pPerf, job) => {
   const { userScore, followerScore, followersQuality, userScoreWithoutFollower, blockedPerPostImpression,
     blockpointsPerImpression, averagePostScore, multiplicationFromQualityCriteriaScore,
-    postPerformanceScore, ageScore }
-  = require('./formula');
+    postPerformanceScore, ageScore, weightPostLongComments }
+    = require('../utils');
   require('dotenv').config;
   const db = require('../databases/models')
-  const { UserFollowUser, StatisticPost, UserBlockedUser, Posts } = require('../databases/models');
+  const { UserFollowUser, StatisticPost, UserBlockedUser, Posts, PostStatistic } = require('../databases/models');
   const impression = await StatisticPost.sum('counter');
-  const totalBlocks = await UserBlockedUser.count({ where: { user_id_blocked: "619ec1a3-f0f7-4ac1-9811-7142d8e21e3f" } });
-  const { postPerformanceScoreProcess } = require('../processes/post-perfomance-process')
-  const F = await UserFollowUser.count({ where: { user_id_followed: "619ec1a3-f0f7-4ac1-9811-7142d8e21e3f" } })
-  const countPosts = await Posts.count({ where: { author_user_id: "619ec1a3-f0f7-4ac1-9811-7142d8e21e3f" } })
+  const comment = await PostStatistic.sum('comment_count');
+  const totalBlocks = await UserBlockedUser.count({ where: { user_id_blocked: job.user_id } });
+  const F = await UserFollowUser.count({ where: { user_id_followed: job.user_id } });
+  const countPosts = await Posts.count({ where: { author_user_id: job.user_id } });
 
   const WY = process.env.W_Y || 1;
   const WF = process.env.W_F || 1;
@@ -22,14 +22,16 @@ const testFunc = async () => {
   const WEMAIL = process.env.W_EMAIL || 1.2;
   const WTWITTER = process.env.W_TWITTER || 2;
   const WUSERATT = process.env.W_USERATT || 1;
-  const bpImprGlobal = process.env.BP_IMPR_GLOBALE || 0.00533333333333333
+  const WLONGC = process.env.W_LONGC || 1;
+  const bpImprGlobal = process.env.BP_IMPR_GLOBAL || 0.00533333333333333;
   const bp = blockpointsPerImpression(totalBlocks, impression, bpImprGlobal);
   const b = blockedPerPostImpression(bp);
-  const postPerformance = postPerformanceScore(postPerformanceScoreProcess())
+  const pLongC = weightPostLongComments(comment, impression, WLONGC);
+  const postPerformance = postPerformanceScore(pPerf, pLongC);
   const r = averagePostScore(postPerformance, countPosts);
   const query = `
     select extract(day from age(current_date, u.created_at)) :: int as age_days
-    from users u where user_id='619ec1a3-f0f7-4ac1-9811-7142d8e21e3f'`;
+    from users u where user_id='${job.user_id}'`;
   const [results, _] = await db.sequelize.query(query);
   const ageAccountUser = results[0]?.age_days || 0;
   const a = ageScore(ageAccountUser);
@@ -37,8 +39,12 @@ const testFunc = async () => {
   const u1 = userScoreWithoutFollower(F, WF, b, WB, r, WR, q, WQ, a, WA);
   const userScoreWithoutFollowerScore = followerScore(F);
   const y = followersQuality(userScoreWithoutFollowerScore, F);
-  console.log(F, WF, b, WB, r, WR, q, WQ, a, WA);
-  return userScore(u1, y, WY);
+  const user_score = userScore(u1, y, WY);
+
+  console.info(`score of user : ${user_score}`);
+  return { user_score }
 }
 
-testFunc().then(res => console.log(res))
+module.exports = {
+  userScoreProcess
+}
