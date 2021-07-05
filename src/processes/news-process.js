@@ -78,7 +78,7 @@ const putMainFeed = async (job, name, logo, created, data) => {
 const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
   try {
     const findNewsLink = await NewsLink.findOne({
-      where: { news_url: job.body }
+      where: { news_url: data.news_url }
     })
     let message
     if (findNewsLink) {
