@@ -19,7 +19,7 @@ const postScore = (impr, wsNonBp, wwNonBp, wsD, wwD, wsUpdown, wwUpdown) => {
   } else if (impr < 50) {
     result_p_pref = p_pref * (wsNonBp ** wwNonBp) * (wsD ** wwD);
   } else {
-    result_p_pref = p_pref * (wsNonBp ** ww_nonbp) * (ws_d ** ww_d) * (wsUpdown ** wwUpdown);
+    result_p_pref = p_pref * (wsNonBp ** wwNonBp) * (wsD ** wwD) * (wsUpdown ** wwUpdown);
   }
 
   return result_p_pref;
@@ -196,11 +196,9 @@ const applyMultipliesToTotalScore = (wTopic, topicFollowed, wFollow, wDegree, wL
   let calculate
   if (userFollowAuthor) {
     calculate = followedTopic * wFollow;
-  }
-  else if (followAuthorFollower == 1) {
+  } else if (followAuthorFollower == 1) {
     calculate = followedTopic * wDegree;
-  }
-  else {
+  } else {
     calculate = followedTopic * 1;
   }
   const result = calculate * wLinkDomain ** linkPost;
@@ -225,11 +223,11 @@ const scoreBasedPostCharacteristics = (rec, wRec, att, wAtt, d, wD, p, wP, postL
   @description formula for variable p_perv
 */
 const previousInteractionScore = (prevInteract, prevD, prevUc, prevPre) => {
-  if (prevInteract == 'seen') {
+  if (prevInteract === 'seen') {
     return prevPre;
-  } else if (prevInteract == 'downvote') {
+  } else if (prevInteract === 'downvote') {
     return prevD;
-  } else if (prevInteract == 'upvote' || prevInteract == 'comment') {
+  } else if (prevInteract === 'upvote' || prevInteract === 'comment') {
     return prevUc;
   } else {
     return 1;   //none interaction
@@ -240,14 +238,14 @@ const previousInteractionScore = (prevInteract, prevD, prevUc, prevPre) => {
   @description formula for variable Rec
 */
 const RecencyScore = (ageOfPost, expirationSetting) => {
-  if (expirationSetting == 1) {
+  if (expirationSetting === 1) {
     return 1 - 0.007 * ageOfPost;
-  } else if (expirationSetting == 7) {
+  } else if (expirationSetting === 7) {
     return 1.3 - 0.4 * ageOfPost ** 0.15;
-  } else if (expirationSetting == 30) {
+  } else if (expirationSetting === 30) {
     return 0.95 - 0.225 * ageOfPost ** 0.215;
-  } else if (expirationSetting == 'forever') {
-    return max(0.02, 0.95 - 0.225 * ageOfPost ** 0.215);
+  } else if (expirationSetting === 'forever') {
+    return Math.max(0.02, 0.95 - 0.225 * ageOfPost ** 0.215);
   }
 }
 
@@ -255,12 +253,12 @@ const RecencyScore = (ageOfPost, expirationSetting) => {
   @description formula for variable t
 */
 const ageOfPost = (expirationSetting, postDateTime, nowDateTime) => {
-  diffDays = (Date.parse(nowDateTime) - Date.parse(postDateTime)) / 60 / 60 / 24;
+  const diffDays = (Date.parse(nowDateTime) - Date.parse(postDateTime)) / 60 / 60 / 24;
 
-  if(expirationSetting == "forever") {
-    return max(1, diffDays);
+  if(expirationSetting === "forever") {
+    return Math.max(1, diffDays);
   } else {
-    return min(expirationSetting, max(1, diffDays));
+    return Math.min(expirationSetting, Math.max(1, diffDays));
   }
 }
 
@@ -281,5 +279,6 @@ module.exports = {
   nonBpScoreWilsonScore, upDownScore, postPerformanceScore,
   dBench, userScore, userScoreWithoutFollower, followerScore, followersQuality,
   blockedPerPostImpression, blockpointsPerImpression, averagePostScore, ageScore,
-  multiplicationFromQualityCriteriaScore
+  multiplicationFromQualityCriteriaScore, finalScorePost, previousInteractionScore,
+  applyMultipliesToTotalScore, scoreBasedPostCharacteristics, RecencyScore, ageOfPost
 }

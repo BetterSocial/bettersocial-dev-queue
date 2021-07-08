@@ -4,6 +4,9 @@ const { handlerFailure, handlerCompleted, handlerStalled } = require('./handler'
 
 const { newsQueue, postTimeQueue  } = require('../config')
 
+/*
+  @description initial all job queue
+*/
 const initQueue = () => {
   console.info('newsQueue job is working!');
   newsQueue.process(newsJob);
