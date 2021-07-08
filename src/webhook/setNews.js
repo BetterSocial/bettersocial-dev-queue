@@ -3,9 +3,12 @@ const createQueueNews = async (req, res) => {
   // const bodyData = req.body.message
   // const id_feed = req.body.id || false
   // const user_id = req.body.actor_id || null
+  // const user_id = req.body.topics || null
+  // const user_id = req.body.duration_feed || null
   const bodyData = req.body[0]?.new[0]?.message
   const id_feed = req.body[0]?.new[0]?.id || false
-  const user_id = req.body[0]?.new[0]?.actor?.id || null
+  const user_id = req.body[0]?.new[0]?.topics || []
+  const user_id = req.body[0]?.new[0]?.duration_feed || ""
   const { checkIfValidURL, successResponse, errorResponse } = require('../utils');
   if (bodyData) {
     try {

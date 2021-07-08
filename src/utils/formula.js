@@ -238,13 +238,13 @@ const previousInteractionScore = (prevInteract, prevD, prevUc, prevPre) => {
   @description formula for variable Rec
 */
 const RecencyScore = (ageOfPost, expirationSetting) => {
-  if (expirationSetting == 1) {
+  if (expirationSetting === 1) {
     return 1 - 0.007 * ageOfPost;
-  } else if (expirationSetting == 7) {
+  } else if (expirationSetting === 7) {
     return 1.3 - 0.4 * ageOfPost ** 0.15;
-  } else if (expirationSetting == 30) {
+  } else if (expirationSetting === 30) {
     return 0.95 - 0.225 * ageOfPost ** 0.215;
-  } else if (expirationSetting == 'forever') {
+  } else if (expirationSetting === 'forever') {
     return Math.max(0.02, 0.95 - 0.225 * ageOfPost ** 0.215);
   }
 }
@@ -258,7 +258,7 @@ const ageOfPost = (expirationSetting, postDateTime, nowDateTime) => {
   if(expirationSetting === "forever") {
     return Math.max(1, diffDays);
   } else {
-    return Math.min(expirationSetting, max(1, diffDays));
+    return Math.min(expirationSetting, Math.max(1, diffDays));
   }
 }
 
