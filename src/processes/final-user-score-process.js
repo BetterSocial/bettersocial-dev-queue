@@ -10,6 +10,7 @@ const validatePostMessage = (str) => {
 }
 
 const finalUserScoreProcess = async(u, p, pPerf, job) => {
+  require("dotenv").config();
   const {
     finalScorePost, previousInteractionScore, applyMultipliesToTotalScore,
     scoreBasedPostCharacteristics, RecencyScore, ageOfPost, postPerformanceScore,
