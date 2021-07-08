@@ -19,7 +19,7 @@ const postScore = (impr, wsNonBp, wwNonBp, wsD, wwD, wsUpdown, wwUpdown) => {
   } else if (impr < 50) {
     result_p_pref = p_pref * (wsNonBp ** wwNonBp) * (wsD ** wwD);
   } else {
-    result_p_pref = p_pref * (wsNonBp ** ww_nonbp) * (ws_d ** ww_d) * (wsUpdown ** wwUpdown);
+    result_p_pref = p_pref * (wsNonBp ** wwNonBp) * (wsD ** wwD) * (wsUpdown ** wwUpdown);
   }
 
   return result_p_pref;

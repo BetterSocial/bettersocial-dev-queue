@@ -15,7 +15,7 @@ const finalUserScoreProcess = async(u, p, pPerf, job) => {
     finalScorePost, previousInteractionScore, applyMultipliesToTotalScore,
     scoreBasedPostCharacteristics, RecencyScore, ageOfPost, postPerformanceScore,
     weightPostLongComments
-  } = require('./formula');
+  } = require('../utils');
   const { StatisticPost, PostStatistic } = require('../databases/models');
   const impression = await StatisticPost.sum('counter');
   const comment = await PostStatistic.sum('comment_count');

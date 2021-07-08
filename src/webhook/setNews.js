@@ -3,12 +3,13 @@ const createQueueNews = async (req, res) => {
   // const bodyData = req.body.message
   // const id_feed = req.body.id || false
   // const user_id = req.body.actor_id || null
-  // const user_id = req.body.topics || null
-  // const user_id = req.body.duration_feed || null
+  // const topics = req.body.topics || null
+  // const duration_feed = +req.body.duration_feed || null
   const bodyData = req.body[0]?.new[0]?.message
   const id_feed = req.body[0]?.new[0]?.id || false
-  const user_id = req.body[0]?.new[0]?.topics || []
-  const user_id = req.body[0]?.new[0]?.duration_feed || ""
+  const user_id = req.body[0]?.new[0]?.actor?.id || false
+  const topics = req.body[0]?.new[0]?.topics || []
+  const duration_feed = req.body[0]?.new[0]?.duration_feed || ""
   const { checkIfValidURL, successResponse, errorResponse } = require('../utils');
   if (bodyData) {
     try {
@@ -23,7 +24,7 @@ const createQueueNews = async (req, res) => {
       };
       if (checkIfValidURL(bodyData)) {
         const getJob = await newsQueue.add({
-          body: checkIfValidURL(bodyData), id_feed, user_id }, options
+          body: checkIfValidURL(bodyData), id_feed, user_id, topics, duration_feed }, options
         );
         return successResponse(res, `success created news with job id : ${getJob.id}`, bodyData)
       } else {
