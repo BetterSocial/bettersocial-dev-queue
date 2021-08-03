@@ -1,4 +1,10 @@
 const { PostViewTime } = require("../databases/models");
+const {
+  followLocation,
+  followLocations,
+  followUsers,
+  followTopics,
+} = require("../services");
 
 const followLocation = async (job, done) => {
   try {
@@ -8,6 +14,11 @@ const followLocation = async (job, done) => {
     */
 
     console.log(job.data);
+
+    let { token, locations } = job.data;
+
+    let res = await followLocations(token, location);
+    console.log(res);
 
     done(null, job.data);
   } catch (error) {
@@ -21,8 +32,9 @@ const followUser = async (job, done) => {
     /*
       @description job follow user to getstream
     */
-
-    console.log(job.data);
+    let { token, users } = job.data;
+    let res = await followUsers(token, users);
+    console.log(res);
 
     done(null, job.data);
   } catch (error) {
@@ -37,7 +49,8 @@ const followTopic = async (job, done) => {
       @description job follow user to getstream
       here logic to follow topic
     */
-
+    let { token, topics } = job.data;
+    let res = await followTopics(token, topics);
     console.log(job.data);
 
     done(null, job.data);

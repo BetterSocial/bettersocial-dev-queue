@@ -1,5 +1,8 @@
 module.exports = {
-  ...require('./postStream'),
-  ...require('./updateStream'),
-  ...require('./refreshPostViewTime')
-}
+  ...require("./postStream"),
+  ...require("./updateStream"),
+  ...require("./refreshPostViewTime"),
+  ...require("./followLocation"),
+  ...require("./followUser"),
+  ...require("./followTopic"),
+};
