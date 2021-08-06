@@ -1,6 +1,6 @@
 const { PostViewTime } = require("../databases/models");
 const {
-  followLocation,
+  followLocationService,
   followLocations,
   followUsers,
   followTopics,
@@ -17,7 +17,7 @@ const followLocation = async (job, done) => {
 
     let { token, locations } = job.data;
 
-    let res = await followLocations(token, location);
+    let res = await followLocationService(token, location);
     console.log(res);
 
     done(null, job.data);
