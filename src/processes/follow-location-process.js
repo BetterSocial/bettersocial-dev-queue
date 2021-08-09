@@ -1,10 +1,5 @@
 const { PostViewTime } = require("../databases/models");
-const {
-  followLocation,
-  followLocations,
-  followUsers,
-  followTopics,
-} = require("../services");
+const { followLocations, followUsers, followTopics } = require("../services");
 
 const followLocation = async (job, done) => {
   try {
