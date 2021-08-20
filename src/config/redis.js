@@ -3,6 +3,15 @@ const Bull = require("bull");
 const newsQueue = new Bull("newsQueue", {
   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
 });
+newsQueue.on("error", (err) => {
+  console.log("newsQueue error : ", err);
+});
+newsQueue
+  .process("newsQueue", 1, (job) => {
+    console.log("ok");
+    return Promise.resolve(job.id);
+  })
+  .catch((error) => console.error("Failed to start consumer", error.message));
 
 // const emailQueue = new Bull("email", {
 //   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
