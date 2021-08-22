@@ -20,12 +20,11 @@ const addMemberToChannel = async (job, done) => {
     // });
     // console.log(updateResponse);
     locations.map(async (item) => {
-      console.log(item);
       const token = serverClient.createToken(userId);
-      console.log(token);
       const channelId = item;
       const members = [];
       members.push(user_id);
+
       const channel = serverClient.channel("messaging", channelId, {
         name: `Awesome channel about ${channelId}`,
         created_by_id: "e554d0ac-81cc-4139-9939-11de565cda27",
@@ -33,7 +32,7 @@ const addMemberToChannel = async (job, done) => {
       await channel.create();
 
       await channel.addMembers(members, {
-        text: "Tommaso joined the channel.",
+        text: "new users has joined the channel.",
         user_id: user_id,
       });
     });
