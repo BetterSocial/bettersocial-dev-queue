@@ -27,7 +27,7 @@ const followTopicQueue = new Bull("followTopicQueue", {
   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
 });
 
-const addMemberToChannelQueue = new Bull("addMemberToChannelQueue", {
+const addUserToChannelQueue = new Bull("addUserToChannelQueue", {
   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
 });
 
@@ -37,5 +37,5 @@ module.exports = {
   locationQueue,
   followTopicQueue,
   followUserQueue,
-  addMemberToChannelQueue,
+  addUserToChannelQueue,
 };
