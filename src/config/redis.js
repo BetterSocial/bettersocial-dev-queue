@@ -1,9 +1,9 @@
 const Bull = require("bull");
 
-const newsQueue = new Bull("newsQueue", {
-  redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
-});
-// const newsQueue = new Bull("newsQueue", String(process.env.REDIS_URL));
+// const newsQueue = new Bull("newsQueue", {
+//   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
+// });
+const newsQueue = new Bull("newsQueue", process.env.REDIS_URL);
 newsQueue.on("error", (err) => {
   console.log("newsQueue error : ", err);
 });
