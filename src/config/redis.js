@@ -5,6 +5,7 @@ const newsQueue = new Bull("newsQueue", {
 });
 newsQueue.on("error", (err) => {
   console.log("newsQueue error : ", err);
+  console.log("redis url ", process.env.REDIS_URL);
 });
 
 // const emailQueue = new Bull("email", {
