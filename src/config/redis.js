@@ -4,9 +4,7 @@ const Bull = require("bull");
 //   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
 // });
 const newsQueue = new Bull("newsQueue", process.env.REDIS_URL);
-newsQueue.on("error", (err) => {
-  console.log("newsQueue error : ", err);
-});
+const testQueue = new Bull("testQueue", process.env.REDIS_URL);
 
 // const emailQueue = new Bull("email", {
 //   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
@@ -38,4 +36,5 @@ module.exports = {
   followTopicQueue,
   followUserQueue,
   addMemberToChannelQueue,
+  testQueue,
 };

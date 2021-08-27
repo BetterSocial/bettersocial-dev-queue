@@ -42,9 +42,8 @@ const createQueueNews = async (req, res) => {
           },
           options
         );
-        const array = await job.finished();
-
-        console.log("getJob ", JSON.stringify(array));
+        // const array = await getJob.finished();
+        // console.log("getJob ", JSON.stringify(array));
         return successResponse(
           res,
           `success created news with job id : ${getJob.id}`,
