@@ -31,9 +31,9 @@ const initQueue = () => {
   newsQueue.on("failed", handlerFailure);
   newsQueue.on("completed", handlerCompleted);
   newsQueue.on("stalled", handlerStalled);
-  newsQueue.on("error", (err) => {
-    console.log("newsQueue error : ", err);
-  });
+  // newsQueue.on("error", (err) => {
+  //   console.log("newsQueue error : ", err);
+  // });
 
   console.info("postTimeQueue job is working!");
   postTimeQueue.process(createPostTime);
@@ -67,7 +67,7 @@ const initQueue = () => {
 
   console.info("testQueue job is working!");
   testQueue.process((job) => {
-    console.log("job test ", job);
+    console.log("testQueue run job test ", job.data);
   });
   testQueue.on("failed", handlerFailure);
   testQueue.on("completed", handlerCompleted);
