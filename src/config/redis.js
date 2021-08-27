@@ -3,8 +3,16 @@ const Bull = require("bull");
 // const newsQueue = new Bull("newsQueue", {
 //   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
 // });
-const newsQueue = new Bull("newsQueue", process.env.REDIS_URL);
-const testQueue = new Bull("testQueue", process.env.REDIS_URL);
+const opts = { redis: { maxRetriesPerRequest: 100 } };
+const newsQueue = new Bull("newsQueue", process.env.REDIS_URL, opts);
+const testQueue = new Bull("testQueue", String(process.env.REDIS_URL), {
+  redis: {
+    maxRetriesPerRequest: 100,
+  },
+});
+testQueue.on("error", (err) => {
+  console.log("err test ", err);
+});
 
 // const emailQueue = new Bull("email", {
 //   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
@@ -35,7 +43,6 @@ module.exports = {
   locationQueue,
   followTopicQueue,
   followUserQueue,
-  addMemberToChannelQueue,
   testQueue,
   addUserToChannelQueue,
 };
