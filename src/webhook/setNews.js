@@ -5,16 +5,11 @@ const createQueueNews = async (req, res) => {
   // const user_id = req.body.actor_id || null
   // const topics = req.body.topics || null
   // const duration_feed = +req.body.duration_feed || null
-  console.log("res body all ", req.body);
   const bodyData = req.body[0]?.new[0]?.message;
-  console.log("res body ", bodyData);
   const id_feed = req.body[0]?.new[0]?.id || false;
-  console.log("id Feed ", id_feed);
   const user_id = req.body[0]?.new[0]?.actor?.id || false;
-  console.log("user_id ", user_id);
   const topics = req.body[0]?.new[0]?.topics || [];
   const duration_feed = req.body[0]?.new[0]?.duration_feed || "";
-  console.log("duration_feed ", duration_feed);
   const {
     checkIfValidURL,
     successResponse,
@@ -42,8 +37,6 @@ const createQueueNews = async (req, res) => {
           },
           options
         );
-        // const array = await getJob.finished();
-        // console.log("getJob ", JSON.stringify(array));
         return successResponse(
           res,
           `success created news with job id : ${getJob.id}`,
