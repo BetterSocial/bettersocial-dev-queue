@@ -6,9 +6,7 @@ const Bull = require("bull");
 const opts = { redis: { maxRetriesPerRequest: 100 } };
 const newsQueue = new Bull("newsQueue", process.env.REDIS_URL, opts);
 const testQueue = new Bull("testQueue", String(process.env.REDIS_URL), {
-  redis: {
-    maxRetriesPerRequest: 100,
-  },
+  redis: { tls: { rejectUnauthorized: false } },
 });
 testQueue.on("error", (err) => {
   console.log("err test ", err);
