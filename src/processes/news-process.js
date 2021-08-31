@@ -2,6 +2,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const { DomainPage, NewsLink, StatisticPost, UserScore, PostScore } = require("../databases/models");
 const { dateCreted } = require("../utils");
+const { v4: uuidv4 } = require("uuid");
 
 const validateDomain = async (resp) => {
   try {
