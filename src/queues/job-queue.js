@@ -17,9 +17,10 @@ const {
   locationQueue,
   followTopicQueue,
   followUserQueue,
-  addMemberToChannelQueue,
+  testQueue,
+  addUserToChannelQueue,
 } = require("../config");
-const { addMemberToChannel } = require("../processes/chat-process");
+const { addUserToChannel } = require("../processes/chat-process");
 
 /*
   @description initial all job queue
@@ -30,6 +31,9 @@ const initQueue = () => {
   newsQueue.on("failed", handlerFailure);
   newsQueue.on("completed", handlerCompleted);
   newsQueue.on("stalled", handlerStalled);
+  // newsQueue.on("error", (err) => {
+  //   console.log("newsQueue error : ", err);
+  // });
 
   console.info("postTimeQueue job is working!");
   postTimeQueue.process(createPostTime);
@@ -55,11 +59,22 @@ const initQueue = () => {
   followTopicQueue.on("completed", handlerCompleted);
   followTopicQueue.on("stalled", handlerStalled);
 
-  console.log("Add member to channel");
-  addMemberToChannelQueue.process(addMemberToChannel);
-  followTopicQueue.on("failed", handlerFailure);
-  followTopicQueue.on("completed", handlerCompleted);
-  followTopicQueue.on("stalled", handlerStalled);
+  console.log("Add new User to channel");
+  addUserToChannelQueue.process(addUserToChannel);
+  addUserToChannelQueue.on("failed", handlerFailure);
+  addUserToChannelQueue.on("completed", handlerCompleted);
+  addUserToChannelQueue.on("stalled", handlerStalled);
+
+  console.info("testQueue job is working!");
+  testQueue.process((job) => {
+    console.log("testQueue run job test ", job.data);
+  });
+  testQueue.on("failed", handlerFailure);
+  testQueue.on("completed", handlerCompleted);
+  testQueue.on("stalled", handlerStalled);
+  testQueue.on("error", (err) => {
+    console.log("newsQueue error : ", err);
+  });
 };
 
 initQueue();
