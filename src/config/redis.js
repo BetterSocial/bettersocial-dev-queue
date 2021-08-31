@@ -3,8 +3,9 @@ const Bull = require("bull");
 // const newsQueue = new Bull("newsQueue", {
 //   redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
 // });
-const opts = { redis: { maxRetriesPerRequest: 100 } };
-const newsQueue = new Bull("newsQueue", process.env.REDIS_URL, opts);
+const newsQueue = new Bull("newsQueue", process.env.REDIS_URL, {
+  redis: { tls: { rejectUnauthorized: false } },
+});
 const testQueue = new Bull("testQueue", String(process.env.REDIS_URL), {
   redis: { tls: { rejectUnauthorized: false } },
 });
