@@ -1,6 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const { DomainPage, NewsLink, StatisticPost } = require("../databases/models");
+const { DomainPage, NewsLink, StatisticPost, UserScore, PostScore } = require("../databases/models");
 const { dateCreted } = require("../utils");
 
 const validateDomain = async (resp) => {
@@ -60,6 +60,7 @@ const putMainFeed = async (job, name, logo, created, data) => {
     userScore.user_score, setPostScore.score,
     performanceScore.post_performance_comments_score, job
   );
+
   try {
     const set = {
       post_type: 2,
@@ -78,6 +79,17 @@ const putMainFeed = async (job, name, logo, created, data) => {
   } catch (error) {
     console.info(error)
   }
+
+  await UserScore.create({
+    user_score_id : uuidv4(),
+    user_id : job.user_id,
+    user_score : userScore.user_score
+  })
+  await PostScore.create({
+    post_score_id : uuidv4(),
+    feed_id : job.id_feed,
+    post_score : score.score
+  })
 }
 
 const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
