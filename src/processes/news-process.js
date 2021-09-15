@@ -113,7 +113,7 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
       const site_name = data.site_name
       const activity = {
         domain: {
-          name, site_name, info, image:logo
+          name, site_name, info, image:logo, domain_page_id: data.domain_page_id
         },
         content: {...data, ...dateCreted}
       }
