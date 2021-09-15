@@ -73,6 +73,7 @@ const putMainFeed = async (job, name, logo, created, data) => {
         description: data.description,
         image: data.image,
         url: data.news_url,
+        domain_page_id : data.domain_page_id
       },...score,...performanceScore,...userScore,...finalScore
     }
     await putStream(job.id_feed, set);
