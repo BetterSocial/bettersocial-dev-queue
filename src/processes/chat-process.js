@@ -5,6 +5,7 @@ const StreamChat = require("stream-chat").StreamChat;
 
 const addUserToChannel = async (job, done) => {
   try {
+    console.log("****************=====================******************");
     console.info("running job add new user to channel " + job.id);
     console.log(job.data);
     let data = job.data;
@@ -21,8 +22,8 @@ const addUserToChannel = async (job, done) => {
       members.push(user_id);
 
       const channel = serverClient.channel("messaging", channelId, {
-        name: `Awesome channel about ${channelId}`,
-        created_by_id: "e554d0ac-81cc-4139-9939-11de565cda27",
+        name: `${channelId}`,
+        created_by_id: "system",
       });
       await channel.create();
 
