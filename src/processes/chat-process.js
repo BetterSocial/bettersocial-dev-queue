@@ -22,7 +22,7 @@ const addUserToChannel = async (job, done) => {
 
       const channel = serverClient.channel("messaging", channelId, {
         name: `Awesome channel about ${channelId}`,
-        created_by_id: "e554d0ac-81cc-4139-9939-11de565cda27",
+        created_by_id: "system",
       });
       await channel.create();
 
