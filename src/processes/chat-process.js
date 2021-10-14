@@ -1,5 +1,6 @@
 // const stream = require("getstream");
 // const streamChat = require("stream-chat");
+const { convertString } = require("../utils/custom");
 
 const StreamChat = require("stream-chat").StreamChat;
 
@@ -21,8 +22,11 @@ const addUserToChannel = async (job, done) => {
       const members = [];
       members.push(user_id);
 
+      let channelName = convertString(channelId, "-", " ");
+      let newChannelName = channelName.toUpperCase();
+
       const channel = serverClient.channel("messaging", channelId, {
-        name: `${channelId}`,
+        name: newChannelName,
         created_by_id: "system",
       });
       await channel.create();
