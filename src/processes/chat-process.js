@@ -29,7 +29,7 @@ const addUserToChannel = async (job, done) => {
       await channel.create();
 
       await channel.addMembers(members, {
-        text: "new users has joined the channel.",
+        text: "A new user has joined the group.",
         user_id: user_id,
       });
     });
