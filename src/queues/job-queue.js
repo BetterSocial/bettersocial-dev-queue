@@ -19,8 +19,13 @@ const {
   followUserQueue,
   testQueue,
   addUserToChannelQueue,
+  addUserToTopicChannelQueue,
 } = require("../config");
-const { addUserToChannel } = require("../processes/chat-process");
+
+const {
+  addUserToChannel,
+  addUserToTopicChannel,
+} = require("../processes/chat-process");
 
 /*
   @description initial all job queue
@@ -64,6 +69,12 @@ const initQueue = () => {
   addUserToChannelQueue.on("failed", handlerFailure);
   addUserToChannelQueue.on("completed", handlerCompleted);
   addUserToChannelQueue.on("stalled", handlerStalled);
+
+  console.log("Add new user To topic channel");
+  addUserToTopicChannelQueue.process(addUserToTopicChannel);
+  addUserToTopicChannelQueue.on("failed", handlerFailure);
+  addUserToTopicChannelQueue.on("completed", handlerCompleted);
+  addUserToTopicChannelQueue.on("stalled", handlerStalled);
 
   console.info("testQueue job is working!");
   testQueue.process((job) => {

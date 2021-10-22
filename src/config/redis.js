@@ -40,6 +40,14 @@ const addUserToChannelQueue = new Bull(
   }
 );
 
+const addUserToTopicChannelQueue = new Bull(
+  "addUserToTopicChannelQueue",
+  process.env.REDIS_TLS_URL,
+  {
+    redis: { tls: { rejectUnauthorized: false } },
+  }
+);
+
 module.exports = {
   newsQueue,
   postTimeQueue,
@@ -48,4 +56,5 @@ module.exports = {
   followUserQueue,
   testQueue,
   addUserToChannelQueue,
+  addUserToTopicChannelQueue,
 };
