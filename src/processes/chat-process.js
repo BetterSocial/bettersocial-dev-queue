@@ -1,6 +1,10 @@
 // const stream = require("getstream");
 // const streamChat = require("stream-chat");
 const { convertString, capitalizing } = require("../utils/custom");
+const {
+  CHANNEL_TYPE_TOPIC,
+  CHANNEL_TYPE_GROUP_LOCATION,
+} = require("../utils/constant");
 
 const StreamChat = require("stream-chat").StreamChat;
 
@@ -25,7 +29,9 @@ const addUserToChannel = async (job, done) => {
       const channel = serverClient.channel("messaging", channelId, {
         name: channelName,
         created_by_id: "system",
-        channel_type: 2,
+        channel_type: CHANNEL_TYPE_GROUP_LOCATION,
+        channelImage:
+          "https://res.cloudinary.com/hpjivutj2/image/upload/v1617245336/Frame_66_1_xgvszh.png",
       });
       await channel.create();
 
@@ -65,7 +71,9 @@ const addUserToTopicChannel = (job, done) => {
       const channel = serverClient.channel("messaging", channelId, {
         name: channelName,
         created_by_id: "system",
-        channel_type: 3,
+        channelImage:
+          "https://res.cloudinary.com/hpjivutj2/image/upload/v1617245336/Frame_66_1_xgvszh.png",
+        channel_type: CHANNEL_TYPE_TOPIC,
       });
       await channel.create();
 

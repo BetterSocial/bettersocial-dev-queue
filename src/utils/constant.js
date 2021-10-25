@@ -1,3 +1,8 @@
 module.exports = {
-  DOMAIN:'domain'
-}
+  DOMAIN: "domain",
+
+  CHANNEL_TYPE_PERSONAL: 0,
+  CHANNEL_TYPE_GROUP: 1,
+  CHANNEL_TYPE_GROUP_LOCATION: 2,
+  CHANNEL_TYPE_TOPIC: 3,
+};
