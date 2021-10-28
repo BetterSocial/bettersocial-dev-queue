@@ -24,6 +24,7 @@ const locationQueue = new Bull(
 const followUserQueue = new Bull("followUserQueue", process.env.REDIS_TLS_URL, {
   redis: { tls: { rejectUnauthorized: false } },
 });
+
 const followTopicQueue = new Bull(
   "followTopicQueue",
   process.env.REDIS_TLS_URL,

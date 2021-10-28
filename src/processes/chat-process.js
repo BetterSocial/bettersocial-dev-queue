@@ -10,6 +10,7 @@ const StreamChat = require("stream-chat").StreamChat;
 
 const addUserToChannel = async (job, done) => {
   try {
+    console.info("running job add user to channel ! with id " + job.id);
     let data = job.data;
     let { channelIds, user_id } = data;
     let userId = user_id.toString();
@@ -49,8 +50,8 @@ const addUserToChannel = async (job, done) => {
 };
 
 const addUserToTopicChannel = (job, done) => {
-  console.log("*****************************************************");
   try {
+    console.info("running job add user to Topic ! with id " + job.id);
     let data = job.data;
     let { channelIds, user_id } = data;
     let userId = user_id.toString();
