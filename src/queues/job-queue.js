@@ -64,13 +64,13 @@ const initQueue = () => {
   followTopicQueue.on("completed", handlerCompleted);
   followTopicQueue.on("stalled", handlerStalled);
 
-  console.log("Add new User to channel");
+  console.log("Add new User to channel job is working");
   addUserToChannelQueue.process(addUserToChannel);
   addUserToChannelQueue.on("failed", handlerFailure);
   addUserToChannelQueue.on("completed", handlerCompleted);
   addUserToChannelQueue.on("stalled", handlerStalled);
 
-  console.log("Add new user To topic channel");
+  console.log("Add new user To topic channel job is working");
   addUserToTopicChannelQueue.process(addUserToTopicChannel);
   addUserToTopicChannelQueue.on("failed", handlerFailure);
   addUserToTopicChannelQueue.on("completed", handlerCompleted);
