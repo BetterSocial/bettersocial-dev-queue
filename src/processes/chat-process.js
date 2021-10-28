@@ -40,6 +40,7 @@ const addUserToChannel = async (job, done) => {
         user_id: user_id,
       });
     });
+    console.log("Selesai add user to channel");
     done(null, job.data);
   } catch (error) {
     console.log(error);
@@ -82,6 +83,7 @@ const addUserToTopicChannel = (job, done) => {
         user_id: user_id,
       });
     });
+    console.log("finish handle add user ke topic chat");
     done(null, job.data);
   } catch (error) {
     console.log("addUserToTopicChannel");
