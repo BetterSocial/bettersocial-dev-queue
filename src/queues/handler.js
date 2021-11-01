@@ -1,6 +1,9 @@
-const handlerCompleted = job => {
+const handlerCompleted = (job) => {
   console.info(
     `Job in ${job.queue.name} completed for: ${JSON.stringify(job.data)}`
+  );
+  console.log(
+    "============================Completed==============================="
   );
   job.remove();
 };
@@ -17,17 +20,20 @@ const handlerFailure = (job, err) => {
     return null;
   }
   console.info(
-    `Job in ${job.queue.name} failed for: ${JSON.stringify(job.data)} with ${err.message
+    `Job in ${job.queue.name} failed for: ${JSON.stringify(job.data)} with ${
+      err.message
     }. ${job.opts.attempts - job.attemptsMade} attempts left`
   );
 };
 
-const handlerStalled = job => {
+const handlerStalled = (job) => {
   console.info(
     `Job in ${job.queue.name} stalled for: ${JSON.stringify(job.data)}`
   );
 };
 
 module.exports = {
-  handlerCompleted, handlerFailure, handlerStalled
-}
+  handlerCompleted,
+  handlerFailure,
+  handlerStalled,
+};
