@@ -76,16 +76,16 @@ const initQueue = () => {
   addUserToTopicChannelQueue.on("completed", handlerCompleted);
   addUserToTopicChannelQueue.on("stalled", handlerStalled);
 
-  console.info("testQueue job is working!");
-  testQueue.process((job) => {
-    console.log("testQueue run job test ", job.data);
-  });
-  testQueue.on("failed", handlerFailure);
-  testQueue.on("completed", handlerCompleted);
-  testQueue.on("stalled", handlerStalled);
-  testQueue.on("error", (err) => {
-    console.log("newsQueue error : ", err);
-  });
+  // console.info("testQueue job is working!");
+  // testQueue.process((job) => {
+  //   console.log("testQueue run job test ", job.data);
+  // });
+  // testQueue.on("failed", handlerFailure);
+  // testQueue.on("completed", handlerCompleted);
+  // testQueue.on("stalled", handlerStalled);
+  // testQueue.on("error", (err) => {
+  //   console.log("newsQueue error : ", err);
+  // });
 };
 
 initQueue();

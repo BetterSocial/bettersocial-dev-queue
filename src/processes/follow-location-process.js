@@ -13,8 +13,8 @@ const followLocation = async (job, done) => {
     let { token, locations } = job.data;
 
     let res = await followLocations(token, location);
+    console.log("****** follow location ********");
     console.log(res);
-
     done(null, job.data);
   } catch (error) {
     done(null, error);
@@ -29,7 +29,6 @@ const followUser = async (job, done) => {
     */
     let { token, users } = job.data;
     let res = await followUsers(token, users);
-    console.log(res);
 
     done(null, job.data);
   } catch (error) {
@@ -46,7 +45,6 @@ const followTopic = async (job, done) => {
     */
     let { token, topics } = job.data;
     let res = await followTopics(token, topics);
-    console.log(job.data);
 
     done(null, job.data);
   } catch (error) {
