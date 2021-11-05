@@ -31,6 +31,7 @@ const {
   @description initial all job queue
 */
 const initQueue = () => {
+  console.log(process.env.REDIS_URL);
   console.info("newsQueue job is working!");
   newsQueue.process(newsJob);
   newsQueue.on("failed", handlerFailure);
