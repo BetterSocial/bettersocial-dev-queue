@@ -35,6 +35,7 @@ const addUserToChannel = async (job, done) => {
         channel_type: CHANNEL_TYPE_GROUP_LOCATION,
         channelImage: ICON_LOCATION_CHANNEL,
         channel_image: ICON_LOCATION_CHANNEL,
+        image: ICON_LOCATION_CHANNEL
       });
       await channel.create();
 
@@ -75,9 +76,10 @@ const addUserToTopicChannel = (job, done) => {
       const channel = serverClient.channel("messaging", channelId, {
         name: channelName,
         created_by_id: "system",
+        channel_type: CHANNEL_TYPE_TOPIC,
         channelImage: ICON_TOPIC_CHANNEL,
         channel_image: ICON_TOPIC_CHANNEL,
-        channel_type: CHANNEL_TYPE_TOPIC,
+        image: ICON_TOPIC_CHANNEL
       });
       await channel.create();
 
