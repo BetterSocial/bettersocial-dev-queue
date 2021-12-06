@@ -5,7 +5,9 @@ const createQueueNews = async (req, res) => {
   // const user_id = req.body.actor_id || null
   // const topics = req.body.topics || null
   // const duration_feed = +req.body.duration_feed || null
+  console.log('*************************************');
   console.log(req.body);
+  console.log('*************************************');
   const bodyData = req.body[0]?.new[0]?.message;
   const id_feed = req.body[0]?.new[0]?.id || false;
   const user_id = req.body[0]?.new[0]?.actor?.id || false;
