@@ -6,12 +6,21 @@ const checkIfValidURL = (str) => {
   const urlRegex = /(https?:\/\/[^ ]*)/;
   const urlValidation = str.match(urlRegex);
 
+  const urlRegexHttp = /(http?:\/\/[^ ]*)/;
+  const validationUrlHttp = str.match(urlRegexHttp)
+
   if (urlValidation) {
     return str.match(urlRegex)[1];
-  } else {
-    return false;
   }
+
+  if (validationUrlHttp) {
+    return str.match(urlRegexHttp)[1];
+  }
+
+  return false;
 };
+
+
 
 const dateCreted = {
   created_at: new Date().toISOString(),
