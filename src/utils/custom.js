@@ -3,17 +3,21 @@ const convertString = (str, from, to) => {
 };
 
 const checkIfValidURL = (str) => {
-  console.log(str);
+  var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+    '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+  const isDomainOnly = !!pattern.test(str);
+
   const urlRegex = /(https?:\/\/[^ ]*)/;
   const urlValidation = str.match(urlRegex);
 
-  const urlRegexHttp = /(http?:\/\/[^ ]*)/;
-  const validationUrlHttp = str.match(urlRegexHttp)
-
   if (urlValidation) {
     return str.match(urlRegex)[1];
-  } else if (validationUrlHttp) {
-    return str.match(urlRegexHttp)[1];
+  } else if (isDomainOnly) {
+    return str;
   } else {
     return false;
   }

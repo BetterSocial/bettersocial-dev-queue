@@ -11,9 +11,6 @@ const createQueueNews = async (req, res) => {
   const topics = req.body[0]?.new[0]?.topics || [];
   const duration_feed = req.body[0]?.new[0]?.duration_feed || "";
 
-  console.log('*************************************');
-  console.log(bodyData);
-  console.log('*************************************');
   const {
     checkIfValidURL,
     successResponse,
@@ -31,7 +28,6 @@ const createQueueNews = async (req, res) => {
         removeOnComplete: true,
       };
       if (checkIfValidURL(bodyData)) {
-        console.log(checkIfValidURL(bodyData));
         const getJob = await newsQueue.add(
           {
             body: checkIfValidURL(bodyData),
