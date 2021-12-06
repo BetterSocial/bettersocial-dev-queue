@@ -3,6 +3,7 @@ const convertString = (str, from, to) => {
 };
 
 const checkIfValidURL = (str) => {
+  console.log(str);
   const urlRegex = /(https?:\/\/[^ ]*)/;
   const urlValidation = str.match(urlRegex);
 
@@ -11,13 +12,11 @@ const checkIfValidURL = (str) => {
 
   if (urlValidation) {
     return str.match(urlRegex)[1];
-  }
-
-  if (validationUrlHttp) {
+  } else if (validationUrlHttp) {
     return str.match(urlRegexHttp)[1];
+  } else {
+    return false;
   }
-
-  return false;
 };
 
 
