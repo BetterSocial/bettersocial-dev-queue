@@ -210,7 +210,7 @@ const newsJob = async (job, done) => {
     done(null, result);
   } catch (error) {
     console.log(error);
-    // done(null, error);
+    done(null, error);
   }
 }
 
