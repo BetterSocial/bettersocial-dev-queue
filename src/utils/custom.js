@@ -17,7 +17,7 @@ const checkIfValidURL = (str) => {
   if (urlValidation) {
     return str.match(urlRegex)[1];
   } else if (isDomainOnly) {
-    return str;
+    return `https://${str}`;
   } else {
     return false;
   }
