@@ -73,9 +73,9 @@ const putMainFeed = async (job, name, logo, created, data) => {
         description: data.description,
         image: data.image,
         url: data.news_url,
-        domain_page_id : data.domain_page_id,
-        news_link_id : data.news_link_id
-      },...score,...performanceScore,...userScore,...finalScore
+        domain_page_id: data.domain_page_id,
+        news_link_id: data.news_link_id
+      }, ...score, ...performanceScore, ...userScore, ...finalScore
     }
     await putStream(job.id_feed, set);
     console.info(`updated main_feed:${job.id_feed}`)
@@ -84,14 +84,14 @@ const putMainFeed = async (job, name, logo, created, data) => {
   }
 
   await UserScore.create({
-    user_score_id : uuidv4(),
-    user_id : job.user_id,
-    user_score : userScore.user_score
+    user_score_id: uuidv4(),
+    user_id: job.user_id,
+    user_score: userScore.user_score
   })
   await PostScore.create({
-    post_score_id : uuidv4(),
-    feed_id : job.id_feed,
-    post_score : score.score
+    post_score_id: uuidv4(),
+    feed_id: job.id_feed,
+    post_score: score.score
   })
 }
 
@@ -110,14 +110,14 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
       data.news_link_id = uuidv4();
       data.url = data.news_url;
 
-      await NewsLink.create({...data, ...dateCreted})
+      await NewsLink.create({ ...data, ...dateCreted })
 
       const site_name = data.site_name
       const activity = {
         domain: {
-          name, site_name, info, image:logo, domain_page_id: data.domain_page_id
+          name, site_name, info, image: logo, domain_page_id: data.domain_page_id
         },
-        content: {...data, ...dateCreted}
+        content: { ...data, ...dateCreted }
       }
 
       await postToGetstream(activity, job.user_id);
@@ -145,7 +145,7 @@ const saveCounterPost = async (user_id) => {
     data.date = date;
 
     const findPostToday = await StatisticPost.count({
-      where : { user_id, date }
+      where: { user_id, date }
     });
     /*
       @description if exist post today counter else creatae post counter
@@ -156,7 +156,7 @@ const saveCounterPost = async (user_id) => {
         { where: { user_id, date } }
       );
     } else {
-      await StatisticPost.create({...data, ...dateCreted});
+      await StatisticPost.create({ ...data, ...dateCreted });
     }
     console.info("counter created");
   } catch (error) {
@@ -171,6 +171,9 @@ const newsJob = async (job, done) => {
       @description crawls data from url post getstream
     */
     const crawls = await axios.get(job.data.body);
+    console.log('+++++++++++++++++++++++++++++++++++++++');
+    console.log(crawls);
+    console.log('---------------------------------------');
     /*
       @description validate domain if exist get data or empty create data domain to table domain
     */
@@ -204,9 +207,9 @@ const newsJob = async (job, done) => {
     */
     const result = await saveNewsLink(data, name, info, job.data, logo, created_domain);
     console.info(result);
-    done(null , result);
+    done(null, result);
   } catch (error) {
-    done(null , error);
+    done(null, error);
   }
 }
 
