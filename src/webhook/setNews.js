@@ -5,13 +5,13 @@ const createQueueNews = async (req, res) => {
   // const user_id = req.body.actor_id || null
   // const topics = req.body.topics || null
   // const duration_feed = +req.body.duration_feed || null
-  const res = req.body[0]?.new[0];
+  const test = req.body[0]?.new[0];
   const bodyData = req.body[0]?.new[0]?.message;
   const id_feed = req.body[0]?.new[0]?.id || false;
   const user_id = req.body[0]?.new[0]?.actor?.id || false;
   const topics = req.body[0]?.new[0]?.topics || [];
   const duration_feed = req.body[0]?.new[0]?.duration_feed || "";
-  console.log(res);
+  console.log(test);
 
   const {
     checkIfValidURL,
