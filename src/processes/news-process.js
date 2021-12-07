@@ -166,13 +166,13 @@ const saveCounterPost = async (user_id) => {
 
 const newsJob = async (job, done) => {
   try {
-    console.info('running job news! with id ' + job.id);
+    // console.info('running job news! with id ' + job.id);
     /*
       @description crawls data from url post getstream
     */
-    const crawls = await axios.get(job.data.body);
+    const crawls = await axios.get(job);
     console.log('+++++++++++++++++++++++++++++++++++++++');
-    console.log(crawls);
+    console.log(job);
     console.log('---------------------------------------');
     /*
       @description validate domain if exist get data or empty create data domain to table domain
@@ -209,7 +209,8 @@ const newsJob = async (job, done) => {
     console.info(result);
     done(null, result);
   } catch (error) {
-    done(null, error);
+    console.log(error);
+    // done(null, error);
   }
 }
 
