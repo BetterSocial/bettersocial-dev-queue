@@ -47,6 +47,7 @@ const validateDomain = async (resp) => {
 
     return { domain_id, name, info, domain_image, created_domain }
   } catch (error) {
+    console.log(error);
     return error
   }
 }
@@ -160,7 +161,7 @@ const saveCounterPost = async (user_id) => {
         { where: { user_id, date } }
       );
     } else {
-      await StatisticPost.create({...data, ...dateCreted});
+      await StatisticPost.create({ ...data, ...dateCreted });
     }
     console.info("counter created");
   } catch (error) {
