@@ -26,6 +26,9 @@ const validateDomain = async (resp) => {
       const $ = cheerio.load(crawls.data);
       const logo = $('meta[property="og:image"]').attr('content') || "";
       const description = $('meta[property="og:description"]').attr('content') || "";
+      if (description === "") {
+        description = $('meta[name="description"]').attr('content') || "";
+      }
       const { v4: uuidv4 } = require('uuid');
       const data = {
         domain_page_id: uuidv4(),
@@ -96,6 +99,7 @@ const putMainFeed = async (job, name, logo, created, data) => {
 }
 
 const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
+  console.log('data');
   try {
     const findNewsLink = await NewsLink.findOne({
       where: { news_url: data.news_url }
@@ -191,6 +195,9 @@ const newsJob = async (job, done) => {
     const title = $("title").text();
     const image = $('meta[property="og:image"]').attr('content') || "";
     const description = $('meta[property="og:description"]').attr('content') || "";
+    if (description === "") {
+      description = $('meta[name="description"]').attr('content') || "";
+    }
     const news_url = $('meta[property="og:url"]').attr('content') || "";
     const keyword = $('meta[name="keywords"]').attr('content') || "";
     const author = $('meta[name="author"]').attr('content') || "";
@@ -201,6 +208,7 @@ const newsJob = async (job, done) => {
     const data = {
       domain_page_id, title, site_name, image, description, news_url, keyword, author
     };
+
 
     /*
       @description save news link and post to getstream
