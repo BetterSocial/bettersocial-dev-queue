@@ -160,7 +160,7 @@ const saveCounterPost = async (user_id) => {
         { where: { user_id, date } }
       );
     } else {
-      await StatisticPost.create({ ...data, ...dateCreted });
+      await StatisticPost.create({...data, ...dateCreted});
     }
     console.info("counter created");
   } catch (error) {
@@ -170,14 +170,11 @@ const saveCounterPost = async (user_id) => {
 
 const newsJob = async (job, done) => {
   try {
-    // console.info('running job news! with id ' + job.id);
+    console.info('running job news! with id ' + job.id);
     /*
       @description crawls data from url post getstream
     */
-    const crawls = await axios.get(job);
-    console.log('+++++++++++++++++++++++++++++++++++++++');
-    console.log(job);
-    console.log('---------------------------------------');
+    const crawls = await axios.get(job.data.body);
     /*
       @description validate domain if exist get data or empty create data domain to table domain
     */
