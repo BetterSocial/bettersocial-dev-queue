@@ -28,7 +28,6 @@ const createQueueNews = async (req, res) => {
         removeOnComplete: true,
       };
       if (checkIfValidURL(bodyData)) {
-        console.log('validasi url berhasil');
         const getJob = await newsQueue.add(
           {
             body: checkIfValidURL(bodyData),
@@ -39,14 +38,12 @@ const createQueueNews = async (req, res) => {
           },
           options
         );
-        console.log(`success created news with job id : ${getJob.id}`);
         return successResponse(
           res,
           `success created news with job id : ${getJob.id}`,
           bodyData
         );
       } else {
-        console.log('error validasi url');
         return errorResponse(res, 'url is invalid', 400);
         // throw new Error("url is invalid");
       }
