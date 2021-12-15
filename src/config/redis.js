@@ -1,16 +1,8 @@
 const Bull = require("bull");
 
-const newsQueue = new Bull("newsQueue", {
-  redis: {
-    password: process.env.REDIS_PASSWORD,
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    tls: {
-      rejectUnauthorized: false,
-      servername: process.env.REDIS_HOST
-    }
-  },
-});
+const connectRedis = process.env.REDIS_URL;
+
+const newsQueue = new Bull("newsQueue", connectRedis, { redis: { tls: { rejectUnauthorized: false } } });
 // const testQueue = new Bull("testQueue", process.env.REDIS_URL, {
 // redis: { tls: { rejectUnauthorized: false } },
 // }, {
@@ -22,91 +14,49 @@ const newsQueue = new Bull("newsQueue", {
 
 const postTimeQueue = new Bull(
   "addQueuePostTime",
+  connectRedis,
   {
-    redis: {
-      password: process.env.REDIS_PASSWORD,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      tls: {
-        rejectUnauthorized: false,
-        servername: process.env.REDIS_HOST
-      }
-    },
+    redis: { tls: { rejectUnauthorized: false } }
   }
 );
 
 const locationQueue = new Bull(
   "followLocationQueue",
+  connectRedis,
   {
-    redis: {
-      password: process.env.REDIS_PASSWORD,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      tls: {
-        rejectUnauthorized: false,
-        servername: process.env.REDIS_HOST
-      }
-    },
+    redis: { tls: { rejectUnauthorized: false } }
   }
 );
 
 const followUserQueue = new Bull(
   "followUserQueue",
+  connectRedis,
   {
-    redis: {
-      password: process.env.REDIS_PASSWORD,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      tls: {
-        rejectUnauthorized: false,
-        servername: process.env.REDIS_HOST
-      }
-    },
+    redis: { tls: { rejectUnauthorized: false } }
   }
 );
 
 const followTopicQueue = new Bull(
   "followTopicQueue",
+  connectRedis,
   {
-    redis: {
-      password: process.env.REDIS_PASSWORD,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      tls: {
-        rejectUnauthorized: false,
-        servername: process.env.REDIS_HOST
-      }
-    },
+    redis: { tls: { rejectUnauthorized: false } }
   }
 );
 
 const addUserToChannelQueue = new Bull(
   "addUserToChannelQueue",
+  connectRedis,
   {
-    redis: {
-      password: process.env.REDIS_PASSWORD,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      tls: {
-        rejectUnauthorized: false,
-        servername: process.env.REDIS_HOST
-      }
-    },
+    redis: { tls: { rejectUnauthorized: false } }
   }
 );
 
 const addUserToTopicChannelQueue = new Bull(
   "addUserToTopicChannelQueue",
+  connectRedis,
   {
-    redis: {
-      password: process.env.REDIS_PASSWORD,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      tls: {
-        rejectUnauthorized: false,
-        servername: process.env.REDIS_HOST
-      }
-    },
+    redis: { tls: { rejectUnauthorized: false } }
   }
 );
 
