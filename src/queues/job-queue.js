@@ -40,12 +40,19 @@ const initQueue = () => {
   newsQueue.on("error", (err) => {
     console.log("newsQueue error : ", err);
   });
+  newsQueue.on("active", (res) => {
+    console.log(res);
+  })
 
   console.info("postTimeQueue job is working!");
   postTimeQueue.process(createPostTime);
   postTimeQueue.on("failed", handlerFailure);
   postTimeQueue.on("completed", handlerCompleted);
   postTimeQueue.on("stalled", handlerStalled);
+
+  postTimeQueue.on("error", (err) => {
+    console.log("posttime error: ", err);
+  })
 
   console.info("Follow location job is working!");
   locationQueue.process(followLocation);
