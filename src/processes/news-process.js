@@ -22,6 +22,7 @@ const validateDomain = async (resp) => {
       domain_image = getDomain.dataValues.logo;
       created_domain = getDomain.dataValues.created_at;
     } else {
+      console.log(`${resp.request.protocol}//${resp.request.host}`);
       const crawls = await axios.get(`${resp.request.protocol}//${resp.request.host}`);
       const $ = cheerio.load(crawls.data);
       const logo = $('meta[property="og:image"]').attr('content') || "";
@@ -29,6 +30,7 @@ const validateDomain = async (resp) => {
       if (description === "") {
         description = $('meta[name="description"]').attr('content') || "";
       }
+      console.log(description);
       const { v4: uuidv4 } = require('uuid');
       const data = {
         domain_page_id: uuidv4(),
