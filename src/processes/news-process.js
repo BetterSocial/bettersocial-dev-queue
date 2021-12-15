@@ -35,7 +35,8 @@ const validateDomain = async (resp) => {
       const data = {
         domain_page_id: uuidv4(),
         domain_name: removeWww,
-        logo, description, ...dateCreted
+        short_description: description,
+        logo, ...dateCreted
       }
 
       await DomainPage.create(data);
