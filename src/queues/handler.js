@@ -1,10 +1,6 @@
 const handlerCompleted = (job) => {
-  console.info(
-    `Job in ${job.queue.name} completed for: ${JSON.stringify(job.data)}`
-  );
   console.log(
-    "============================Completed==============================="
-  );
+    `============================Completed job ${job.queue.name}===============================`);
   job.remove();
 };
 
@@ -20,8 +16,7 @@ const handlerFailure = (job, err) => {
     return null;
   }
   console.info(
-    `Job in ${job.queue.name} failed for: ${JSON.stringify(job.data)} with ${
-      err.message
+    `Job in ${job.queue.name} failed for: ${JSON.stringify(job.data)} with ${err.message
     }. ${job.opts.attempts - job.attemptsMade} attempts left`
   );
 };

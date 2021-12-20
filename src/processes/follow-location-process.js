@@ -8,13 +8,9 @@ const followLocation = async (job, done) => {
       @description job follow location to getstream
     */
 
-    console.log(job.data);
-
     let { token, locations } = job.data;
 
     let res = await followLocations(token, location);
-    console.log("****** follow location ********");
-    console.log(res);
     done(null, job.data);
   } catch (error) {
     done(null, error);

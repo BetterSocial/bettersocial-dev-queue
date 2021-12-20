@@ -44,7 +44,6 @@ const addUserToChannel = async (job, done) => {
         user_id: user_id,
       });
     });
-    console.log("Selesai add user to channel");
     done(null, job.data);
   } catch (error) {
     console.log(error);
@@ -70,8 +69,6 @@ const addUserToTopicChannel = (job, done) => {
 
       let name = capitalizing(item);
       let channelName = "#" + convertString(name, "-", "");
-      console.log(`Channel name: ${channelName}`);
-      console.log(`Channel id: ${channelId}`);
 
       const channel = serverClient.channel("messaging", channelId, {
         name: channelName,
@@ -88,10 +85,8 @@ const addUserToTopicChannel = (job, done) => {
         user_id: user_id,
       });
     });
-    console.log("finish handle add user ke topic chat");
     done(null, job.data);
   } catch (error) {
-    console.log("addUserToTopicChannel");
     console.log(error);
     done(null, error);
   }
