@@ -31,7 +31,6 @@ const {
   @description initial all job queue
 */
 const initQueue = () => {
-  console.log(process.env.REDIS_URL);
   console.info("newsQueue job is working!");
   newsQueue.process(newsJob);
   newsQueue.on("failed", handlerFailure);
@@ -65,6 +64,9 @@ const initQueue = () => {
   followUserQueue.on("failed", handlerFailure);
   followUserQueue.on("completed", handlerCompleted);
   followUserQueue.on("stalled", handlerStalled);
+  followUserQueue.on('error', (err) => {
+    console.error('error follow user', err);
+  })
 
   console.log("Follow topic job is working!");
   followTopicQueue.process(followTopic);
