@@ -11,22 +11,30 @@ const followUser = async (token, userId, feedGroup, status = 1) => {
 };
 
 const followUsers = async (token, userIds) => {
-  const client = stream.connect(process.env.API_KEY, token, process.env.APP_ID);
-  const clientServer = stream.connect(process.env.API_KEY, process.env.SECRET);
-  const userSevice = new UserService();
-  let userAdmin = await userSevice.getUserAdmin(process.env.USERNAME_ADMIN);
-  let id = userAdmin.user_id;
-  userIds.push(id);
-  const follows = [];
-  userIds.map((item) => {
-    follows.push({
-      source: "main_feed:" + client.userId,
-      target: "user:" + item.toLowerCase(),
-    });
-  });
+  try {
 
-  const res = await clientServer.followMany(follows);
-  return res;
+    const client = stream.connect(process.env.API_KEY, token, process.env.APP_ID);
+    const clientServer = stream.connect(process.env.API_KEY, process.env.SECRET);
+    const userSevice = new UserService();
+    let userAdmin = await userSevice.getUserAdmin(process.env.USERNAME_ADMIN);
+    let id = userAdmin.user_id;
+    console.log('id admin', id);
+    userIds.push(id);
+    const follows = [];
+    userIds.map((item) => {
+      follows.push({
+        source: "main_feed:" + client.userId,
+        target: "user:" + item.toLowerCase(),
+      });
+    });
+
+    const res = await clientServer.followMany(follows);
+    console.log(res);
+    return res;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };
 
 module.exports = {
