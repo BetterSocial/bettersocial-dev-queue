@@ -3,32 +3,39 @@ const convertString = (str, from, to) => {
 };
 
 const checkIfValidURL = (str) => {
-  //  var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-  //    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-  //    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-  //    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-  //    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-  //    '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-  //  const isDomainOnly = !!pattern.test(str);
-  //
-  //  const urlRegex = /(https?:\/\/[^ ]*)/;
-  //  const urlValidation = str.match(urlRegex);
-  //
-  //  if (urlValidation) {
-  //    return str.match(urlRegex)[1];
-  //  } else if (isDomainOnly) {
-  //    const newStr = `https://${str}`;
-  //    return newStr.match(urlRegex)[1];
-  //  } else {
-  //    return false;
-  //  }
-  const urlRegex = /(https?:\/\/[^ ]*)/;
-  const urlValidation = str.match(urlRegex);
+  try {
 
-  if (urlValidation) {
-    return str.match(urlRegex)[1]
-  } else {
-    return false
+
+    var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    const isDomainOnly = !!pattern.test(str);
+
+    const urlRegex = /(https?:\/\/[^ ]*)/;
+    const urlValidation = str.match(urlRegex);
+
+    if (urlValidation) {
+      return str.match(urlRegex)[1];
+    } else if (isDomainOnly) {
+      const newStr = `https://${str}`;
+      return newStr.match(urlRegex)[1];
+    } else {
+      return false;
+    }
+    // const urlRegex = /(https?:\/\/[^ ]*)/;
+    // const urlValidation = str.match(urlRegex);
+
+    // if (urlValidation) {
+    //   return str.match(urlRegex)[1]
+    // } else {
+    //   return false
+    // }
+  } catch (error) {
+    console.log('error validation url', error);
+    return false;
   }
 };
 
