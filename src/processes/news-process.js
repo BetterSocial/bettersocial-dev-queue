@@ -103,17 +103,32 @@ const putMainFeed = async (job, name, logo, created, data) => {
 }
 
 const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
-  console.log('data');
+  const { v4: uuidv4 } = require('uuid');
+  const { postToGetstream } = require('./domain-process');
+  console.info(data);
   try {
     const findNewsLink = await NewsLink.findOne({
       where: { news_url: data.news_url }
     })
+    console.info("id", findNewsLink.news_link_id);
     let message
     if (findNewsLink) {
+      data.news_link_id = findNewsLink.news_link_id;
+      data.url = data.news_url;
+
+      const site_name = data.site_name
+      const activity = {
+        domain: {
+          name, site_name, info, image: logo, domain_page_id: data.domain_page_id
+        },
+        content: { ...data, ...dateCreted }
+      }
+
+      await postToGetstream(activity, job.user_id);
+      await saveCounterPost(job.user_id);
+      await putMainFeed(job, name, logo, created_domain, data);
       message = 'url news not unique'
     } else {
-      const { v4: uuidv4 } = require('uuid');
-      const { postToGetstream } = require('./domain-process');
 
       data.news_link_id = uuidv4();
       data.url = data.news_url;
