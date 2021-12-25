@@ -110,9 +110,9 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
     const findNewsLink = await NewsLink.findOne({
       where: { news_url: data.news_url }
     })
-    console.info("id", findNewsLink.news_link_id);
     let message
     if (findNewsLink) {
+      console.info("id", findNewsLink.news_link_id);
       data.news_link_id = findNewsLink.news_link_id;
       data.url = data.news_url;
 
