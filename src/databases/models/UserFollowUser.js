@@ -13,9 +13,13 @@ module.exports = (sequelize, DataTypes) => {
   }
   UserFollowUser.init(
     {
-      follow_action: DataTypes.STRING,
-      user_id_follower: DataTypes.STRING,
-      user_id_followed: DataTypes.STRING,
+      follow_action_id: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true,
+      },
+      user_id_follower: { type: DataTypes.UUID, allowNull: false },
+      user_id_followed: { type: DataTypes.UUID, allowNull: false },
     },
     {
       sequelize,
