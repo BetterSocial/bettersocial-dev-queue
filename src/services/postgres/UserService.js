@@ -29,6 +29,18 @@ class UserService {
       throw error
     }
   }
+
+  async getUsersByIds(ids) {
+    try {
+      return await User.findAll({
+        where: {
+          user_id: ids
+        }
+      })
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = UserService;
