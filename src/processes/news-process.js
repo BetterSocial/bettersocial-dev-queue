@@ -208,7 +208,7 @@ const newsJob = async (job, done) => {
     */
     const $ = cheerio.load(crawls.data);
     const site_name = $('meta[property="og:site_name"]').attr('content') || "";
-    const title = $("title").text();
+    const title = $('meta[property="og:title"]').attr('content') || "";
     const image = $('meta[property="og:image"]').attr('content') || "";
     const description = $('meta[property="og:description"]').attr('content') || "";
     if (description === "") {
