@@ -125,7 +125,7 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
       }
 
       await saveCounterPost(job.user_id);
-      await postToGetstream(activity, job.user_id);
+      // await postToGetstream(activity, job.user_id);
       await putMainFeed(job, name, logo, created_domain, data);
       message = 'url news not unique'
     } else {
