@@ -23,20 +23,20 @@ const validateDomain = async (resp) => {
       created_domain = getDomain.dataValues.created_at;
     } else {
       console.log(`${resp.request.protocol}//${resp.request.host}`);
-      const crawls = await axios.get(`${resp.request.protocol}//${resp.request.host}`);
+      const crawls = await axios.get(`${resp.request.protocol}//${resp.request.host}`,
+        { headers: { 'User-Agent': 'bettersocial' } });
       const $ = cheerio.load(crawls.data);
       const logo = $('meta[property="og:image"]').attr('content') || "";
       const description = $('meta[property="og:description"]').attr('content') || "";
-      if (description === "") {
-        description = $('meta[name="description"]').attr('content') || "";
-      }
-      console.log(description);
       const { v4: uuidv4 } = require('uuid');
+      const domainId = uuidv4();
+      console.log('domain id: ', domainId);
       const data = {
-        domain_page_id: uuidv4(),
+        domain_page_id: domainId,
         domain_name: removeWww,
-        short_description: description,
-        logo, ...dateCreted
+        short_description: description.length > 254 ? description.substring(0, 230) : description,
+        logo,
+        ...dateCreted
       }
 
       await DomainPage.create(data);
@@ -193,7 +193,9 @@ const newsJob = async (job, done) => {
     /*
       @description crawls data from url post getstream
     */
-    const crawls = await axios.get(job.data.body);
+
+    const crawls = await axios.get(job.data.body, { headers: { 'User-Agent': 'bettersocial' } });
+
     /*
       @description validate domain if exist get data or empty create data domain to table domain
     */
@@ -203,6 +205,7 @@ const newsJob = async (job, done) => {
     const info = getDomain.info;
     const logo = getDomain.domain_image;
     const created_domain = getDomain.created_domain;
+
     /*
       @description crawls attribut opengraph url domain
     */
@@ -233,7 +236,7 @@ const newsJob = async (job, done) => {
     console.info(result);
     done(null, result);
   } catch (error) {
-    console.log(error);
+    console.log('kesalahan', error);
     done(null, error);
   }
 }
