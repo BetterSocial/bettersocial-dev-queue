@@ -4,6 +4,8 @@ const UserService = require("../services/postgres/UserService");
 const prepopulatedDm = async (job, done) => {
 
   try {
+
+    console.info("running job prepopulated dm to channel ! with id " + job.id);
     let data = job.data;
     let { id, ids } = data;
     let userService = new UserService();
