@@ -60,6 +60,14 @@ const addUserToTopicChannelQueue = new Bull(
   }
 );
 
+const prepopulatedDmQueue = new Bull(
+  "prepopulatedDmQueue",
+  connectRedis,
+  {
+    redis: { tls: { rejectUnauthorized: false } }
+  }
+)
+
 module.exports = {
   newsQueue,
   postTimeQueue,
@@ -69,4 +77,5 @@ module.exports = {
   // testQueue,
   addUserToChannelQueue,
   addUserToTopicChannelQueue,
+  prepopulatedDmQueue,
 };

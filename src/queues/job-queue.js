@@ -20,12 +20,14 @@ const {
   testQueue,
   addUserToChannelQueue,
   addUserToTopicChannelQueue,
+  prepopulatedDmQueue,
 } = require("../config");
 
 const {
   addUserToChannel,
   addUserToTopicChannel,
 } = require("../processes/chat-process");
+const { prepopulatedDm } = require("../processes/prepopulate-dm-process");
 
 /*
   @description initial all job queue
@@ -85,6 +87,12 @@ const initQueue = () => {
   addUserToTopicChannelQueue.on("failed", handlerFailure);
   addUserToTopicChannelQueue.on("completed", handlerCompleted);
   addUserToTopicChannelQueue.on("stalled", handlerStalled);
+
+  console.log("Prepopulated dm job is working");
+  prepopulatedDmQueue.process(prepopulatedDm);
+  prepopulatedDmQueue.on("failed", handlerFailure);
+  prepopulatedDmQueue.on("completed", handlerCompleted);
+  prepopulatedDmQueue.on("stalled", handlerStalled);
 
 };
 
