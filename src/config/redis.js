@@ -2,7 +2,10 @@ const Bull = require("bull");
 
 const connectRedis = process.env.REDIS_URL;
 
-const newsQueue = new Bull("newsQueue", connectRedis, { redis: { tls: { rejectUnauthorized: false } } });
+const newsQueue = new Bull("newsQueue",
+  {
+    redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
+  });
 // const testQueue = new Bull("testQueue", process.env.REDIS_URL, {
 // redis: { tls: { rejectUnauthorized: false } },
 // }, {
@@ -14,57 +17,57 @@ const newsQueue = new Bull("newsQueue", connectRedis, { redis: { tls: { rejectUn
 
 const postTimeQueue = new Bull(
   "addQueuePostTime",
-  connectRedis,
+
   {
-    redis: { tls: { rejectUnauthorized: false } }
+    redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
   }
 );
 
 const locationQueue = new Bull(
   "followLocationQueue",
-  connectRedis,
+
   {
-    redis: { tls: { rejectUnauthorized: false } }
+    redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
   }
 );
 
 const followUserQueue = new Bull(
   "followUserQueue",
-  connectRedis,
+
   {
-    redis: { tls: { rejectUnauthorized: false } }
+    redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
   }
 );
 
 const followTopicQueue = new Bull(
   "followTopicQueue",
-  connectRedis,
+
   {
-    redis: { tls: { rejectUnauthorized: false } }
+    redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
   }
 );
 
 const addUserToChannelQueue = new Bull(
   "addUserToChannelQueue",
-  connectRedis,
+
   {
-    redis: { tls: { rejectUnauthorized: false } }
+    redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
   }
 );
 
 const addUserToTopicChannelQueue = new Bull(
   "addUserToTopicChannelQueue",
-  connectRedis,
+
   {
-    redis: { tls: { rejectUnauthorized: false } }
+    redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
   }
 );
 
 const prepopulatedDmQueue = new Bull(
   "prepopulatedDmQueue",
-  connectRedis,
+
   {
-    redis: { tls: { rejectUnauthorized: false } }
+    redis: process.env.REDIS_URL || process.env.REDIS_TLS_URL,
   }
 )
 
