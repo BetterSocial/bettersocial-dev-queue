@@ -1,5 +1,6 @@
 const { newsJob } = require("../processes/news-process");
 const { createPostTime } = require("../processes/post-time-process");
+const { scoringProcessJob } = require("../processes/scoring-process");
 const {
   followLocation,
   followTopic,
@@ -21,6 +22,7 @@ const {
   addUserToChannelQueue,
   addUserToTopicChannelQueue,
   prepopulatedDmQueue,
+  scoringProcessQueue,
 } = require("../config");
 
 const {
@@ -33,6 +35,7 @@ const { prepopulatedDm } = require("../processes/prepopulate-dm-process");
   @description initial all job queue
 */
 const initQueue = () => {
+/* TODO
   console.info("newsQueue job is working!");
   newsQueue.process(newsJob);
   newsQueue.on("failed", handlerFailure);
@@ -93,7 +96,18 @@ const initQueue = () => {
   prepopulatedDmQueue.on("failed", handlerFailure);
   prepopulatedDmQueue.on("completed", handlerCompleted);
   prepopulatedDmQueue.on("stalled", handlerStalled);
-
+*/
+  console.info("scoringProcessQueue job is working!");
+  scoringProcessQueue.process(scoringProcessJob);
+  scoringProcessQueue.on("failed", handlerFailure);
+  scoringProcessQueue.on("completed", handlerCompleted);
+  scoringProcessQueue.on("stalled", handlerStalled);
+  scoringProcessQueue.on("error", (err) => {
+    console.log("scoringProcessQueue error : ", err);
+  });
+  scoringProcessQueue.on("active", (res) => {
+    console.log(res);
+  })
 };
 
 initQueue();

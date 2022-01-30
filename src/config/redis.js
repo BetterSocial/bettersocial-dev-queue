@@ -2,6 +2,14 @@ const Bull = require("bull");
 
 const connectRedis = process.env.REDIS_URL;
 
+// for production
+const queueOptions = {
+  redis: { tls: { rejectUnauthorized: false } }
+};
+
+// for development
+//const queueOptions = {};
+
 const newsQueue = new Bull("newsQueue", connectRedis, { redis: { tls: { rejectUnauthorized: false } } });
 // const testQueue = new Bull("testQueue", process.env.REDIS_URL, {
 // redis: { tls: { rejectUnauthorized: false } },
@@ -12,61 +20,22 @@ const newsQueue = new Bull("newsQueue", connectRedis, { redis: { tls: { rejectUn
 //   console.log("err test ", err);
 // });
 
-const postTimeQueue = new Bull(
-  "addQueuePostTime",
-  connectRedis,
-  {
-    redis: { tls: { rejectUnauthorized: false } }
-  }
-);
+const postTimeQueue = new Bull("addQueuePostTime", connectRedis, queueOptions);
 
-const locationQueue = new Bull(
-  "followLocationQueue",
-  connectRedis,
-  {
-    redis: { tls: { rejectUnauthorized: false } }
-  }
-);
+const locationQueue = new Bull("followLocationQueue", connectRedis, queueOptions);
 
-const followUserQueue = new Bull(
-  "followUserQueue",
-  connectRedis,
-  {
-    redis: { tls: { rejectUnauthorized: false } }
-  }
-);
+const followUserQueue = new Bull("followUserQueue", connectRedis, queueOptions);
 
-const followTopicQueue = new Bull(
-  "followTopicQueue",
-  connectRedis,
-  {
-    redis: { tls: { rejectUnauthorized: false } }
-  }
-);
+const followTopicQueue = new Bull( "followTopicQueue", connectRedis, queueOptions);
 
-const addUserToChannelQueue = new Bull(
-  "addUserToChannelQueue",
-  connectRedis,
-  {
-    redis: { tls: { rejectUnauthorized: false } }
-  }
-);
+const addUserToChannelQueue = new Bull("addUserToChannelQueue", connectRedis, queueOptions);
 
-const addUserToTopicChannelQueue = new Bull(
-  "addUserToTopicChannelQueue",
-  connectRedis,
-  {
-    redis: { tls: { rejectUnauthorized: false } }
-  }
-);
+const addUserToTopicChannelQueue = new Bull("addUserToTopicChannelQueue", connectRedis, queueOptions);
 
-const prepopulatedDmQueue = new Bull(
-  "prepopulatedDmQueue",
-  connectRedis,
-  {
-    redis: { tls: { rejectUnauthorized: false } }
-  }
-)
+const prepopulatedDmQueue = new Bull("prepopulatedDmQueue", connectRedis, queueOptions);
+
+// special queue for scoring process
+const scoringProcessQueue = new Bull("scoringProcessQueue", connectRedis, queueOptions);
 
 module.exports = {
   newsQueue,
@@ -78,4 +47,5 @@ module.exports = {
   addUserToChannelQueue,
   addUserToTopicChannelQueue,
   prepopulatedDmQueue,
+  scoringProcessQueue,
 };
