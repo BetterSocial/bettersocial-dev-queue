@@ -122,3 +122,7 @@ dist
 
 formula-rumus.js
 test-formula.js
+.idea/bettersocial-dev-queue.iml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml

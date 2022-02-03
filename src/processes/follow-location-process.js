@@ -1,5 +1,7 @@
 const { PostViewTime } = require("../databases/models");
 const { followLocations, followUsers, followTopics } = require("../services");
+const prepopulated = require("../services/chat/prepopulated");
+const UserService = require("../services/postgres/UserService");
 
 const followLocation = async (job, done) => {
   try {
@@ -23,8 +25,18 @@ const followUser = async (job, done) => {
     /*
       @description job follow user to getstream
     */
-    let { token, users } = job.data;
+    let { token, users, id } = job.data;
     let res = await followUsers(token, users);
+
+    let userService = new UserService();
+    let userAdmin = await userService.getUserAdmin(process.env.USERNAME_ADMIN);
+    let idAdmin = userAdmin.user_id;
+    users = users.filter((element, i, users) => {
+      return (element !== idAdmin);
+    })
+    users.push(idAdmin);
+    let result = await userService.getUsersByIds(users);
+    const pre = await prepopulated(id, result);
 
     done(null, job.data);
   } catch (error) {
