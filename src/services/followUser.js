@@ -5,9 +5,10 @@ const {
   UserFollowUser,
   UserFollowUserHistory } = require("../databases/models");
 const { v4: uuidv4 } = require("uuid");
+
 const followUser = async (token, userId, feedGroup, status = 1) => {
   const client = stream.connect(process.env.API_KEY, token, process.env.APP_ID);
-  const user = client.feed("main_feed", client.userId, token);
+  const user = client.feed("main_feed", userId, token);
   if (status === 1) {
     return user.follow(feedGroup, userId);
   } else {
@@ -15,20 +16,19 @@ const followUser = async (token, userId, feedGroup, status = 1) => {
   }
 };
 
-const followUsers = async (token, userIds) => {
+const followUsers = async (userId, userIds) => {
   try {
     const result = await sequelize.transaction(async (t) => {
-      const client = stream.connect(process.env.API_KEY, token, process.env.APP_ID);
+      // const client = stream.connect(process.env.API_KEY, token, process.env.APP_ID);
       const clientServer = stream.connect(process.env.API_KEY, process.env.SECRET);
       const userSevice = new UserService();
       let userAdmin = await userSevice.getUserAdmin(process.env.USERNAME_ADMIN);
       let id = userAdmin.user_id;
-      console.log('id admin', id);
       // User Follow User
       let followUser = {
         //   generate UUID
         follow_action_id: uuidv4(),
-        user_id_follower: client.userId,
+        user_id_follower: userId,
         user_id_followed: id,
       };
 
@@ -42,7 +42,7 @@ const followUsers = async (token, userIds) => {
       console.info(statusFollowUser);
 
       let user_follow_user_return = {
-        user_id_follower: client.userId,
+        user_id_follower: userId,
         user_id_followed: id,
         action: "in",
         source: 'onboarding',
@@ -56,12 +56,13 @@ const followUsers = async (token, userIds) => {
       const follows = [];
       userIds.map((item) => {
         follows.push({
-          source: "main_feed:" + client.userId,
+          source: "main_feed:" + userId,
           target: "user:" + item.toLowerCase(),
         });
       });
 
       const res = await clientServer.followMany(follows);
+      console.log('follow many: ', res);
       return res;
     })
     return result;
