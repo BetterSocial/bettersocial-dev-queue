@@ -196,18 +196,25 @@ const followersQuality = (userScoreWithoutFollowerScore, followersCount) => {
 /*
   @description formula for variable p1
 */
-const applyMultipliesToTotalScore = (wTopic, topicFollowed, wFollow, wDegree, wLinkDomain, userFollowAuthor, followAuthorFollower, linkPost) => {
-  const constant = 0.5;
-  const followedTopic = wTopic ** (topicFollowed ** constant);
-  let calculate
-  if (userFollowAuthor) {
-    calculate = followedTopic * wFollow;
-  } else if (followAuthorFollower == 1) {
-    calculate = followedTopic * wDegree;
-  } else {
-    calculate = followedTopic * 1;
+const applyMultipliesToTotalScore = (wTopic, topicFollowed, wFollow, wDegree, wLinkDomain, userFollowAuthor, followAuthorFollower, followDomain) => {
+  let result = 1;
+
+  // multiplier by #topicFollowed
+  if (topicFollowed > 0) {
+    result = result * wTopic ** (topicFollowed ** 0.5);
   }
-  const result = calculate * wLinkDomain ** linkPost;
+
+  // multiplier by follow status of the user
+  if (userFollowAuthor) {
+    result = result * wFollow;
+  } else if (followAuthorFollower) {
+    result = result * wDegree;
+  }
+
+  if (followDomain) {
+    result = result * wLinkDomain;
+  }
+
   return result;
 }
 

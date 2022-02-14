@@ -165,10 +165,7 @@ const countLast7DaysPosts = async(userScoreDoc, userScoreList, timeOfPost, isNew
 const calcScoreOnCreatePost = async(data, postScoreDoc, postScoreList, userScoreDoc, userScoreList, db) => {
   console.debug("Starting calcScoreOnCreatePost");
 
-/*
- *   - topics: array of text, optional (can be empty), list of topic tagged for this post/feed
- *   - privacy: text, privacy configuration of this post/feed.
- *
+  /*
     _id: feedId,
     foreign_id: "",
     time: "",
@@ -218,6 +215,8 @@ const calcScoreOnCreatePost = async(data, postScoreDoc, postScoreList, userScore
   postScoreDoc.author_id = data.user_id;
   postScoreDoc.expiration_setting = data.duration_feed || ""; // just need to make sure the value will be in string type
   postScoreDoc.expired_at = data.expired_at;
+  postScoreDoc.topics = data.topics;
+  postScoreDoc.privacy = data.privacy;
 
   const hasLink = containsLink(data.message);
   postScoreDoc.has_link = hasLink;

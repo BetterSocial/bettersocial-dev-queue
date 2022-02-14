@@ -1,8 +1,15 @@
 //const moment = require("moment");
 const { getDb } = require("../config/mongodb_conn");
 const {
+  DB_COLLECTION_USER_SCORE,
+  DB_COLLECTION_POST_SCORE,
+  DB_COLLECTION_USER_POST_SCORE
+} = require("./scoring-constant");
+const {
   calcScoreOnCreateAccount,
   calcScoreOnCreatePost,
+  calcScoreOnUpvotePost,
+  calcScoreOnCancelUpvotePost,
 } = require("./scoring");
 
 const initDataUserScore = (userId, timestamp) => {
@@ -99,6 +106,39 @@ const initDataPostScore = (feedId, timestamp) => {
   };
 };
 
+const initDataUserPostScore = (userId, feedId, timestamp) => {
+  return {
+    _id: userId+":"+feedId,
+    user_id: userId,
+    feed_id: feedId,
+    author_id: "",
+    topics_followed: 0,
+    author_follower: false,
+    second_degree_follower: false,
+    domain_follower: false,
+    p1_score: 0.0,
+    upvote_count: 0,
+    comment_count: 0,
+    downvote_count: 0,
+    block_count: 0,
+    seen_count: 0,
+    p_prev_score: 0.0,
+    post_score: 0.0,
+    user_post_score: 0.0,
+    activity_log: {},
+    anomaly_activities: {
+      upvote_time: "",
+      cancel_upvote_time: "",
+      downvote_time: "",
+      cancel_downvote_time: "",
+      block_time: "",
+      unblock_time: "",
+    },
+    created_at: timestamp,
+    updated_at: timestamp,
+  };
+};
+
 /*
  * Job processor on create account event. Received data:
  *   - user_id : text, id of the created user
@@ -111,7 +151,7 @@ const initDataPostScore = (feedId, timestamp) => {
 const onCreateAccount = async (data) => {
   console.debug("scoring onCreateAccount");
   let db = await getDb();
-  let userScoreList = await db.collection('user_score');
+  let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
 
   let userDoc = await userScoreList.findOne({"_id": data.user_id});
   console.debug("findOne userDoc result: " + JSON.stringify(userDoc));
@@ -143,7 +183,7 @@ const onCreateAccount = async (data) => {
 const onCreatePost = async (data) => {
   console.debug("scoring onCreatePost");
   let db = await getDb();
-  let userScoreList = await db.collection('user_score');
+  let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
 
   const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
   console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
@@ -151,7 +191,7 @@ const onCreatePost = async (data) => {
     throw new Error("User data is not found, with id: " + data.user_id);
   }
 
-  let postScoreList = await db.collection('post_score');
+  let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
   let postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
   console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
   if (!postScoreDoc) {
@@ -163,6 +203,76 @@ const onCreatePost = async (data) => {
 }
 
 /*
+ * Job processor on update post event. Received data:
+ *   - user_id: text, id of the user who doing the upvote action
+ *   - feed_id: text, id of the feed which being upvoted
+ *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
+ */
+const onUpvotePost = async (data) => {
+  console.debug("scoring onUpvotePost");
+  let db = await getDb();
+  let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
+  let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
+  let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
+
+  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
+  if (!userScoreDoc) {
+    throw new Error("User data is not found, with id: " + data.user_id);
+  }
+
+  let postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
+  if (!postScoreDoc) {
+    throw new Error("Post data is not found, with id: " + data.feed_id);
+  }
+
+  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
+  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  if (!userPostScoreDoc) {
+    console.debug("init user post score doc");
+    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+  }
+
+  return await calcScoreOnUpvotePost(data, userScoreDoc, userScoreList, postScoreDoc, userPostScoreDoc, userPostScoreList);
+};
+
+/*
+ * Job processor on update post event. Received data:
+ *   - user_id: text, id of the user who doing the upvote action
+ *   - feed_id: text, id of the feed which being upvoted
+ *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
+ */
+const onCancelUpvotePost = async (data) => {
+  console.debug("scoring onCancelUpvotePost");
+  let db = await getDb();
+  let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
+  let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
+  let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
+
+  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
+  if (!userScoreDoc) {
+    throw new Error("User data is not found, with id: " + data.user_id);
+  }
+
+  let postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
+  if (!postScoreDoc) {
+    throw new Error("Post data is not found, with id: " + data.feed_id);
+  }
+
+  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
+  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  if (!userPostScoreDoc) {
+    console.debug("init user post score doc");
+    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+  }
+
+  return await calcScoreOnCancelUpvotePost(data, userScoreDoc, userScoreList, postScoreDoc, userPostScoreDoc, userPostScoreList);
+};
+
+/*
  * Main function of scoring process job
  */
 const scoringProcessJob = async (job, done) => {
@@ -172,7 +282,8 @@ const scoringProcessJob = async (job, done) => {
     EVENT_UPVOTE_POST,
     EVENT_CANCEL_UPVOTE_POST,
     EVENT_DOWNVOTE_POST,
-    EVENT_CANCEL_DOWNVOTE_POST
+    EVENT_CANCEL_DOWNVOTE_POST,
+    EVENT_CREATE_COMMENT,
   } = require("./scoring-constant");
 
   console.log("scoringProcessJob: " + JSON.stringify(job.data));
@@ -190,8 +301,10 @@ const scoringProcessJob = async (job, done) => {
 //        result = onCreateComment(messageData.data);
         break;
       case EVENT_UPVOTE_POST:
+        result = await onUpvotePost(messageData.data);
         break;
       case EVENT_CANCEL_UPVOTE_POST:
+        result = await onCancelUpvotePost(messageData.data);
         break;
       case EVENT_DOWNVOTE_POST:
         break;
