@@ -10,6 +10,8 @@ const {
   calcScoreOnCreatePost,
   calcScoreOnUpvotePost,
   calcScoreOnCancelUpvotePost,
+  calcScoreOnDownvotePost,
+  calcScoreOnCancelDownvotePost,
 } = require("./scoring");
 
 const initDataUserScore = (userId, timestamp) => {
@@ -203,7 +205,7 @@ const onCreatePost = async (data) => {
 }
 
 /*
- * Job processor on update post event. Received data:
+ * Job processor on upvote post event. Received data:
  *   - user_id: text, id of the user who doing the upvote action
  *   - feed_id: text, id of the feed which being upvoted
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
@@ -238,9 +240,9 @@ const onUpvotePost = async (data) => {
 };
 
 /*
- * Job processor on update post event. Received data:
- *   - user_id: text, id of the user who doing the upvote action
- *   - feed_id: text, id of the feed which being upvoted
+ * Job processor on cancel-upvote post event. Received data:
+ *   - user_id: text, id of the user who doing the cancel-upvote action
+ *   - feed_id: text, id of the feed which being cancel-upvoted
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onCancelUpvotePost = async (data) => {
@@ -270,6 +272,76 @@ const onCancelUpvotePost = async (data) => {
   }
 
   return await calcScoreOnCancelUpvotePost(data, userScoreDoc, userScoreList, postScoreDoc, userPostScoreDoc, userPostScoreList);
+};
+
+/*
+ * Job processor on downvote post event. Received data:
+ *   - user_id: text, id of the user who doing the downvote action
+ *   - feed_id: text, id of the feed which being downvoted
+ *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
+ */
+const onDownvotePost = async (data) => {
+  console.debug("scoring onDownvotePost");
+  let db = await getDb();
+  let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
+  let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
+  let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
+
+  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
+  if (!userScoreDoc) {
+    throw new Error("User data is not found, with id: " + data.user_id);
+  }
+
+  let postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
+  if (!postScoreDoc) {
+    throw new Error("Post data is not found, with id: " + data.feed_id);
+  }
+
+  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
+  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  if (!userPostScoreDoc) {
+    console.debug("init user post score doc");
+    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+  }
+
+  return await calcScoreOnDownvotePost(data, userScoreDoc, userScoreList, postScoreDoc, userPostScoreDoc, userPostScoreList);
+};
+
+/*
+ * Job processor on cancel-downvote post event. Received data:
+ *   - user_id: text, id of the user who doing the cancel-downvote action
+ *   - feed_id: text, id of the feed which being cancel-downvoted
+ *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
+ */
+const onCancelDownvotePost = async (data) => {
+  console.debug("scoring onCancelDownvotePost");
+  let db = await getDb();
+  let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
+  let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
+  let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
+
+  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
+  if (!userScoreDoc) {
+    throw new Error("User data is not found, with id: " + data.user_id);
+  }
+
+  let postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
+  if (!postScoreDoc) {
+    throw new Error("Post data is not found, with id: " + data.feed_id);
+  }
+
+  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
+  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  if (!userPostScoreDoc) {
+    console.debug("init user post score doc");
+    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+  }
+
+  return await calcScoreOnCancelDownvotePost(data, userScoreDoc, userScoreList, postScoreDoc, userPostScoreDoc, userPostScoreList);
 };
 
 /*
@@ -307,8 +379,10 @@ const scoringProcessJob = async (job, done) => {
         result = await onCancelUpvotePost(messageData.data);
         break;
       case EVENT_DOWNVOTE_POST:
+        result = await onDownvotePost(messageData.data);
         break;
       case EVENT_CANCEL_DOWNVOTE_POST:
+        result = await onCancelDownvotePost(messageData.data);
         break;
       default:
         throw Error("Unknown event");
