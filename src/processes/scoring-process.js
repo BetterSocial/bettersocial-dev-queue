@@ -12,6 +12,7 @@ const {
   calcScoreOnCancelUpvotePost,
   calcScoreOnDownvotePost,
   calcScoreOnCancelDownvotePost,
+  calcScoreOnBlockUserPost,
 } = require("./scoring");
 
 const initDataUserScore = (userId, timestamp) => {
@@ -25,9 +26,6 @@ const initDataUserScore = (userId, timestamp) => {
     age_score: 0.0,
     q_score: 1.0,
     y_score: 0.0,
-    B_user_score: 0.0,
-    u_user_score: 0.0,
-    d_user_score: 0.0,
     u1_score: 0.0,
     user_score: 0.0,
     confirmed_acc: {
@@ -43,29 +41,30 @@ const initDataUserScore = (userId, timestamp) => {
     user_att_score: 1.0,
     last_upvotes: {
       counter: 0, // how many upvotes made by this user, in the last 7 days from "last_update"
-      earliest_time: timestamp, // the earliest time of upvote when counting the upvotes
-      last_time: timestamp, // the last time of upvote when counting the upvotes
+      earliest_time: "", // the earliest time of upvote when counting the upvotes
+      last_time: "", // the last time of upvote when counting the upvotes
       last_update: timestamp, // when is the last update time of this counter
     },
     last_downvotes: {
       counter: 0, // how many downvotes made by this user, in the last 7 days from "last_update"
-      earliest_time: timestamp, // the earliest time of downvote when counting the downvotes
-      last_time: timestamp, // the last time of downvote when counting the downvotes
+      earliest_time: "", // the earliest time of downvote when counting the downvotes
+      last_time: "", // the last time of downvote when counting the downvotes
       last_update: timestamp, // when is the last update time of this counter
     },
     last_blocks: {
       counter: 0, // how many blocks made by this user, in the last 7 days from "last_update"
-      earliest_time: timestamp, // the earliest time of block when counting the blocks
-      last_time: timestamp, // the last time of block when counting the blocks
+      earliest_time: "", // the earliest time of block when counting the blocks
+      last_time: "", // the last time of block when counting the blocks
       last_update: timestamp, // when is the last update time of this counter
     },
     last_posts: {
       counter: 0, // how many posts made by this user, in the last 7 days from "last_update"
-      earliest_time: timestamp, // the earliest time of post when counting the posts
-      last_time: timestamp, // the last time of post when counting the posts
+      earliest_time: "", // the earliest time of post when counting the posts
+      last_time: "", // the last time of post when counting the posts
       last_update: timestamp, // when is the last update time of this counter
     },
     following: [], // list of user ids this user follows
+    blocking: [],
     created_at: timestamp,
     updated_at: timestamp,
   };
@@ -78,8 +77,11 @@ const initDataPostScore = (feedId, timestamp) => {
     time: "",
     author_id: "",
     has_link: false,
-    expiration_setting: "24",
+    expiration_setting: "1",
     expired_at: "",
+    topics: [],
+    privacy: "",
+    anonimity: false,
     rec_score: 1.0, // recency score, based on expiration setting and now
     att_score: 1.0, // post-attributes score
     count_weekly_posts: 0.0, // total posts by user A (author) within last 7 days before this post
@@ -127,6 +129,9 @@ const initDataUserPostScore = (userId, feedId, timestamp) => {
     p_prev_score: 0.0,
     post_score: 0.0,
     user_post_score: 0.0,
+    downvote_point: 0.0,
+    upvote_point: 0.0,
+    block_point: 0.0,
     activity_log: {},
     anomaly_activities: {
       upvote_time: "",
@@ -134,7 +139,6 @@ const initDataUserPostScore = (userId, feedId, timestamp) => {
       downvote_time: "",
       cancel_downvote_time: "",
       block_time: "",
-      unblock_time: "",
     },
     created_at: timestamp,
     updated_at: timestamp,
@@ -236,7 +240,7 @@ const onUpvotePost = async (data) => {
     userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
   }
 
-  return await calcScoreOnUpvotePost(data, userScoreDoc, userScoreList, postScoreDoc, userPostScoreDoc, userPostScoreList);
+  return await calcScoreOnUpvotePost(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList);
 };
 
 /*
@@ -271,7 +275,7 @@ const onCancelUpvotePost = async (data) => {
     userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
   }
 
-  return await calcScoreOnCancelUpvotePost(data, userScoreDoc, userScoreList, postScoreDoc, userPostScoreDoc, userPostScoreList);
+  return await calcScoreOnCancelUpvotePost(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList);
 };
 
 /*
@@ -306,7 +310,7 @@ const onDownvotePost = async (data) => {
     userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
   }
 
-  return await calcScoreOnDownvotePost(data, userScoreDoc, userScoreList, postScoreDoc, userPostScoreDoc, userPostScoreList);
+  return await calcScoreOnDownvotePost(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList);
 };
 
 /*
@@ -341,7 +345,62 @@ const onCancelDownvotePost = async (data) => {
     userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
   }
 
-  return await calcScoreOnCancelDownvotePost(data, userScoreDoc, userScoreList, postScoreDoc, userPostScoreDoc, userPostScoreList);
+  return await calcScoreOnCancelDownvotePost(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList);
+};
+
+/*
+ * Job processor on block user post event. Received data:
+ *   - user_id: text, id of the user who doing the action
+ *   - feed_id: text, optional, id of the feed which being blocked
+ *   - blocked_user_id: text, optional, id of the user which being blocked
+ *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
+ */
+const onBlockUserPost = async (data) => {
+  console.debug("scoring onBlockUserPost");
+  let db = await getDb();
+  let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
+  let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
+  let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
+
+  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
+  if (!userScoreDoc) {
+    throw new Error("User data is not found, with id: " + data.user_id);
+  }
+
+  let postScoreDoc;
+  let authorUserScoreDoc;
+  let userPostScoreDoc;
+  if (data.feed_id) {
+    postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+    console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
+    if (!postScoreDoc) {
+      throw new Error("Post data is not found, with id: " + data.feed_id);
+    }
+
+    userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
+    console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+    if (!userPostScoreDoc) {
+      console.debug("init user post score doc");
+      userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+      userPostScoreDoc.author_id = postScoreDoc.author_id;
+    }
+
+    // Get author user doc, if the blocked user id is given, but still we get the doc by using author id of the post, just to make sure it won't mistaken.
+    authorUserScoreDoc = await userScoreList.findOne({"_id": postScoreDoc.author_id});
+    console.debug("findOne userScoreDoc of author: " + JSON.stringify(authorUserScoreDoc));
+    if (!authorUserScoreDoc) {
+      throw new Error("Author User data is not found, with id: " + postScoreDoc.author_id);
+    }
+  } else {
+    authorUserScoreDoc = await userScoreList.findOne({"_id": data.blocked_user_id});
+    console.debug("findOne userScoreDoc of blocked user: " + JSON.stringify(authorUserScoreDoc));
+    if (!authorUserScoreDoc) {
+      throw new Error("Blocked User data is not found, with id: " + data.blocked_user_id);
+    }
+  }
+
+  return await calcScoreOnBlockUserPost(data, userScoreDoc, authorUserScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList);
 };
 
 /*
@@ -355,6 +414,7 @@ const scoringProcessJob = async (job, done) => {
     EVENT_CANCEL_UPVOTE_POST,
     EVENT_DOWNVOTE_POST,
     EVENT_CANCEL_DOWNVOTE_POST,
+    EVENT_BLOCK_USER_POST,
     EVENT_CREATE_COMMENT,
   } = require("./scoring-constant");
 
@@ -383,6 +443,9 @@ const scoringProcessJob = async (job, done) => {
         break;
       case EVENT_CANCEL_DOWNVOTE_POST:
         result = await onCancelDownvotePost(messageData.data);
+        break;
+      case EVENT_BLOCK_USER_POST:
+        result = await onBlockUserPost(messageData.data);
         break;
       default:
         throw Error("Unknown event");

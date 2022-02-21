@@ -287,9 +287,22 @@ const ageScore = (age) => {
   return resultAgeScore;
 }
 
+/*
+  @description formula for calculating post interaction (upvote / downvote / block) point
+*/
+const postInteractionPoint = (totalInteractionLast7Days, maxInteractionWeekly) => {
+  if (totalInteractionLast7Days <= 0) {
+    return 0;
+  } else if (totalInteractionLast7Days <= maxInteractionWeekly) {
+    return 1;
+  } else {
+    return maxInteractionWeekly / totalInteractionLast7Days;
+  }
+}
+
 module.exports = {
   postCountScore, postScore, weightPostLongComments,
-  upDownScoreWilsonScore, durationScoreWilsonScore,
+  upDownScoreWilsonScore, durationScoreWilsonScore, postInteractionPoint,
   nonBpScoreWilsonScore, upDownScore, postPerformanceScore,
   dBench, userScore, userScoreWithoutFollower, followerScore, followersQuality,
   blockedPerPostImpression, blockpointsPerImpression, averagePostScore, ageScore,
