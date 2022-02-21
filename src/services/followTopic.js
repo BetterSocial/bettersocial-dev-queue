@@ -6,13 +6,13 @@ const followTopic = async (token, userId) => {
   return user.follow("topic", id);
 };
 
-const followTopics = async (token, userIds) => {
-  const client = stream.connect(process.env.API_KEY, token, process.env.APP_ID);
+const followTopics = async (userId, userIds) => {
+  // const client = stream.connect(process.env.API_KEY, token, process.env.APP_ID);
   const clientServer = stream.connect(process.env.API_KEY, process.env.SECRET);
   const follows = [];
   userIds.map((item) => {
     follows.push({
-      source: "main_feed:" + client.userId,
+      source: "main_feed:" + userId,
       target: "topic:" + item.toLowerCase(),
     });
   });

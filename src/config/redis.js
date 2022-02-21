@@ -11,6 +11,7 @@ const queueOptions = {
 //const queueOptions = {};
 
 const newsQueue = new Bull("newsQueue", connectRedis, { redis: { tls: { rejectUnauthorized: false } } });
+
 // const testQueue = new Bull("testQueue", process.env.REDIS_URL, {
 // redis: { tls: { rejectUnauthorized: false } },
 // }, {
@@ -22,17 +23,19 @@ const newsQueue = new Bull("newsQueue", connectRedis, { redis: { tls: { rejectUn
 
 const postTimeQueue = new Bull("addQueuePostTime", connectRedis, queueOptions);
 
-const locationQueue = new Bull("followLocationQueue", connectRedis, queueOptions);
+//const locationQueue = new Bull("followLocationQueue", connectRedis, queueOptions);
 
-const followUserQueue = new Bull("followUserQueue", connectRedis, queueOptions);
+//const followUserQueue = new Bull("followUserQueue", connectRedis, queueOptions);
 
-const followTopicQueue = new Bull( "followTopicQueue", connectRedis, queueOptions);
+//const followTopicQueue = new Bull( "followTopicQueue", connectRedis, queueOptions);
 
-const addUserToChannelQueue = new Bull("addUserToChannelQueue", connectRedis, queueOptions);
+//const addUserToChannelQueue = new Bull("addUserToChannelQueue", connectRedis, queueOptions);
 
-const addUserToTopicChannelQueue = new Bull("addUserToTopicChannelQueue", connectRedis, queueOptions);
+//const addUserToTopicChannelQueue = new Bull("addUserToTopicChannelQueue", connectRedis, queueOptions);
 
-const prepopulatedDmQueue = new Bull("prepopulatedDmQueue", connectRedis, queueOptions);
+//const prepopulatedDmQueue = new Bull("prepopulatedDmQueue", connectRedis, queueOptions);
+
+const registerQueue = new Bull("registerQueue", connectRedis, connectRedis, queueOptions);
 
 // special queue for scoring process
 const scoringProcessQueue = new Bull("scoringProcessQueue", connectRedis, queueOptions);
@@ -40,12 +43,13 @@ const scoringProcessQueue = new Bull("scoringProcessQueue", connectRedis, queueO
 module.exports = {
   newsQueue,
   postTimeQueue,
-  locationQueue,
-  followTopicQueue,
-  followUserQueue,
+  // locationQueue,
+  // followTopicQueue,
+  // followUserQueue,
   // testQueue,
-  addUserToChannelQueue,
-  addUserToTopicChannelQueue,
-  prepopulatedDmQueue,
+  // addUserToChannelQueue,
+  // addUserToTopicChannelQueue,
+  // prepopulatedDmQueue,
+  registerQueue,
   scoringProcessQueue,
 };

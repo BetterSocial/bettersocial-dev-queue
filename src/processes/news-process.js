@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const validateDomain = async (resp) => {
   try {
     const removeWww = resp.request.host.replace("www.", "");
+    console.info('validate domain: ', removeWww);
     const getDomain = await DomainPage.findOne({
       where: { domain_name: removeWww }
     })
@@ -30,7 +31,6 @@ const validateDomain = async (resp) => {
       const description = $('meta[property="og:description"]').attr('content') || "";
       const { v4: uuidv4 } = require('uuid');
       const domainId = uuidv4();
-      console.log('domain id: ', domainId);
       const data = {
         domain_page_id: domainId,
         domain_name: removeWww,
@@ -105,7 +105,7 @@ const putMainFeed = async (job, name, logo, created, data) => {
 const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
   const { v4: uuidv4 } = require('uuid');
   const { postToGetstream } = require('./domain-process');
-  console.info(data);
+  console.info('url: ', data.news_url);
   try {
     const findNewsLink = await NewsLink.findOne({
       where: { news_url: data.news_url }
@@ -124,9 +124,9 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
         content: { ...data, ...dateCreted }
       }
 
+      await putMainFeed(job, name, logo, created_domain, data);
       await saveCounterPost(job.user_id);
       // await postToGetstream(activity, job.user_id);
-      await putMainFeed(job, name, logo, created_domain, data);
       message = 'url news not unique'
     } else {
 
@@ -143,9 +143,9 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
         content: { ...data, ...dateCreted }
       }
 
+      await putMainFeed(job, name, logo, created_domain, data);
       await postToGetstream(activity, job.user_id);
       await saveCounterPost(job.user_id);
-      await putMainFeed(job, name, logo, created_domain, data);
       message = 'news link created'
     }
 
@@ -193,7 +193,7 @@ const newsJob = async (job, done) => {
     /*
       @description crawls data from url post getstream
     */
-
+    console.info('domain: ', job.data.body);
     const crawls = await axios.get(job.data.body, { headers: { 'User-Agent': 'bettersocial' } });
 
     /*
@@ -213,10 +213,10 @@ const newsJob = async (job, done) => {
     const site_name = $('meta[property="og:site_name"]').attr('content') || "";
     const title = $('meta[property="og:title"]').attr('content') || "";
     const image = $('meta[property="og:image"]').attr('content') || "";
-    const description = $('meta[property="og:description"]').attr('content') || "";
-    if (description === "") {
-      description = $('meta[name="description"]').attr('content') || "";
-    }
+    let description = $('meta[property="og:description"]').attr('content') || "";
+    // if (description === "") {
+    //   description = $('meta[name="description"]').attr('content') || "";
+    // }
     const news_url = $('meta[property="og:url"]').attr('content') || "";
     const keyword = $('meta[name="keywords"]').attr('content') || "";
     const author = $('meta[name="author"]').attr('content') || "";
@@ -224,7 +224,7 @@ const newsJob = async (job, done) => {
     /*
       @description define data for post to getstream and newslink table
     */
-    const data = {
+    let data = {
       domain_page_id, title, site_name, image, description, news_url, keyword, author
     };
 
