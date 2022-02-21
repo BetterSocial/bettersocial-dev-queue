@@ -13,6 +13,7 @@ const {
   calcScoreOnDownvotePost,
   calcScoreOnCancelDownvotePost,
   calcScoreOnBlockUserPost,
+  calcScoreOnCommentPost,
 } = require("./scoring");
 
 const initDataUserScore = (userId, timestamp) => {
@@ -133,6 +134,7 @@ const initDataUserPostScore = (userId, feedId, timestamp) => {
     upvote_point: 0.0,
     block_point: 0.0,
     activity_log: {},
+    comment_log: {},
     anomaly_activities: {
       upvote_time: "",
       cancel_upvote_time: "",
@@ -404,6 +406,37 @@ const onBlockUserPost = async (data) => {
 };
 
 /*
+ * Job processor on comment post event. Received data:
+ *   - comment_id : text, id of the created comment
+ *   - feed_id : text, id of the post/feed which commented
+ *   - user_id : text, user id who commented
+ *   - message : text, content of the comment
+ *   - activity_time : time, when the user comment the post/feed
+ */
+const onCommentPost = async (data) => {
+  console.debug("scoring onCommentPost");
+  let db = await getDb();
+  let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
+  let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
+
+
+  let postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
+  if (!postScoreDoc) {
+    throw new Error("Post data is not found, with id: " + data.feed_id);
+  }
+
+  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
+  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  if (!userPostScoreDoc) {
+    console.debug("init user post score doc");
+    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+  }
+
+  return await calcScoreOnCommentPost(data, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList);
+};
+
+/*
  * Main function of scoring process job
  */
 const scoringProcessJob = async (job, done) => {
@@ -415,7 +448,7 @@ const scoringProcessJob = async (job, done) => {
     EVENT_DOWNVOTE_POST,
     EVENT_CANCEL_DOWNVOTE_POST,
     EVENT_BLOCK_USER_POST,
-    EVENT_CREATE_COMMENT,
+    EVENT_COMMENT_POST,
   } = require("./scoring-constant");
 
   console.log("scoringProcessJob: " + JSON.stringify(job.data));
@@ -429,8 +462,8 @@ const scoringProcessJob = async (job, done) => {
       case EVENT_CREATE_POST:
         result = await onCreatePost(messageData.data);
         break;
-      case EVENT_CREATE_COMMENT:
-//        result = onCreateComment(messageData.data);
+      case EVENT_COMMENT_POST:
+        result = await onCommentPost(messageData.data);
         break;
       case EVENT_UPVOTE_POST:
         result = await onUpvotePost(messageData.data);
