@@ -1,9 +1,8 @@
+const moment = require("moment");
 /*
   @description formula for variable P
 */
 const postCountScore = (totalPostLastWeek, maxAmountPostWeekly) => {
-  if (totalPostLastWeek === 0) totalPostLastWeek = 1
-
   return Math.min(maxAmountPostWeekly / Math.max(totalPostLastWeek, 1), 1);
 }
 
@@ -11,18 +10,17 @@ const postCountScore = (totalPostLastWeek, maxAmountPostWeekly) => {
   @description formula for variable p_perf
 */
 const postScore = (impr, wsNonBp, wwNonBp, wsD, wwD, wsUpdown, wwUpdown) => {
-  let p_pref = 1;
-  let result_p_pref;
+  let p_perf = 1;
 
-  if (impr < 5) {
-    result_p_pref = p_pref;
-  } else if (impr < 50) {
-    result_p_pref = p_pref * (wsNonBp ** wwNonBp) * (wsD ** wwD);
-  } else {
-    result_p_pref = p_pref * (wsNonBp ** wwNonBp) * (wsD ** wwD) * (wsUpdown ** wwUpdown);
+  if (impr >= 5) {
+    if (impr < 50) {
+      p_perf = (wsNonBp ** wwNonBp) * (wsD ** wwD);
+    } else {
+      p_perf = (wsNonBp ** wwNonBp) * (wsD ** wwD) * (wsUpdown ** wwUpdown);
+    }
   }
 
-  return result_p_pref;
+  return p_perf;
 }
 
 /*
@@ -30,7 +28,7 @@ const postScore = (impr, wsNonBp, wwNonBp, wsD, wwD, wsUpdown, wwUpdown) => {
 */
 const weightPostLongComments = (longC, impr, wlongC) => {
   // weight rewarding if a post has long comments (>80char)
-  let pLongC
+  let pLongC;
   if(impr === 0) {
     pLongC = 1;
   } else {
@@ -43,6 +41,10 @@ const weightPostLongComments = (longC, impr, wlongC) => {
   @description formula for variable WS_updown
 */
 const upDownScoreWilsonScore = (impr, sUpDown, zUpDown, evUpDown) => {
+  if (impr === 0) {
+    return 1;
+  }
+
   const evUpDownPercentage = evUpDown / 100;
   const result = ((sUpDown + (zUpDown ** 2 / (2 * impr))) / (1 + (zUpDown ** 2) / impr)) / evUpDownPercentage;
 
@@ -77,6 +79,10 @@ const nonBpScoreWilsonScore = (bp, impr, zNonbp, evNonBp) => {
   @description formula for variable sUpDown
 */
 const upDownScore = (impr, upvote, downvote, wDown, wN) => {
+  if (impr === 0) {
+    return 1;
+  }
+
   return ((-impr * wDown) + upvote + (downvote * wDown) + wN * (impr - upvote - downvote)) / (impr * (1 - wDown));
 }
 
@@ -84,7 +90,7 @@ const upDownScore = (impr, upvote, downvote, wDown, wN) => {
   @description formula for variable p3
 */
 const postPerformanceScore = (pPerf, pLongC) => {
-  return pPerf * pLongC
+  return pPerf * pLongC;
 }
 
 /*
@@ -131,11 +137,11 @@ const blockedPerPostImpression = (blockpointsPerImpression) => {
 /*
   @description formula for variable BPpImpr_un
 */
-const blockpointsPerImpression = (totalBlocks, impr, bpImprGlobal) => {
-  if (impr == 0) {
+const blockpointsPerImpression = (all_blockpoints, all_impr, bpImprGlobal) => {
+  if (all_impr == 0) {
     return 0;
   } else {
-    return (totalBlocks / impr) / bpImprGlobal;
+    return (all_blockpoints / all_impr) / bpImprGlobal;
   }
 }
 
@@ -190,18 +196,25 @@ const followersQuality = (userScoreWithoutFollowerScore, followersCount) => {
 /*
   @description formula for variable p1
 */
-const applyMultipliesToTotalScore = (wTopic, topicFollowed, wFollow, wDegree, wLinkDomain, userFollowAuthor, followAuthorFollower, linkPost) => {
-  const constant = 0.5;
-  const followedTopic = wTopic ** (topicFollowed ** constant);
-  let calculate
-  if (userFollowAuthor) {
-    calculate = followedTopic * wFollow;
-  } else if (followAuthorFollower == 1) {
-    calculate = followedTopic * wDegree;
-  } else {
-    calculate = followedTopic * 1;
+const applyMultipliesToTotalScore = (wTopic, topicFollowed, wFollow, wDegree, wLinkDomain, userFollowAuthor, followAuthorFollower, followDomain) => {
+  let result = 1;
+
+  // multiplier by #topicFollowed
+  if (topicFollowed > 0) {
+    result = result * wTopic ** (topicFollowed ** 0.5);
   }
-  const result = calculate * wLinkDomain ** linkPost;
+
+  // multiplier by follow status of the user
+  if (userFollowAuthor) {
+    result = result * wFollow;
+  } else if (followAuthorFollower) {
+    result = result * wDegree;
+  }
+
+  if (followDomain) {
+    result = result * wLinkDomain;
+  }
+
   return result;
 }
 
@@ -209,13 +222,12 @@ const applyMultipliesToTotalScore = (wTopic, topicFollowed, wFollow, wDegree, wL
   @description formula for variable p2
 */
 const scoreBasedPostCharacteristics = (rec, wRec, att, wAtt, d, wD, p, wP, postLink) => {
-  const formula = rec ** wRec * att ** wAtt;
-  let result
+  console.log("rec:"+rec+", wRec:"+wRec+", att:"+att+", wAtt:"+wAtt+", d:"+d+", wD:"+wD+", p:"+p+", wP:"+wP+", postLink:"+postLink);
+  let result = rec ** wRec * att ** wAtt * p ** wP;
   if (postLink) {
-    result = formula * d ** wD;
-  } else {
-    result = formula * 1 * p ** wP;
+    result = result * d ** wD;
   }
+
   return result;
 }
 
@@ -238,13 +250,13 @@ const previousInteractionScore = (prevInteract, prevD, prevUc, prevPre) => {
   @description formula for variable Rec
 */
 const RecencyScore = (ageOfPost, expirationSetting) => {
-  if (expirationSetting === 1) {
+  if (expirationSetting === '1') {
     return 1 - 0.007 * ageOfPost;
-  } else if (expirationSetting === 7) {
+  } else if (expirationSetting === '7') {
     return 1.3 - 0.4 * ageOfPost ** 0.15;
-  } else if (expirationSetting === 30) {
+  } else if (expirationSetting === '30') {
     return 0.95 - 0.225 * ageOfPost ** 0.215;
-  } else if (expirationSetting === 'forever') {
+  } else if (expirationSetting === 'never') {
     return Math.max(0.02, 0.95 - 0.225 * ageOfPost ** 0.215);
   }
 }
@@ -253,29 +265,44 @@ const RecencyScore = (ageOfPost, expirationSetting) => {
   @description formula for variable t
 */
 const ageOfPost = (expirationSetting, postDateTime, nowDateTime) => {
-  const diffDays = (Date.parse(nowDateTime) - Date.parse(postDateTime)) / 60 / 60 / 24;
+  const diffHours = Math.trunc(moment.duration(
+    moment.utc(nowDateTime).diff(moment.utc(postDateTime))
+  ).as('hours'));
 
-  if(expirationSetting === "forever") {
-    return Math.max(1, diffDays);
+  if(expirationSetting === "never") {
+    return Math.max(1, diffHours);
   } else {
-    return Math.min(expirationSetting, Math.max(1, diffDays));
+    return Math.min(expirationSetting*24, Math.max(1, diffHours));
   }
 }
 
 const ageScore = (age) => {
-  let resultAgeScore
+  let resultAgeScore;
   if (age < 365) {
-    resultAgeScore = 0.4 + 0.6 * (age / 365)
+    resultAgeScore = 0.4 + 0.6 * (age / 365);
   } else {
-    resultAgeScore = 1
+    resultAgeScore = 1;
   }
 
-  return resultAgeScore
+  return resultAgeScore;
+}
+
+/*
+  @description formula for calculating post interaction (upvote / downvote / block) point
+*/
+const postInteractionPoint = (totalInteractionLast7Days, maxInteractionWeekly) => {
+  if (totalInteractionLast7Days <= 0) {
+    return 0;
+  } else if (totalInteractionLast7Days <= maxInteractionWeekly) {
+    return 1;
+  } else {
+    return maxInteractionWeekly / totalInteractionLast7Days;
+  }
 }
 
 module.exports = {
   postCountScore, postScore, weightPostLongComments,
-  upDownScoreWilsonScore, durationScoreWilsonScore,
+  upDownScoreWilsonScore, durationScoreWilsonScore, postInteractionPoint,
   nonBpScoreWilsonScore, upDownScore, postPerformanceScore,
   dBench, userScore, userScoreWithoutFollower, followerScore, followersQuality,
   blockedPerPostImpression, blockpointsPerImpression, averagePostScore, ageScore,
