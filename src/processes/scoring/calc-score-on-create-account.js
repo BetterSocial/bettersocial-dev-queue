@@ -46,6 +46,13 @@ const calcScoreOnCreateAccount = async(data, userDoc, userScoreList) => {
 
   // calculate q_score
   userDoc.q_score = calcQualitativeCriteriaScore(userDoc);
+  if (data.follow_users && data.follow_users.length > 0) {
+    data.follow_users.forEach(follow => {
+      if (userDoc.following.indexOf(follow) == -1) {
+        userDoc.following.push(follow);
+      }
+    });
+  }
 
   await calcUserScore(userDoc);
   userDoc.updated_at = moment().utc().format("YYYY-MM-DD HH:mm:ss"); // format current time in utc
