@@ -98,6 +98,8 @@ async function calcScoreOnBlockUser(data, userScoreDoc, authorUserScoreDoc, user
       { upsert: false } // options
     );
 
+    await updateScoreToStream(postScoreDoc);
+
     return result;
   }
 }
@@ -214,6 +216,8 @@ async function calcScoreOnBlockPost(data, userScoreDoc, authorUserScoreDoc, user
 
       console.debug("Update on block post event: " + JSON.stringify(result));
       console.debug("calcScoreOnBlockPost => user post score doc: " + JSON.stringify(userPostScoreDoc));
+
+      await updateScoreToStream(postScoreDoc);
     }
   }
 }

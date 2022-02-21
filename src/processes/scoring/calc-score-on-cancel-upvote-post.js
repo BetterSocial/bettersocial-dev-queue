@@ -140,6 +140,8 @@ const calcScoreOnCancelUpvotePost = async(data, userScoreDoc, userScoreList, pos
           { $set : postScoreDoc }, // updates
           { upsert: false } // options
         );
+
+        await updateScoreToStream(postScoreDoc);
       }
     }
   }

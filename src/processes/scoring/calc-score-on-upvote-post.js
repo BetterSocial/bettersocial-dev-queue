@@ -188,6 +188,8 @@ const calcScoreOnUpvotePost = async(data, userScoreDoc, userScoreList, postScore
           { $set : postScoreDoc }, // updates
           { upsert: false } // options
         );
+
+        await updateScoreToStream(postScoreDoc);
       }
     }
   }
