@@ -14,9 +14,6 @@ const calcUserScore = async(userDoc) => {
     age_score: 0.0,
     q_score: 1.0,
     y_score: 0.0,
-    B_user_score: 0.0, // Total Number of times a User blocked someone else during last 7 days
-    u_user_score: 0.0, // Total upvotes of User A during last 7 days
-    d_user_score: 0.0, // Total downvotes of User A during last 7 days
     u1_score: 0.0,
     user_score: 0.0,
     confirmed_acc: {
