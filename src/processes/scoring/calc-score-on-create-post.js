@@ -217,6 +217,7 @@ const calcScoreOnCreatePost = async(data, postScoreDoc, postScoreList, userScore
   postScoreDoc.expired_at = data.expired_at;
   postScoreDoc.topics = data.topics;
   postScoreDoc.privacy = data.privacy;
+  postScoreDoc.anonimity = data.anonimity;
 
   const hasLink = containsLink(data.message);
   postScoreDoc.has_link = hasLink;
@@ -228,8 +229,9 @@ const calcScoreOnCreatePost = async(data, postScoreDoc, postScoreList, userScore
   const wordsCount = countWordsWithoutLink(data.message);
   postScoreDoc.W_score = wordsCount;
   postScoreDoc.D_bench_score = dBench(DUR_MIN, DUR_MARG, wordsCount);
+  postScoreDoc.u_score = userScoreDoc.user_score;
 
-  await calcPostScore(postScoreDoc, userScoreDoc.user_score);
+  await calcPostScore(postScoreDoc);
 
   postScoreDoc.updated_at = moment().utc().format(REGULAR_TIME_FORMAT); // format current time in utc
 
@@ -242,7 +244,7 @@ const calcScoreOnCreatePost = async(data, postScoreDoc, postScoreList, userScore
   console.debug("Update on create post event: " + JSON.stringify(result));
   console.debug("calcScoreOnCreatePost => post score doc: " + JSON.stringify(postScoreDoc));
 
-  await updateScoreToStream(postScoreDoc);
+  //await updateScoreToStream(postScoreDoc);
 
   return result;
 };

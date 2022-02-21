@@ -46,7 +46,7 @@ const calcPostPerformanceScore = (postScoreDoc) => {
     return pPerf;
 }
 
-const calcPostScore = async(postScoreDoc, authorScore) => {
+const calcPostScore = async(postScoreDoc) => {
   console.debug("Starting calcPostScore");
 
   /*
@@ -56,6 +56,8 @@ const calcPostScore = async(postScoreDoc, authorScore) => {
     author_id: "",
     has_link: false,
     expiration_setting: "24",
+    topics: [],
+    privacy: "",
     rec_score: 1.0, // recency score, based on expiration setting and now
     att_score: 1.0, // post-attributes score
     count_weekly_posts: 0.0, // total posts by user A (author) within last 7 days before this post
@@ -115,13 +117,12 @@ const calcPostScore = async(postScoreDoc, authorScore) => {
   const p1 = 1;
   const prev = 1;
 
-  const final_score = finalScorePost(authorScore, WU, p1, WP1, p2, WP2, p3, WP3, prev, WPREV);
+  const final_score = finalScorePost(postScoreDoc.u_score, WU, p1, WP1, p2, WP2, p3, WP3, prev, WPREV);
 
   postScoreDoc.rec_score = rec;
   postScoreDoc.p2_score = p2;
   postScoreDoc.p_longC_score = pLongC;
   postScoreDoc.p3_score = p3;
-  postScoreDoc.u_score = authorScore;
   postScoreDoc.post_score = final_score;
 
   console.debug("calcPostScore => Final post score doc: " + JSON.stringify(postScoreDoc));

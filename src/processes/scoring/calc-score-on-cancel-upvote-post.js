@@ -1,9 +1,51 @@
 require('dotenv').config;
 const moment = require("moment");
 const { calcUserPostScore } = require("./calc-user-post-score");
+const { calcPostScore } = require("./calc-post-score");
+const { isStringBlankOrNull } = require("../../utils");
 const REGULAR_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
-const calcScoreOnCancelUpvotePost = async(data, userScoreDoc, userScoreList, postScoreDoc, userPostScoreDoc, userPostScoreList) => {
+/*
+ * Update last upvotes information, with condition for update:
+ * 1. Update the counter in userScoreDoc whenever it's make sense to update.
+ *    By the mean of make sense:
+ *    1. last_update is earlier from this activity time, less than a day (means this info have been updated at least from daily process)
+ *    2. earliest_time is not more than 7 days earlier from this activity time. If it's more than 7 days before, surely it's not an uptodated counter.
+ * 2. Updated fields:
+ *    1. last update --> with activity time
+ *    2. counter --> increment 1
+ */
+function updateLastUpvotes(lastUpvotes, activityTime) {
+  // Get the activity time in moment object, so it would be easier to count the difference between times.
+  const momentActivityTime = moment.utc(activityTime, REGULAR_TIME_FORMAT, true);
+
+  if (!isStringBlankOrNull(lastUpvotes.last_update)) {
+    const dayDiffLastUpdateAndPostTime = moment.duration(momentActivityTime.diff(moment.utc(lastUpvotes.last_update, REGULAR_TIME_FORMAT, true))).as('days');
+
+    console.debug("calcScoreOnCancelUpvotePost:updateLastUpvotes -> there is last blocks data");
+
+    // continue, if last_update is earlier from activity time, less than a day.
+    // note: minus duration means last update is later than activity time.
+    if (dayDiffLastUpdateAndPostTime >= 0 && dayDiffLastUpdateAndPostTime <= 1) {
+      console.debug("calcScoreOnCancelUpvotePost:updateLastUpvotes -> last_update is earlier from activity time and less than a day");
+
+      // continue, if earliest_time is empty or not more than 7 days earlier from activity time
+      let isUpdate = true;
+      if (!isStringBlankOrNull(lastUpvotes.earliest_time)) {
+        const dayDiffEarliestTimeAndActivityTime = moment.duration(momentActivityTime.diff(moment.utc(lastUpvotes.earliest_time, REGULAR_TIME_FORMAT, true))).as('days');
+
+        if (dayDiffEarliestTimeAndActivityTime <= 7) {
+          console.debug("calcScoreOnCancelUpvotePost:updateLastUpvotes -> earliest_time is less than or equals 7 days earlier from activity time");
+
+          lastUpvotes.last_update = activityTime;
+          lastUpvotes.counter = lastUpvotes.counter - 1;
+        }
+      }
+    }
+  }
+}
+
+const calcScoreOnCancelUpvotePost = async(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList) => {
   console.debug("Starting calcScoreOnCancelUpvotePost");
 
   /*
@@ -36,8 +78,7 @@ const calcScoreOnCancelUpvotePost = async(data, userScoreDoc, userScoreList, pos
     updated_at: timestamp,
  */
 
-  userPostScoreDoc.author_id = postScoreDoc.author_id;
-  userPostScoreDoc.post_score = postScoreDoc.post_score;
+  const timestamp = moment().utc().format(REGULAR_TIME_FORMAT);
 
   // add activity log if not exists yet. Assumed the activity is unique by time, it means
   // there won't be different event in the same second.
@@ -67,13 +108,45 @@ const calcScoreOnCancelUpvotePost = async(data, userScoreDoc, userScoreList, pos
         }
       } else {
         console.debug("calcScoreOnCancelUpvotePost -> set upvote count = 0");
+
+        updateLastUpvotes(userScoreDoc.last_upvotes, data.activity_time);
+        userScoreDoc.updated_at = timestamp; // format current time in utc
+
+        // Update post-score doc:
+        //    1. increment upvote point
+        //    2. decrement downvote point with previous calculated downvote point, if downvoted previously
+        //    3. Recalculate post score
+        const upvotePoint = userPostScoreDoc.upvote_point; // get latest upvote point from user-post score doc
+        postScoreDoc.upvote_point = postScoreDoc.upvote_point - upvotePoint;
+        await calcPostScore(postScoreDoc);
+        postScoreDoc.updated_at = timestamp; // format current time in utc
+
+        // 5. Update user-post score doc:
+        //    1. upvote_count = 0
+        //    2. Re-calculate and update the user-post score
         userPostScoreDoc.upvote_count = 0;
+
+        await userScoreList.updateOne(
+          { _id : userScoreDoc._id }, // query data to be updated
+          { $set : {
+            last_upvotes: userScoreDoc.last_upvotes,
+            updated_at: userScoreDoc.updated_at,
+          } }, // updates
+          { upsert: false } // options
+        );
+
+        await postScoreList.updateOne(
+          { _id : postScoreDoc._id }, // query data to be updated
+          { $set : postScoreDoc }, // updates
+          { upsert: false } // options
+        );
       }
     }
   }
 
+  userPostScoreDoc.author_id = postScoreDoc.author_id;
+  userPostScoreDoc.post_score = postScoreDoc.post_score;
   await calcUserPostScore(userPostScoreDoc);
-
   userPostScoreDoc.updated_at = moment().utc().format(REGULAR_TIME_FORMAT); // format current time in utc
 
   const result = await userPostScoreList.updateOne(
