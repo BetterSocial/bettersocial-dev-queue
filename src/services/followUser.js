@@ -56,8 +56,8 @@ const followUsers = async (userId, userIds) => {
       const follows = [];
       userIds.map((item) => {
         follows.push({
-          source: "main_feed:" + userId,
-          target: "user:" + item.toLowerCase(),
+          source: "main_feed:" + item.toLowerCase(),
+          target: "user:" + userId,
         });
       });
 
