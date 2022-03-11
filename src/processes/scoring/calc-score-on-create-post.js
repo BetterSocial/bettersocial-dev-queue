@@ -32,6 +32,8 @@ function calcPostAttributesScore(data, hasLink) {
   const W_CITY = process.env.W_CITY || 1.6;
   const W_STATE = process.env.W_STATE || 1.2;
   const W_GLOBAL = process.env.W_GLOBAL || 0.8;
+  const W_PUBLIC = process.env.W_PUBLIC || 0.8;
+  const { PRIVACY_PUBLIC } = require("../scoring-constant");
 
   let att_anon = 1;
   if (data.anonimity) {
@@ -74,8 +76,14 @@ function calcPostAttributesScore(data, hasLink) {
       break;
   }
 
-  console.debug("calcPostAttributesScore: att_anon:" + att_anon + ", att_type:" + att_type + ", att_length:" + att_length + ", att_geo:" + att_geo);
-  return att_anon * att_type * att_length * att_geo;
+  // additional post score for public post
+  let att_privacy = 1;
+  if (data.privacy.toLowerCase() === PRIVACY_PUBLIC) {
+    att_privacy = W_PUBLIC;
+  }
+
+  console.debug("calcPostAttributesScore: att_anon:" + att_anon + ", att_type:" + att_type + ", att_length:" + att_length + ", att_geo:" + att_geo + ", att_privacy:" + att_privacy);
+  return att_anon * att_type * att_length * att_geo * att_privacy;
 }
 
 const countLast7DaysPosts = async(userScoreDoc, userScoreList, timeOfPost, isNewPost, postScoreList) => {
