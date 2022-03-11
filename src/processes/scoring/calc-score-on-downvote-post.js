@@ -172,6 +172,7 @@ const calcScoreOnDownvotePost = async(data, userScoreDoc, userScoreList, postSco
         userPostScoreDoc.downvote_count = 1;
         userPostScoreDoc.upvote_count = 0;
         userPostScoreDoc.downvote_point = downvotePoint;
+        userPostScoreDoc.last_updown = data.activity_time;
 
         await userScoreList.updateOne(
           { _id : userScoreDoc._id }, // query data to be updated

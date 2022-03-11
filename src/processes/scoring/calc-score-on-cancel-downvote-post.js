@@ -122,9 +122,10 @@ const calcScoreOnCancelDownvotePost = async(data, userScoreDoc, userScoreList, p
         postScoreDoc.updated_at = timestamp; // format current time in utc
 
         // 5. Update user-post score doc:
-        //    1. upvote_count = 0
+        //    1. downvote_count = 0
         //    2. Re-calculate and update the user-post score
         userPostScoreDoc.downvote_count = 0;
+        userPostScoreDoc.last_updown = "";
 
         await userScoreList.updateOne(
           { _id : userScoreDoc._id }, // query data to be updated

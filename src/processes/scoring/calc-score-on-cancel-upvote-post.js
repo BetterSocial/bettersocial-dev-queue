@@ -125,6 +125,7 @@ const calcScoreOnCancelUpvotePost = async(data, userScoreDoc, userScoreList, pos
         //    1. upvote_count = 0
         //    2. Re-calculate and update the user-post score
         userPostScoreDoc.upvote_count = 0;
+        userPostScoreDoc.last_updown = "";
 
         await userScoreList.updateOne(
           { _id : userScoreDoc._id }, // query data to be updated

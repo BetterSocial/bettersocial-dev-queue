@@ -188,6 +188,7 @@ async function calcScoreOnBlockPost(data, userScoreDoc, authorUserScoreDoc, user
       //    3. Re-calculate and update the user-post score
       userPostScoreDoc.block_count = 1;
       userPostScoreDoc.block_point = blockPoint;
+      userPostScoreDoc.last_block = data.activity_time;
       await calcUserPostScore(userPostScoreDoc);
       userPostScoreDoc.updated_at = timestamp; // format current time in utc
 
