@@ -7,4 +7,7 @@ module.exports = {
   ...require("./calc-score-on-cancel-downvote-post"),
   ...require("./calc-score-on-block-user-post"),
   ...require("./calc-score-on-comment-post"),
+  ...require("./calc-score-on-view-post"),
+  ...require("./calc-score-on-follow-user"),
+  ...require("./calc-score-on-unfollow-user"),
 };

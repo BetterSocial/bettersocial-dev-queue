@@ -160,21 +160,21 @@ const averagePostScore = (postPerformanceScore, countPosts) => {
   @description formula for variable q
 */
 const multiplicationFromQualityCriteriaScore = (wEdu, eduEmail, wEmail, wTwitter, followerTwitter, email, wUserAtt) => {
-  let verifiedEdu
-  let twitter
+  let verifiedEdu;
+  let twitter;
   if (eduEmail) {
     verifiedEdu = wEdu ** 1;
   } else {
     verifiedEdu = wEdu ** 0;
   }
-  const veridiedEmail = wEmail ** (Math.min(3, email) ** 0.25);
+  const verifiedEmail = wEmail ** (Math.min(3, email) ** 0.25);
   if (followerTwitter > 200) {
     twitter = wTwitter ** 1;
   } else {
     twitter = wTwitter ** 0;
   }
 
-  const result = verifiedEdu * veridiedEmail * twitter * wUserAtt;
+  const result = verifiedEdu * verifiedEmail * twitter * wUserAtt;
   return result;
 }
 

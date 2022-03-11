@@ -14,6 +14,9 @@ const {
   calcScoreOnCancelDownvotePost,
   calcScoreOnBlockUserPost,
   calcScoreOnCommentPost,
+  calcScoreOnViewPost,
+  calcScoreOnFollowUser,
+  calcScoreOnUnfollowUser,
 } = require("./scoring");
 
 const initDataUserScore = (userId, timestamp) => {
@@ -126,6 +129,8 @@ const initDataUserPostScore = (userId, feedId, timestamp) => {
     comment_count: 0,
     downvote_count: 0,
     block_count: 0,
+    last_updown: "",
+    last_block: "",
     seen_count: 0,
     p_prev_score: 0.0,
     post_score: 0.0,
@@ -135,6 +140,7 @@ const initDataUserPostScore = (userId, feedId, timestamp) => {
     block_point: 0.0,
     activity_log: {},
     comment_log: {},
+    impression_log: {},
     anomaly_activities: {
       upvote_time: "",
       cancel_upvote_time: "",
@@ -437,6 +443,76 @@ const onCommentPost = async (data) => {
 };
 
 /*
+ * Job processor on view post event. Received data:
+ *   - feed_id : text, id of the post/feed which viewed
+ *   - user_id : text, user id who viewing the post
+ *   - view_duration : number in milliseconds, duration of user viewing the post. If the user clicked to show the post in PDP, than the duration is total duration from previous page and view it in PDP
+ *   - is_pdp : boolean, whether it includes duration in PDP
+ *   - activity_time : time, when the user comment the post/feed
+ */
+const onViewPost = async (data) => {
+  console.debug("scoring onViewPost");
+  let db = await getDb();
+  let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
+  let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
+
+  let postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
+  if (!postScoreDoc) {
+    throw new Error("Post data is not found, with id: " + data.feed_id);
+  }
+
+  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
+  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  if (!userPostScoreDoc) {
+    console.debug("init user post score doc");
+    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+  }
+
+  return await calcScoreOnViewPost(data, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList);
+};
+
+/*
+ * Job processor on follow user event. Received data:
+ *   - user_id: text, id of the user who doing the action
+ *   - followed_user_id: text, id of the user which being followed
+ *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
+ */
+const onFollowUser = async (data) => {
+  console.debug("scoring onFollowUser");
+  let db = await getDb();
+  let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
+
+  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
+  if (!userScoreDoc) {
+    throw new Error("User data is not found, with id: " + data.user_id);
+  }
+
+  return await calcScoreOnFollowUser(data, userScoreDoc, userScoreList);
+};
+
+/*
+ * Job processor on unfollow user event. Received data:
+ *   - user_id: text, id of the user who doing the action
+ *   - followed_user_id: text, id of the user which being unfollowed
+ *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
+ */
+const onUnfollowUser = async (data) => {
+  console.debug("scoring onFollowUser");
+  let db = await getDb();
+  let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
+
+  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
+  if (!userScoreDoc) {
+    throw new Error("User data is not found, with id: " + data.user_id);
+  }
+
+  return await calcScoreOnUnfollowUser(data, userScoreDoc, userScoreList);
+};
+
+/*
  * Main function of scoring process job
  */
 const scoringProcessJob = async (job, done) => {
@@ -449,6 +525,9 @@ const scoringProcessJob = async (job, done) => {
     EVENT_CANCEL_DOWNVOTE_POST,
     EVENT_BLOCK_USER_POST,
     EVENT_COMMENT_POST,
+    EVENT_VIEW_POST,
+    EVENT_FOLLOW_USER,
+    EVENT_UNFOLLOW_USER,
   } = require("./scoring-constant");
 
   console.log("scoringProcessJob: " + JSON.stringify(job.data));
@@ -479,6 +558,15 @@ const scoringProcessJob = async (job, done) => {
         break;
       case EVENT_BLOCK_USER_POST:
         result = await onBlockUserPost(messageData.data);
+        break;
+      case EVENT_VIEW_POST:
+        result = await onViewPost(messageData.data);
+        break;
+      case EVENT_FOLLOW_USER:
+        result = await onFollowUser(messageData.data);
+        break;
+      case EVENT_UNFOLLOW_USER:
+        result = await onUnfollowUser(messageData.data);
         break;
       default:
         throw Error("Unknown event");
