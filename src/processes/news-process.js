@@ -71,7 +71,7 @@ const putMainFeed = async (job, name, logo, created, data) => {
         url: data.news_url,
         domain_page_id: data.domain_page_id,
         news_link_id: data.news_link_id
-      };
+      }
     }
     await putStream(job.id_feed, set);
     console.info(`updated main_feed:${job.id_feed}`)
