@@ -2,6 +2,8 @@ require('dotenv').config;
 const moment = require("moment");
 const { calcUserPostScore } = require("./calc-user-post-score");
 const { calcPostScore } = require("./calc-post-score");
+const { updateLastp3Scores } = require("./calc-user-score");
+const { updateScoreToStream } = require("./update-score-to-stream");
 const { isStringBlankOrNull, postInteractionPoint } = require("../../utils");
 const REGULAR_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
@@ -81,7 +83,7 @@ function updateLastUpvotes(userScoreDoc, activityTime, isDownvoted) {
   }
 }
 
-const calcScoreOnUpvotePost = async(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList) => {
+const calcScoreOnUpvotePost = async(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList, authorUserScoreDoc) => {
   console.debug("Starting calcScoreOnUpvotePost");
 
   /*
@@ -174,6 +176,18 @@ const calcScoreOnUpvotePost = async(data, userScoreDoc, userScoreList, postScore
         userPostScoreDoc.upvote_point = upvotePoint;
         userPostScoreDoc.last_updown = data.activity_time;
 
+        // Update last p3 scores in user score doc
+        updateLastp3Scores(authorUserScoreDoc, postScoreDoc);
+        authorUserScoreDoc.updated_at = timestamp; // format current time in utc
+
+        await userScoreList.updateOne(
+          { _id : authorUserScoreDoc._id }, // query data to be updated
+          { $set : {
+            last_p3_scores: authorUserScoreDoc.last_p3_scores,
+            updated_at: authorUserScoreDoc.updated_at,
+          } }, // updates
+          { upsert: false } // options
+        );
 
         await userScoreList.updateOne(
           { _id : userScoreDoc._id }, // query data to be updated

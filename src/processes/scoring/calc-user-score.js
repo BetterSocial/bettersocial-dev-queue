@@ -1,5 +1,14 @@
 const moment = require("moment");
 
+const updateLastp3Scores = (userScoreDoc, postScoreDoc) => {
+  const p3scoreSubDoc = userScoreDoc.last_p3_scores[postScoreDoc._id];
+  if (p3scoreSubDoc) {
+    p3scoreSubDoc.p3_score = postScoreDoc.p3_score;
+  }
+
+  return userScoreDoc;
+}
+
 const calcUserScore = async(userDoc) => {
   console.debug("Starting calcUserScore");
 
@@ -75,5 +84,6 @@ const calcUserScore = async(userDoc) => {
 };
 
 module.exports = {
-  calcUserScore
+  calcUserScore,
+  updateLastp3Scores
 }

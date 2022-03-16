@@ -86,6 +86,75 @@ function calcPostAttributesScore(data, hasLink) {
   return att_anon * att_type * att_length * att_geo * att_privacy;
 }
 
+function updateLastp3Scores(lastp3Scores, postScoreDoc) {
+  // Flow:
+  // 1. Update p3 score, if the post id already exists in last_p3_scores
+  // 2. If last_p3_scores count less than max post to count in last_p3_scores, then:
+  //    1. Increment count
+  //    2. Add the post in last_p3_scores
+  //    3. If post time is less than minimum time, then update the minimum time with post time, and earliest post id with post id
+  // 3. Otherwise:
+  //    1. If post time is bigger than min time, then:
+  //       1. delete the key pointed by earliest post id
+  //       2. Add the post in last_p3_scores
+  //       3. Loop over last_p3_scores to find the minimum post time and it's id, then update it in the last_p3_scores
+
+  const existingp3ScoreOfPost = lastp3Scores[postScoreDoc._id];
+  if (existingp3ScoreOfPost) {
+    existingp3ScoreOfPost.p3_score = postScoreDoc.p3_score;
+  } else {
+    // the post id not yet exists in the list, continue on step #2
+    const currentCount = lastp3Scores._count;
+    if (currentCount < 10) {
+      lastp3Scores._count = currentCount + 1
+      lastp3Scores[postScoreDoc._id] = {
+        time : postScoreDoc.time,
+        p3_score : postScoreDoc.p3_score,
+      };
+
+      if (currentCount === 0) {
+        lastp3Scores._earliest_post_time = postScoreDoc.time;
+        lastp3Scores._earliest_post_id = postScoreDoc._id;
+      } else {
+        const momentTimeOfPost = moment.utc(postScoreDoc.time, POST_TIME_FORMAT, true);
+        const diffPostTimeAndEarliest = momentTimeOfPost.diff(moment.utc(lastp3Scores._earliest_post_time, POST_TIME_FORMAT, true));
+        if (diffPostTimeAndEarliest < 0) {
+          lastp3Scores._earliest_post_time = postScoreDoc.time;
+          lastp3Scores._earliest_post_id = postScoreDoc._id;
+        }
+      }
+    } else { // the author already have more than maximum count of post for calculating average p3 score
+      delete lastp3Scores[lastp3Scores._earliest_post_id];
+      lastp3Scores[postScoreDoc._id] = {
+        time : postScoreDoc.time,
+        p3_score : postScoreDoc.p3_score,
+      };
+
+      let _earliest_post_id = "";
+      let _earliest_post_time = "";
+      let momentEarliestPostTime;
+      for (key in lastp3Scores) {
+        if (key !== "_count" && key !== "_earliest_post_time" && key !== "_earliest_post_id") {
+          if (_earliest_post_id) {
+            const diffPostTimeAndEarliest = momentEarliestPostTime.diff(moment.utc(lastp3Scores[key].time, POST_TIME_FORMAT, true));
+            if (diffPostTimeAndEarliest > 0) {
+              _earliest_post_id = key;
+              _earliest_post_time = lastp3Scores[key].time;
+              momentEarliestPostTime = moment.utc(_earliest_post_time, POST_TIME_FORMAT, true);
+            }
+          } else {
+            _earliest_post_id = key;
+            _earliest_post_time = lastp3Scores[key].time;
+            momentEarliestPostTime = moment.utc(_earliest_post_time, POST_TIME_FORMAT, true);
+          }
+        }
+      }
+      lastp3Scores._earliest_post_id = _earliest_post_id;
+      lastp3Scores._earliest_post_time = _earliest_post_time;
+    }
+  }
+}
+
 const countLast7DaysPosts = async(userScoreDoc, userScoreList, timeOfPost, isNewPost, postScoreList) => {
   /*
    * The main concept is:
@@ -111,31 +180,32 @@ const countLast7DaysPosts = async(userScoreDoc, userScoreList, timeOfPost, isNew
       console.debug("countLast7DaysPosts: last_update is earlier from time of post and less than a day");
 
       // continue, if earliest_time is not more than 7 days earlier from time of post
-      const dayDiffEarliestTimeAndPostTime = moment.duration(momentTimeOfPost.diff(moment.utc(userScoreDoc.last_posts.earliest_time, REGULAR_TIME_FORMAT, true))).as('days');
+      let isUpdate = true;
+      const formattedTimeOfPost = momentTimeOfPost.format(REGULAR_TIME_FORMAT);
+      if (!isStringBlankOrNull(userScoreDoc.last_posts.earliest_time)) {
+        const dayDiffEarliestTimeAndPostTime = moment.duration(momentTimeOfPost.diff(moment.utc(userScoreDoc.last_posts.earliest_time, REGULAR_TIME_FORMAT, true))).as('days');
 
-      if (dayDiffEarliestTimeAndPostTime <= 7) {
-        console.debug("countLast7DaysPosts: earliest_time is not more than 7 days earlier from time of post");
+        if (dayDiffEarliestTimeAndPostTime <= 7) {
+          console.debug("countLast7DaysPosts: earliest_time is not more than 7 days earlier from time of post");
+          const currentCount = userScoreDoc.last_posts.counter;
 
-        const formattedTimeOfPost = momentTimeOfPost.format(REGULAR_TIME_FORMAT);;
-        const currentCount = userScoreDoc.last_posts.counter;
+          if (isNewPost) {
+            console.debug("countLast7DaysPosts: update the counter, since it new post");
+            userScoreDoc.last_posts.last_update = formattedTimeOfPost;
+            userScoreDoc.last_posts.last_time = formattedTimeOfPost;
+            userScoreDoc.last_posts.counter = currentCount + 1;
+          }
 
-        if (isNewPost) {
-          console.debug("countLast7DaysPosts: update the counter, since it new post");
-          userScoreDoc.last_posts.last_update = formattedTimeOfPost;
-          userScoreDoc.last_posts.last_time = formattedTimeOfPost;
-          userScoreDoc.last_posts.counter = currentCount + 1;
-
-          await userScoreList.updateOne(
-            { _id : userScoreDoc._id }, // query data to be updated
-            { $set : {
-              last_posts : userScoreDoc.last_posts,
-              updated_at : moment().utc().format(REGULAR_TIME_FORMAT),
-            } }, // updates
-            { upsert: false } // options
-          );
+          return currentCount;
         }
+      } else {
+        console.debug("countLast7DaysPosts: update the counter, since it the first post of the author");
+        userScoreDoc.last_posts.earliest_time = formattedTimeOfPost;
+        userScoreDoc.last_posts.last_update = formattedTimeOfPost;
+        userScoreDoc.last_posts.last_time = formattedTimeOfPost;
+        userScoreDoc.last_posts.counter = 1;
 
-        return currentCount;
+        return 0;
       }
     }
   }
@@ -232,7 +302,7 @@ const calcScoreOnCreatePost = async(data, postScoreDoc, postScoreList, userScore
   postScoreDoc.att_score = calcPostAttributesScore(data, hasLink);
 
   // count weekly posts
-  postScoreDoc.count_weekly_posts = await countLast7DaysPosts(userScoreDoc, userScoreList, data.time, isNewPost,  postScoreList);
+  postScoreDoc.count_weekly_posts = await countLast7DaysPosts(userScoreDoc, userScoreList, data.time, isNewPost, postScoreList);
 
   const wordsCount = countWordsWithoutLink(data.message);
   postScoreDoc.W_score = wordsCount;
@@ -249,10 +319,22 @@ const calcScoreOnCreatePost = async(data, postScoreDoc, postScoreList, userScore
     { upsert: true } // options
   );
 
+  updateLastp3Scores(userScoreDoc.last_p3_scores, postScoreDoc);
+
   console.debug("Update on create post event: " + JSON.stringify(result));
   console.debug("calcScoreOnCreatePost => post score doc: " + JSON.stringify(postScoreDoc));
 
-  //await updateScoreToStream(postScoreDoc);
+  await userScoreList.updateOne(
+    { _id : userScoreDoc._id }, // query data to be updated
+    { $set : {
+      last_p3_scores : userScoreDoc.last_p3_scores,
+      last_posts : userScoreDoc.last_posts,
+      updated_at : moment().utc().format(REGULAR_TIME_FORMAT),
+    } }, // updates
+    { upsert: false } // options
+  );
+
+  await updateScoreToStream(postScoreDoc);
 
   return result;
 };
