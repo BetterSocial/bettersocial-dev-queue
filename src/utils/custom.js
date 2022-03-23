@@ -79,11 +79,48 @@ const generateRandomId = (a = '') =>
     ((Number(a) ^ (Math.random() * 16)) >> (Number(a) / 4)).toString(16)
     : `${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`.replace(/[018]/g, generateRandomId);
 
+const isStringBlankOrNull = (str) => {
+  if (str) {
+    if (str !== "") {
+      return false;
+    }
+  }
+  return true;
+}
+
+const countWordsWithoutLink = (str) => {
+  //console.debug("The sentence: " + str);
+
+  const filteredStr = str.replace(/(https?:\/\/[^ ]*)/, "");
+  //console.log("filtered:" + filteredStr);
+
+  let matches = filteredStr.match(/([\w\d]+)/g);
+
+  if (matches) {
+    return matches.length;
+  }
+
+  return 0;
+}
+
+const countCharactersWithoutLink = (str) => {
+  //console.debug("The sentence: " + str);
+
+  const filteredStr = str.replace(/(https?:\/\/[^ ]*)/g, "");
+  //console.debug("filtered:" + filteredStr);
+
+  //let chars = filteredStr.replace(/[^\a-zA-Z]/g,"");
+  return filteredStr.length;
+}
+
 module.exports = {
   convertString,
   dateCreted,
   getToken,
   checkIfValidURL,
   capitalizing,
-  generateRandomId
+  generateRandomId,
+  isStringBlankOrNull,
+  countWordsWithoutLink,
+  countCharactersWithoutLink,
 };
