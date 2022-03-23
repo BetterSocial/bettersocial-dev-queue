@@ -89,10 +89,10 @@ const isStringBlankOrNull = (str) => {
 }
 
 const countWordsWithoutLink = (str) => {
-  console.debug("The sentence: " + str);
+  //console.debug("The sentence: " + str);
 
   const filteredStr = str.replace(/(https?:\/\/[^ ]*)/, "");
-  console.log("filtered:" + filteredStr);
+  //console.log("filtered:" + filteredStr);
 
   let matches = filteredStr.match(/([\w\d]+)/g);
 
@@ -104,10 +104,10 @@ const countWordsWithoutLink = (str) => {
 }
 
 const countCharactersWithoutLink = (str) => {
-  console.debug("The sentence: " + str);
+  //console.debug("The sentence: " + str);
 
   const filteredStr = str.replace(/(https?:\/\/[^ ]*)/g, "");
-  console.debug("filtered:" + filteredStr);
+  //console.debug("filtered:" + filteredStr);
 
   //let chars = filteredStr.replace(/[^\a-zA-Z]/g,"");
   return filteredStr.length;
