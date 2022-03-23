@@ -573,9 +573,9 @@ const scoringProcessJob = async (job, done) => {
     EVENT_UNFOLLOW_USER,
   } = require("./scoring-constant");
 
-  console.log("scoringProcessJob: " + JSON.stringify(job.data));
+  //console.log("scoringProcessJob: " + JSON.stringify(job.data));
   try {
-    console.info('running job scoring with id: ' + job.id);
+    //console.info('running job scoring with id: ' + job.id);
     const messageData = job.data;
     switch(messageData.event) {
       case EVENT_CREATE_ACCOUNT:
@@ -614,11 +614,11 @@ const scoringProcessJob = async (job, done) => {
       default:
         throw Error("Unknown event");
     }
-    console.info(result);
+    //console.info(result);
     done(null, result);
   } catch (error) {
     console.log(error);
-    done(null, error);
+    done(error);
   }
 }
 
