@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { MongoClient } = require("mongodb");
+const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const mongodbConfig = {
   local: {
@@ -24,12 +24,12 @@ const env = process.env.NODE_ENV || "development";
 console.debug("env: " + env);
 const config = mongodbConfig[env];
 console.debug("config: " + config.url);
-const client = new MongoClient(config.url);
+const client = new MongoClient(config.url, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 let db;
 
 const getDb = async () => {
   if (db) {
-    console.debug("mongodb already connected, just use it");
+    //console.debug("mongodb already connected, just use it");
     return db;
   } else {
     console.debug("try to create mongodb connection");
