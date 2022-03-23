@@ -1,6 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const { DomainPage, NewsLink, StatisticPost, UserScore, PostScore } = require("../databases/models");
+const { DomainPage, NewsLink } = require("../databases/models");
 const { dateCreted } = require("../utils");
 const { v4: uuidv4 } = require("uuid");
 
@@ -57,17 +57,6 @@ const validateDomain = async (resp) => {
 
 const putMainFeed = async (job, name, logo, created, data) => {
   const { putStream } = require('../services');
-  const { setPostScore } = require('../processes/domain-process');
-  const { postPerformanceScoreProcess } = require('../processes/post-perfomance-process');
-  const { userScoreProcess } = require('../processes/user-score-process');
-  const { finalUserScoreProcess } = require('../processes/final-user-score-process');
-  const score = await setPostScore(job.user_id);
-  const performanceScore = await postPerformanceScoreProcess(job);
-  const userScore = await userScoreProcess(performanceScore.post_performance_comments_score, job);
-  const finalScore = await finalUserScoreProcess(
-    userScore.user_score, setPostScore.score,
-    performanceScore.post_performance_comments_score, job
-  );
 
   try {
     const set = {
@@ -82,24 +71,13 @@ const putMainFeed = async (job, name, logo, created, data) => {
         url: data.news_url,
         domain_page_id: data.domain_page_id,
         news_link_id: data.news_link_id
-      }, ...score, ...performanceScore, ...userScore, ...finalScore
+      }
     }
     await putStream(job.id_feed, set);
     console.info(`updated main_feed:${job.id_feed}`)
   } catch (error) {
     console.info(error)
   }
-
-  await UserScore.create({
-    user_score_id: uuidv4(),
-    user_id: job.user_id,
-    user_score: userScore.user_score
-  })
-  await PostScore.create({
-    post_score_id: uuidv4(),
-    feed_id: job.id_feed,
-    post_score: score.score
-  })
 }
 
 const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
@@ -125,7 +103,6 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
       }
 
       await putMainFeed(job, name, logo, created_domain, data);
-      await saveCounterPost(job.user_id);
       // await postToGetstream(activity, job.user_id);
       message = 'url news not unique'
     } else {
@@ -145,45 +122,12 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
 
       await putMainFeed(job, name, logo, created_domain, data);
       await postToGetstream(activity, job.user_id);
-      await saveCounterPost(job.user_id);
       message = 'news link created'
     }
 
     return message
   } catch (error) {
     return error
-  }
-}
-
-const saveCounterPost = async (user_id) => {
-  const moment = require("moment")
-  const { v4: uuidv4 } = require('uuid');
-  try {
-    const date = moment(new Date()).format("YYYY-MM-DD");
-
-    const data = {}
-    data.id_statistic = uuidv4();
-    data.user_id = user_id;
-    data.counter = 1;
-    data.date = date;
-
-    const findPostToday = await StatisticPost.count({
-      where: { user_id, date }
-    });
-    /*
-      @description if exist post today counter else creatae post counter
-    */
-    if (findPostToday) {
-      await StatisticPost.increment(
-        { counter: +1 },
-        { where: { user_id, date } }
-      );
-    } else {
-      await StatisticPost.create({ ...data, ...dateCreted });
-    }
-    console.info("counter created");
-  } catch (error) {
-    console.info(error);
   }
 }
 
