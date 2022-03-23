@@ -10,7 +10,7 @@ const queueOptions = {
 // for development
 //const queueOptions = {};
 
-const newsQueue = new Bull("newsQueue", connectRedis, { redis: { tls: { rejectUnauthorized: false } } });
+const newsQueue = new Bull("newsQueue", connectRedis, queueOptions);
 
 // const testQueue = new Bull("testQueue", process.env.REDIS_URL, {
 // redis: { tls: { rejectUnauthorized: false } },
