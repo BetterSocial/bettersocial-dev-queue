@@ -217,6 +217,7 @@ const onCreatePost = async (data) => {
     console.debug("init post score doc");
     postScoreDoc = initDataPostScore(data.feed_id, data.created_at);
   }
+
   // put last post by user
   return await calcScoreOnCreatePost(data, postScoreDoc, postScoreList, userScoreDoc, userScoreList, db);
 }
