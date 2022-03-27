@@ -4,7 +4,7 @@ const connectRedis = process.env.REDIS_URL;
 
 // for production
 const queueOptions = {
-  redis: { tls: { rejectUnauthorized: false } }
+  redis: { tls: { rejectUnauthorized: false, requestCert: true, } }
 };
 
 // for development
@@ -35,7 +35,7 @@ const postTimeQueue = new Bull("addQueuePostTime", connectRedis, queueOptions);
 
 //const prepopulatedDmQueue = new Bull("prepopulatedDmQueue", connectRedis, queueOptions);
 
-const registerQueue = new Bull("registerQueue", connectRedis, connectRedis, queueOptions);
+const registerQueue = new Bull("registerQueue", connectRedis, queueOptions);
 
 // special queue for scoring process
 const scoringProcessQueue = new Bull("scoringProcessQueue", connectRedis, queueOptions);
