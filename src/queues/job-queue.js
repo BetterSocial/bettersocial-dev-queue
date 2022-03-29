@@ -37,7 +37,7 @@ const { registerProcess } = require("../processes/register-process");
   @description initial all job queue
 */
 const initQueue = () => {
-/* TODO
+
   console.info("newsQueue job is working!");
   newsQueue.process(newsJob);
   newsQueue.on("failed", handlerFailure);
@@ -50,15 +50,15 @@ const initQueue = () => {
     console.log(res);
   })
 
-  console.info("postTimeQueue job is working!");
-  postTimeQueue.process(createPostTime);
-  postTimeQueue.on("failed", handlerFailure);
-  postTimeQueue.on("completed", handlerCompleted);
-  postTimeQueue.on("stalled", handlerStalled);
-
-  postTimeQueue.on("error", (err) => {
-    console.log("posttime error: ", err);
-  })
+  // Cit, 20220329, postTimeQueue is not needed anymore, already covered in scoring
+  // console.info("postTimeQueue job is working!");
+  // postTimeQueue.process(createPostTime);
+  // postTimeQueue.on("failed", handlerFailure);
+  // postTimeQueue.on("completed", handlerCompleted);
+  // postTimeQueue.on("stalled", handlerStalled);
+  // postTimeQueue.on("error", (err) => {
+  //   console.log("posttime error: ", err);
+  // })
 
   // console.info("Follow location job is working!");
   // locationQueue.process(followLocation);
@@ -104,7 +104,7 @@ const initQueue = () => {
   registerQueue.on("failed", handlerFailure);
   registerQueue.on("completed", handlerCompleted);
   registerQueue.on("stalled", handlerStalled);
-*/
+
   console.info("scoringProcessQueue job is working!");
   scoringProcessQueue.process(scoringProcessJob);
   scoringProcessQueue.on("failed", handlerFailure);
@@ -113,9 +113,6 @@ const initQueue = () => {
   scoringProcessQueue.on("error", (err) => {
     console.log("scoringProcessQueue error : ", err);
   });
-  scoringProcessQueue.on("active", (res) => {
-    console.log(res);
-  })
 };
 
 initQueue();
