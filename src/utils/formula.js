@@ -103,7 +103,8 @@ const postPerformanceScore = (pPerf, pLongC) => {
   #  #W: jumlah kata dalam postnya (jgn termasuk kata2 dalam link, cuma yg ngetip dari user)
 */
 const dBench = (dur_min, dur_marg, W) => {
-  return dur_min + dur_marg * W
+  // dur_min * 1.0 --> just to make sure the env var will be read as number, not as text
+  return dur_min * 1.0 + dur_marg * W
 }
 
 /*
