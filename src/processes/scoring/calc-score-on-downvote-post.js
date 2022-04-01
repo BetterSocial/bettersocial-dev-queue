@@ -149,7 +149,7 @@ const calcScoreOnDownvotePost = async(data, userScoreDoc, userScoreList, postSco
 
         // check whether the user previously has downvote the post.
         // If it does, then need to update several additional information regarding the downvote
-        const isUpvoted = (userPostScoreDoc.downvote_count > 0);
+        const isUpvoted = (userPostScoreDoc.upvote_count > 0);
 
         updateLastDownvotes(userScoreDoc, data.activity_time, isUpvoted);
         userScoreDoc.updated_at = timestamp; // format current time in utc
