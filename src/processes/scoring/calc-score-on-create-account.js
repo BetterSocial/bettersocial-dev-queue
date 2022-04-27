@@ -6,6 +6,7 @@ const moment = require("moment");
 const calcScoreOnCreateAccount = async(data, userDoc, userScoreList) => {
   console.debug("Starting calcScoreOnCreateAccount");
 
+  const timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
   userDoc.register_time = data.register_time;
 
   // loop the followed topics, and add it to array if it's not exists
@@ -46,22 +47,48 @@ const calcScoreOnCreateAccount = async(data, userDoc, userScoreList) => {
 
   // calculate q_score
   userDoc.q_score = calcQualitativeCriteriaScore(userDoc);
+  const updateUserScoreDocs = [];
   if (data.follow_users && data.follow_users.length > 0) {
-    data.follow_users.forEach(follow => {
+    for (const follow of data.follow_users) {
       if (userDoc.following.indexOf(follow) == -1) {
         userDoc.following.push(follow);
+
+        const followedUserScoreDoc = await userScoreList.findOne({"_id": follow});
+        if (followedUserScoreDoc) {
+          followedUserScoreDoc.F_score_update = followedUserScoreDoc.F_score_update + 1;
+          followedUserScoreDoc.updated_at = timestamp;
+
+          updateUserScoreDocs.push(
+            { updateOne : {
+                filter : { _id : followedUserScoreDoc._id }, // query data to be updated
+                update : { $set : {
+                  F_score_update: followedUserScoreDoc.F_score_update,
+                  updated_at: followedUserScoreDoc.updated_at,
+                } }, // updates
+                upsert: false
+              }
+            }
+          );
+        } else {
+          throw new Error("Followed user data is not found, with id: " + follow);
+        }
       }
-    });
+    }
   }
 
   await calcUserScore(userDoc);
-  userDoc.updated_at = moment().utc().format("YYYY-MM-DD HH:mm:ss"); // format current time in utc
+  userDoc.updated_at = timestamp;
 
-  const result = await userScoreList.updateOne(
-    { _id : userDoc._id }, // query data to be updated
-    { $set : userDoc }, // updates
-    { upsert: true } // options
+  updateUserScoreDocs.push(
+    { updateOne : {
+        filter : { _id : userDoc._id }, // query data to be updated
+        update : { $set : userDoc }, // updates
+        upsert: true,
+      }
+    }
   );
+
+  const result = await userScoreList.bulkWrite(updateUserScoreDocs);
 
   console.debug("Update on create account event: " + JSON.stringify(result));
   return result;

@@ -76,29 +76,52 @@ async function calcScoreOnBlockUser(data, userScoreDoc, authorUserScoreDoc, user
   } else {
     console.debug("Adding user " + authorUserScoreDoc._id + " as blocked by user " + userScoreDoc._id);
 
+    const timestamp = moment().utc().format(REGULAR_TIME_FORMAT);
+
     // 1. Update Last blocks information
     updateLastBlocks(userScoreDoc.last_blocks, data.activity_time);
 
     // 2. Delete following of the author (if exists)
     const followingIndex = userScoreDoc.following.indexOf(authorUserScoreDoc._id);
+    const updateUserScoreDocs = [];
     if (followingIndex > -1) {
       userScoreDoc.following.splice(followingIndex);
+
+      authorUserScoreDoc.F_score_update = authorUserScoreDoc.F_score_update - 1;
+      authorUserScoreDoc.updated_at = timestamp;
+
+      updateUserScoreDocs.push(
+        { updateOne : {
+            filter : { _id : authorUserScoreDoc._id }, // query data to be updated
+            update : { $set : {
+              F_score_update: authorUserScoreDoc.F_score_update,
+              updated_at: authorUserScoreDoc.updated_at,
+            } }, // updates
+            upsert: false
+          }
+        }
+      );
     }
 
     // 3. Add the author in blocking list
     userScoreDoc.blocking.push(authorUserScoreDoc._id);
-    userScoreDoc.updated_at = moment().utc().format(REGULAR_TIME_FORMAT); // format current time in utc
+    userScoreDoc.updated_at = timestamp;
 
-    const result = await userScoreList.updateOne(
-      { _id : userScoreDoc._id }, // query data to be updated
-      { $set : {
-        last_blocks: userScoreDoc.last_blocks,
-        following: userScoreDoc.following,
-        blocking: userScoreDoc.blocking,
-        updated_at: userScoreDoc.updated_at,
-      } }, // updates
-      { upsert: false } // options
+    updateUserScoreDocs.push(
+      { updateOne : {
+          filter : { _id : userScoreDoc._id }, // query data to be updated
+          update : { $set : {
+            last_blocks: userScoreDoc.last_blocks,
+            following: userScoreDoc.following,
+            blocking: userScoreDoc.blocking,
+            updated_at: userScoreDoc.updated_at,
+          } }, // updates
+          upsert: false
+        }
+      }
     );
+
+    const result = await userScoreList.bulkWrite(updateUserScoreDocs);
 
     return result;
   }
@@ -161,6 +184,8 @@ async function calcScoreOnBlockPost(data, userScoreDoc, authorUserScoreDoc, user
           const followingIndex = userScoreDoc.following.indexOf(authorUserScoreDoc._id);
           if (followingIndex > -1) {
             userScoreDoc.following.splice(followingIndex);
+
+            authorUserScoreDoc.F_score_update = authorUserScoreDoc.F_score_update - 1;
           }
 
           // 3. Add the author in blocking list
@@ -194,27 +219,39 @@ async function calcScoreOnBlockPost(data, userScoreDoc, authorUserScoreDoc, user
 
       // Update last p3 scores in user score doc
       updateLastp3Scores(authorUserScoreDoc, postScoreDoc);
+      authorUserScoreDoc.sum_BP_score_update += blockPoint;
       authorUserScoreDoc.updated_at = timestamp; // format current time in utc
 
-      await userScoreList.updateOne(
-        { _id : authorUserScoreDoc._id }, // query data to be updated
-        { $set : {
-          last_p3_scores: authorUserScoreDoc.last_p3_scores,
-          updated_at: authorUserScoreDoc.updated_at,
-        } }, // updates
-        { upsert: false } // options
+      const updateUserScoreDocs = [];
+      updateUserScoreDocs.push(
+        { updateOne : {
+            filter : { _id : authorUserScoreDoc._id }, // query data to be updated
+            update : { $set : {
+              F_score_update: authorUserScoreDoc.F_score_update,
+              sum_BP_score_update: authorUserScoreDoc.sum_BP_score_update,
+              last_p3_scores: authorUserScoreDoc.last_p3_scores,
+              updated_at: authorUserScoreDoc.updated_at,
+            } }, // updates
+            upsert: false
+          }
+        }
       );
 
-      await userScoreList.updateOne(
-        { _id : userScoreDoc._id }, // query data to be updated
-        { $set : {
-          last_blocks: userScoreDoc.last_blocks,
-          following: userScoreDoc.following,
-          blocking: userScoreDoc.blocking,
-          updated_at: userScoreDoc.updated_at,
-        } }, // updates
-        { upsert: false } // options
+      updateUserScoreDocs.push(
+        { updateOne : {
+            filter : { _id : userScoreDoc._id }, // query data to be updated
+            update : { $set : {
+              last_blocks: userScoreDoc.last_blocks,
+              following: userScoreDoc.following,
+              blocking: userScoreDoc.blocking,
+              updated_at: userScoreDoc.updated_at,
+            } }, // updates
+            upsert: false
+          }
+        }
       );
+
+      await userScoreList.bulkWrite(updateUserScoreDocs);
 
       await postScoreList.updateOne(
         { _id : postScoreDoc._id }, // query data to be updated

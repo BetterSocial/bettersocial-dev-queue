@@ -60,11 +60,13 @@ const calcScoreOnViewPost = async(data, postScoreDoc, postScoreList, userPostSco
 
         // Update last p3 scores in user score doc
         updateLastp3Scores(authorUserScoreDoc, postScoreDoc);
+        authorUserScoreDoc.sum_impr_score_update += 1;
         authorUserScoreDoc.updated_at = timestamp; // format current time in utc
 
         await userScoreList.updateOne(
           { _id : authorUserScoreDoc._id }, // query data to be updated
           { $set : {
+            sum_impr_score_update: authorUserScoreDoc.sum_impr_score_update,
             last_p3_scores: authorUserScoreDoc.last_p3_scores,
             updated_at: authorUserScoreDoc.updated_at,
           } }, // updates
