@@ -85,12 +85,12 @@ const addUserToTopicChannel = async (user_id, topics) => {
 const prepopulatedDm = async (id, ids) => {
   try {
     let userService = new UserService();
-    let userAdmin = await userService.getUserAdmin(process.env.USERNAME_ADMIN);
-    let idAdmin = userAdmin.user_id;
-    ids = ids.filter((element, i, ids) => {
-      return (element !== idAdmin);
-    })
-    ids.push(idAdmin);
+    // let userAdmin = await userService.getUserAdmin(process.env.USERNAME_ADMIN);
+    // let idAdmin = userAdmin.user_id;
+    // ids = ids.filter((element, i, ids) => {
+    //   return (element !== idAdmin);
+    // })
+    // ids.push(idAdmin);
     let users = await userService.getUsersByIds(ids)
     const pre = await prepopulated(id, users);
     console.log('prepopulatedDm', 'done');
