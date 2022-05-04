@@ -162,6 +162,7 @@ const newsJob = async (job, done) => {
     //   description = $('meta[name="description"]').attr('content') || "";
     // }
     const news_url = $('meta[property="og:url"]').attr('content') || "";
+    const url_compact = $('meta[property="og:url"]').attr('content') || "";
     const keyword = $('meta[name="keywords"]').attr('content') || "";
     const author = $('meta[name="author"]').attr('content') || "";
 
@@ -169,7 +170,7 @@ const newsJob = async (job, done) => {
       @description define data for post to getstream and newslink table
     */
     let data = {
-      domain_page_id, title, site_name, image, description, news_url, keyword, author
+      domain_page_id, title, site_name, image, description, news_url, keyword, author, url_compact
     };
 
 
