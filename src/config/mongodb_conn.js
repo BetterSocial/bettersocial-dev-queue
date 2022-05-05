@@ -40,6 +40,15 @@ const getDb = async () => {
   }
 }
 
+const closeConn = async() => {
+  if (client) {
+    console.debug("Closing mongodb connection...");
+    await client.close();
+    console.debug("done closing mongodb connection.");
+  }
+}
+
 module.exports = {
   getDb,
+  closeConn,
 }

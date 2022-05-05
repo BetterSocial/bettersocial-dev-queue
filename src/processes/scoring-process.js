@@ -24,8 +24,11 @@ const initDataUserScore = (userId, timestamp) => {
     _id: userId,
     register_time: timestamp,
     F_score: 0.0,
+    F_score_update: 0.0,
     sum_BP_score: 0.0,
+    sum_BP_score_update: 0.0,
     sum_impr_score: 0.0,
+    sum_impr_score_update: 0.0,
     r_score: 1.0,
     age_score: 0.0,
     q_score: 1.0,
@@ -74,6 +77,7 @@ const initDataUserScore = (userId, timestamp) => {
       // format of <key>:<value>
       // <post id> : { "time":"...", "p3_score": ... }
     },
+    last_daily_process: "",
     created_at: timestamp,
     updated_at: timestamp,
   };
@@ -533,17 +537,23 @@ const onFollowUser = async (data) => {
     throw new Error("User data is not found, with id: " + data.user_id);
   }
 
-  return await calcScoreOnFollowUser(data, userScoreDoc, userScoreList);
+  const followedUserScoreDoc = await userScoreList.findOne({"_id": data.followed_user_id});
+  console.debug("findOne userScoreDoc result: " + JSON.stringify(followedUserScoreDoc));
+  if (!followedUserScoreDoc) {
+    throw new Error("User data is not found, with id: " + data.followed_user_id);
+  }
+
+  return await calcScoreOnFollowUser(data, userScoreDoc, followedUserScoreDoc, userScoreList);
 };
 
 /*
  * Job processor on unfollow user event. Received data:
  *   - user_id: text, id of the user who doing the action
- *   - followed_user_id: text, id of the user which being unfollowed
+ *   - unfollowed_user_id: text, id of the user which being unfollowed
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onUnfollowUser = async (data) => {
-  console.debug("scoring onFollowUser");
+  console.debug("scoring onUnfollowUser");
   let db = await getDb();
   let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
 
@@ -553,7 +563,13 @@ const onUnfollowUser = async (data) => {
     throw new Error("User data is not found, with id: " + data.user_id);
   }
 
-  return await calcScoreOnUnfollowUser(data, userScoreDoc, userScoreList);
+  const followedUserScoreDoc = await userScoreList.findOne({"_id": data.unfollowed_user_id});
+  console.debug("findOne userScoreDoc result: " + JSON.stringify(followedUserScoreDoc));
+  if (!followedUserScoreDoc) {
+    throw new Error("User data is not found, with id: " + data.unfollowed_user_id);
+  }
+
+  return await calcScoreOnUnfollowUser(data, userScoreDoc, followedUserScoreDoc, userScoreList);
 };
 
 /*
