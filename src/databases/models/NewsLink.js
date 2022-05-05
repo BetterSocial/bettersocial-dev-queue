@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     image: DataTypes.STRING,
     description: DataTypes.TEXT,
     url: DataTypes.TEXT,
+    url_compact: DataTypes.TEXT,
     keyword: DataTypes.STRING,
     author: DataTypes.STRING,
     created_at: DataTypes.DATE,
