@@ -77,6 +77,7 @@ const initDataUserScore = (userId, timestamp) => {
       // format of <key>:<value>
       // <post id> : { "time":"...", "p3_score": ... }
     },
+    last_daily_process: "",
     created_at: timestamp,
     updated_at: timestamp,
   };
