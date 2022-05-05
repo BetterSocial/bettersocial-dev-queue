@@ -170,7 +170,7 @@ const countLast7DaysPosts = async(userScoreDoc, userScoreList, timeOfPost, isNew
   const momentTimeOfPost = moment.utc(timeOfPost, POST_TIME_FORMAT, true);
 
   if (!isStringBlankOrNull(userScoreDoc.last_posts.last_update)) {
-    const dayDiffLastUpdateAndPostTime = moment.duration(momentTimeOfPost.diff(moment.utc(userScoreDoc.last_posts.last_update, REGULAR_TIME_FORMAT, true))).as('days');
+    const dayDiffLastUpdateAndPostTime = moment.duration(momentTimeOfPost.diff(moment.utc(userScoreDoc.last_posts.last_update, POST_TIME_FORMAT, true))).as('days');
 
     console.debug("countLast7DaysPosts: there is last posts data");
 
@@ -181,9 +181,8 @@ const countLast7DaysPosts = async(userScoreDoc, userScoreList, timeOfPost, isNew
 
       // continue, if earliest_time is not more than 7 days earlier from time of post
       let isUpdate = true;
-      const formattedTimeOfPost = momentTimeOfPost.format(REGULAR_TIME_FORMAT);
       if (!isStringBlankOrNull(userScoreDoc.last_posts.earliest_time)) {
-        const dayDiffEarliestTimeAndPostTime = moment.duration(momentTimeOfPost.diff(moment.utc(userScoreDoc.last_posts.earliest_time, REGULAR_TIME_FORMAT, true))).as('days');
+        const dayDiffEarliestTimeAndPostTime = moment.duration(momentTimeOfPost.diff(moment.utc(userScoreDoc.last_posts.earliest_time, POST_TIME_FORMAT, true))).as('days');
 
         if (dayDiffEarliestTimeAndPostTime <= 7) {
           console.debug("countLast7DaysPosts: earliest_time is not more than 7 days earlier from time of post");
@@ -191,8 +190,8 @@ const countLast7DaysPosts = async(userScoreDoc, userScoreList, timeOfPost, isNew
 
           if (isNewPost) {
             console.debug("countLast7DaysPosts: update the counter, since it new post");
-            userScoreDoc.last_posts.last_update = formattedTimeOfPost;
-            userScoreDoc.last_posts.last_time = formattedTimeOfPost;
+            userScoreDoc.last_posts.last_update = timeOfPost;
+            userScoreDoc.last_posts.last_time = timeOfPost;
             userScoreDoc.last_posts.counter = currentCount + 1;
           }
 
@@ -200,9 +199,9 @@ const countLast7DaysPosts = async(userScoreDoc, userScoreList, timeOfPost, isNew
         }
       } else {
         console.debug("countLast7DaysPosts: update the counter, since it the first post of the author");
-        userScoreDoc.last_posts.earliest_time = formattedTimeOfPost;
-        userScoreDoc.last_posts.last_update = formattedTimeOfPost;
-        userScoreDoc.last_posts.last_time = formattedTimeOfPost;
+        userScoreDoc.last_posts.earliest_time = timeOfPost;
+        userScoreDoc.last_posts.last_update = timeOfPost;
+        userScoreDoc.last_posts.last_time = timeOfPost;
         userScoreDoc.last_posts.counter = 1;
 
         return 0;
