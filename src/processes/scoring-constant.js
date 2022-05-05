@@ -12,9 +12,17 @@ module.exports = {
   EVENT_UNFOLLOW_USER: "unfollow-user",
   EVENT_UNBLOCK_USER: "unblock-user",
 
+  EVENT_DAILY_PROCESS_TRIGGER: "daily-process-trigger",
+  EVENT_DAILY_PROCESS_USER_SCORE_PHASE1: "daily-process-user-score-1",
+  EVENT_DAILY_PROCESS_USER_SCORE_PHASE2: "daily-process-user-score-2",
+  EVENT_DAILY_PROCESS_POST_SCORE: "daily-process-post-score",
+
   DB_COLLECTION_USER_SCORE: "user_score",
   DB_COLLECTION_POST_SCORE: "post_score",
   DB_COLLECTION_USER_POST_SCORE: "user_post_score",
 
   PRIVACY_PUBLIC: "public",
+
+  POST_TIME_FORMAT: "YYYY-MM-DDTHH:mm:ss.SSSSSS",
+  REGULAR_TIME_FORMAT: "YYYY-MM-DD HH:mm:ss",
 };

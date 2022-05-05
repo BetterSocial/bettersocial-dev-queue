@@ -10,4 +10,8 @@ module.exports = {
   ...require("./calc-score-on-view-post"),
   ...require("./calc-score-on-follow-user"),
   ...require("./calc-score-on-unfollow-user"),
+  ...require("./update-final-user-score-on-daily-process"),
+  ...require("./update-user-score-on-daily-process-phase1"),
+  ...require("./update-post-score-on-daily-process"),
+  ...require("./trigger-daily-process"),
 };
