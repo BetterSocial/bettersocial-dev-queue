@@ -1,3 +1,5 @@
+#! /app/.heroku/node/bin/node
+
 require('dotenv').config();
 const {
   EVENT_DAILY_PROCESS_TRIGGER,
