@@ -40,6 +40,9 @@ const registerQueue = new Bull("registerQueue", connectRedis, queueOptions);
 // special queue for scoring process
 const scoringProcessQueue = new Bull("scoringProcessQueue", connectRedis, queueOptions);
 
+// special queue for scoring daily process
+const scoringDailyProcessQueue = new Bull("scoringDailyProcessQueue", connectRedis, queueOptions);
+
 module.exports = {
   newsQueue,
   postTimeQueue,
@@ -52,4 +55,5 @@ module.exports = {
   // prepopulatedDmQueue,
   registerQueue,
   scoringProcessQueue,
+  scoringDailyProcessQueue,
 };
