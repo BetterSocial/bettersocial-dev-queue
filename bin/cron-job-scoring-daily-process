@@ -3,10 +3,10 @@
 require('dotenv').config();
 const {
   EVENT_DAILY_PROCESS_TRIGGER,
-} = require("./processes/scoring-constant");
+} = require("../src/processes/scoring-constant");
 
-const scoringProcessQueue = require("./queues/queueSenderForRedis"); // uncomment this line if using redis as message queue server
-//const scoringProcessQueue = require("./queues/queueSenderForKafka"); // uncomment this line if using kafka as message queue server
+const scoringProcessQueue = require("../src/queues/queueSenderForRedis"); // uncomment this line if using redis as message queue server
+//const scoringProcessQueue = require("../src/queues/queueSenderForKafka"); // uncomment this line if using kafka as message queue server
 
 console.log("Starting cron job daily process scoring");
 
