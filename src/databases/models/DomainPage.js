@@ -23,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
       short_description: DataTypes.TEXT,
       created_at: DataTypes.DATE,
       updated_at: DataTypes.DATE,
+      credder_score: DataTypes.INTEGER,
+      credder_last_checked: DataTypes.DATE,
     },
     {
       sequelize,

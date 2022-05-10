@@ -1,4 +1,5 @@
 const Bull = require("bull");
+const { QUEUE_NAME_CREDDER_SCORE } = require("../utils");
 
 const connectRedis = process.env.REDIS_URL;
 
@@ -8,10 +9,11 @@ const queueOptions = {
 };
 
 // for development
-//const queueOptions = {};
+// const queueOptions = {};
 
 const newsQueue = new Bull("newsQueue", connectRedis, queueOptions);
-
+const testQueue = new Bull('testQueue', connectRedis, queueOptions);
+const credderScoreQueue = new Bull(QUEUE_NAME_CREDDER_SCORE, connectRedis, queueOptions);
 // const testQueue = new Bull("testQueue", process.env.REDIS_URL, {
 // redis: { tls: { rejectUnauthorized: false } },
 // }, {
@@ -44,16 +46,17 @@ const scoringProcessQueue = new Bull("scoringProcessQueue", connectRedis, queueO
 const scoringDailyProcessQueue = new Bull("scoringDailyProcessQueue", connectRedis, queueOptions);
 
 module.exports = {
-  newsQueue,
-  postTimeQueue,
-  // locationQueue,
-  // followTopicQueue,
-  // followUserQueue,
-  // testQueue,
   // addUserToChannelQueue,
   // addUserToTopicChannelQueue,
+  credderScoreQueue,
+  // followTopicQueue,
+  // followUserQueue,
+  // locationQueue,
   // prepopulatedDmQueue,
+  newsQueue,
+  postTimeQueue,
   registerQueue,
-  scoringProcessQueue,
   scoringDailyProcessQueue,
+  scoringProcessQueue,
+  testQueue,
 };
