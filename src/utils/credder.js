@@ -1,5 +1,5 @@
-const { default: axios } = require("axios")
-const { default: moment } = require("moment");
+const axios = require("axios")
+const moment = require("moment");
 const { DomainPage } = require("../databases/models");
 
 require('dotenv').config();
@@ -44,6 +44,7 @@ const updateDomainCredderScore = async (domainName) => {
                     // update credder score & update credder last checked
                     console.log('Updating credder score 1')
                     await __updateCredderScore(domain, datum.outlet.scores.recommended.value)
+                    return true
                 }
 
                 let dateDiff = moment().diff(domain.credder_last_checked, 'week')
@@ -52,9 +53,11 @@ const updateDomainCredderScore = async (domainName) => {
                     // update credder score & update credder last checked
                     console.log('Updating credder score 2')
                     await __updateCredderScore(domain, datum.outlet.scores.recommended.value)
+                    return true
                 }
             }
-            // Create new domain here if not existed
+
+            return true
         } else if (datum.valid && !datum.indexed) {
             console.log('news link not indexed')
             console.log('Updating credder score 3')
@@ -65,8 +68,10 @@ const updateDomainCredderScore = async (domainName) => {
             if(!domain) return true
 
             await __updateCredderScore(domain, -1)
+            return true
         } else {
             console.log('news link not valid')
+            return true
         }
 
         return true
