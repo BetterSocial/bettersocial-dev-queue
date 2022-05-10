@@ -32,9 +32,6 @@ const updateDomainCredderScore = async (domainName) => {
         })
 
         let datum = response.data.data[0]
-        console.log('\n')
-        console.log(datum.request_url)
-        console.log(JSON.stringify(datum))
 
         if (datum.valid && datum.indexed) {
             console.log('Checking Domain because valid')

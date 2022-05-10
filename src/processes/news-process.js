@@ -56,13 +56,11 @@ const validateDomain = async (resp) => {
         duration: 60 * 1000 //60k ms = 1 minute
       }
     }
-
-    const queueData = {
-      domainName: removeWww
-    }
-
+    
     console.log(`adding credder score queue ${removeWww}`)
-    credderScoreQueue.add(queueData, queueOptions)
+    credderScoreQueue.add({
+      domainName: removeWww
+    }, queueOptions)
 
     return { domain_id, name, info, domain_image, created_domain }
   } catch (error) {
