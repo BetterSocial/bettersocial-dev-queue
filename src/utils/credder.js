@@ -1,6 +1,7 @@
-const { default: axios } = require("axios")
-const { default: moment } = require("moment");
+const axios = require("axios")
+const moment = require("moment");
 const { DomainPage } = require("../databases/models");
+const { CREDDER_SCORE_NOT_INDEXED, CREDDER_SCORE_NOT_VALID } = require("./constant");
 
 require('dotenv').config();
 
@@ -36,37 +37,46 @@ const updateDomainCredderScore = async (domainName) => {
         if (datum.valid && datum.indexed) {
             console.log('Checking Domain because valid')
             let domain = await DomainPage.findOne({
-                where: { domain_name: datum.outlet.name }
+                where: { domain_name: domainName }
             })
 
             if (domain) {
                 if (!domain.credder_score) {
-                    // update credder score & update credder last checked
                     console.log('Updating credder score 1')
                     await __updateCredderScore(domain, datum.outlet.scores.recommended.value)
                 }
 
-                let dateDiff = moment().diff(domain.credder_last_checked, 'week')
-                console.log(`date diff ${dateDiff} week`)
-                if (dateDiff >= 1) {
+                let dateDiff = moment().diff(domain.credder_last_checked, 'days')
+                if (dateDiff >= QUEUE_CREDDER_INTERVAL_IN_DAYS || domain.credder_last_checked === null) {
                     // update credder score & update credder last checked
                     console.log('Updating credder score 2')
                     await __updateCredderScore(domain, datum.outlet.scores.recommended.value)
                 }
+            } else {
+                console.log('Updating credder score 3')
+                await __updateCredderScore(datum.outlet.name, datum.outlet.scores.recommended.value)
             }
             // Create new domain here if not existed
         } else if (datum.valid && !datum.indexed) {
             console.log('news link not indexed')
-            console.log('Updating credder score 3')
+            console.log('Updating credder score 4')
             let domain = await DomainPage.findOne({
                 where: { domain_name: domainName }
             });
 
             if(!domain) return true
 
-            await __updateCredderScore(domain, -1)
+            await __updateCredderScore(domain, CREDDER_SCORE_NOT_INDEXED)
         } else {
             console.log('news link not valid')
+            console.log('Updating credder score 5')
+            let domain = await DomainPage.findOne({
+                where: { domain_name: domainName }
+            });
+
+            if(!domain) return true
+
+            await __updateCredderScore(domain, CREDDER_SCORE_NOT_VALID)
         }
 
         return true

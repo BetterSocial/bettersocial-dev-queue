@@ -27,6 +27,7 @@ const {
   scoringProcessQueue,
   testQueue,
   credderScoreQueue,
+  weeklyCredderUpdateQueue,
 } = require("../config");
 
 const {
@@ -38,6 +39,7 @@ const { registerProcess } = require("../processes/register-process");
 const { testProcess } = require("../processes/test-process");
 const { updateDomainCredderScore } = require("../utils");
 const { credderScoreProcess } = require("../processes/credder-score-process");
+const { credderWeeklyScoreProcess } = require("../processes/credder-weekly-score-process");
 
 /*
   @description initial all job queue
@@ -139,6 +141,18 @@ const initQueue = () => {
   scoringDailyProcessQueue.on("error", (err) => {
     console.log("scoringDailyProcessQueue error : ", err);
   });
+
+  console.log('Credder Weekly Score Queue job is working');
+  weeklyCredderUpdateQueue.process(credderWeeklyScoreProcess);
+  weeklyCredderUpdateQueue.on("failed", handlerFailure);
+  weeklyCredderUpdateQueue.on("completed", handlerCompleted);
+  weeklyCredderUpdateQueue.on("stalled", handlerStalled);
+
+  weeklyCredderUpdateQueue.add({}, {
+    repeat: {
+      cron: "0 0 * * *"
+    }
+  })
 };
 
 initQueue();

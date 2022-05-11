@@ -1,13 +1,9 @@
-const { testQueue } = require("../config");
+const { testQueue, weeklyCredderUpdateQueue } = require("../config");
 const serviceTestQueue = async (req, res) => {
   let { url } = req.body
   try {
     console.log("run test");
-    const job = await testQueue.add({
-      message: "hello",
-      status: "test",
-      url
-    });
+    const job = await weeklyCredderUpdateQueue.add({});
     console.log("job ", job.data);
     return res.json({
       ststus: "success",
