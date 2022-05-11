@@ -1,7 +1,7 @@
 const axios = require("axios")
 const moment = require("moment");
 const { DomainPage } = require("../databases/models");
-const { CREDDER_SCORE_NOT_INDEXED, CREDDER_SCORE_NOT_VALID } = require("./constant");
+const { CREDDER_SCORE_NOT_INDEXED, CREDDER_SCORE_NOT_VALID, QUEUE_CREDDER_INTERVAL_IN_DAYS } = require("./constant");
 
 require('dotenv').config();
 
