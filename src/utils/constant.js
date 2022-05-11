@@ -11,4 +11,9 @@ module.exports = {
   ICON_GROUP_CHANNEL: "https://res.cloudinary.com/hpjivutj2/image/upload/v1636633216/ru8itxe3erw7vuy42vv7.png",
 
   QUEUE_NAME_CREDDER_SCORE : 'credderScoreQueue',
+  QUEUE_NAME_WEEKLY_CREDDER_SCORE : 'weeklyCredderScoreQueue',
+  QUEUE_CREDDER_INTERVAL_IN_DAYS : 3,
+
+  CREDDER_SCORE_NOT_INDEXED : -1,
+  CREDDER_SCORE_NOT_VALID : -2,
 };
