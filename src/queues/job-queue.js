@@ -150,7 +150,7 @@ const initQueue = () => {
 
   weeklyCredderUpdateQueue.add({}, {
     repeat: {
-      cron: "0 0 * * *"
+      cron: "0 12 * * *"
     }
   })
 };
