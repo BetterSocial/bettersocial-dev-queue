@@ -5,7 +5,13 @@ const {
   DB_COLLECTION_USER_POST_SCORE,
   POST_TIME_FORMAT,
   REGULAR_TIME_FORMAT,
+  EVENT_DAILY_PROCESS_POST_SCORE,
 } = require("../scoring-constant");
+
+const scoringProcessQueue = require("../../queues/queueSenderForRedis"); // uncomment this line if using redis as message queue server
+//const scoringProcessQueue = require("../../queues/queueSenderForKafka"); // uncomment this line if using kafka as message queue server
+
+const batchSize = process.env.SCORING_DAILY_PROCESS_BATCH_SIZE;
 
 async function checkNotYetDailyProcessedUserScore(userScoreCol, processTime) {
   const delayMs = process.env.SCORING_DAILY_PROCESS_CHECK_ALL_PROCESSED_DELAY_MS || 60000;
@@ -29,7 +35,7 @@ async function checkNotYetDailyProcessedUserScore(userScoreCol, processTime) {
   }
 }
 
-const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime) => {
+const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime, postScoreCol) => {
   console.debug("Starting updateFinalUserScoreOnDailyProcess");
 
   const momentNow = moment.utc();
@@ -55,7 +61,8 @@ const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime) => {
   // update last upvotes, downvotes, blocks, and posts.
   // reset update the y_score and user_score
   console.log("Updating last stat info, and reset y score");
-  await userScoreCol.aggregate( [
+  let cursor;
+  cursor = userScoreCol.aggregate( [
     // Stage 1: lookup to user_post_score by user_id
     { $lookup : {
       from: DB_COLLECTION_USER_POST_SCORE,
@@ -214,7 +221,7 @@ const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime) => {
   ] );
 
   console.log("Updating y score and final user score");
-  await userScoreCol.aggregate([
+  cursor = await userScoreCol.aggregate([
     { $unwind: "$following" },
     { $group: { _id: "$following", y_score: { $sum: "$u1_score" } } },
     { $lookup: {
@@ -223,21 +230,96 @@ const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime) => {
       foreignField: "_id",
       as: "user_doc",
       pipeline: [
-        { $project: { u1_score: 1 } },
+        { $project: { u1_score: 1 } }, // we need the u1_score for the next pipeline of aggregate
       ],
     }},
     { $unwind: "$user_doc" },
-    { $addFields: { "user_score": { $multiply: [ "$user_doc.u1_Score", "$y_score" ] } } },
+    { $addFields: { "user_score": { $multiply: [ "$user_doc.u1_score", "$y_score" ] } } },
+    { $project: { y_score: 1, user_score: 1 } },
     { $merge: {
       into: DB_COLLECTION_USER_SCORE,
       on: "_id",
       whenMatched: "merge",
-      whenNotMatched: "discard",
+      whenNotMatched: "fail",
     } },
   ]);
 
   console.debug("Done updateFinalUserScoreOnDailyProcess");
+
+  await triggerPostScoreDailyProcess(postScoreCol);
 };
+
+const triggerPostScoreDailyProcess = async(postScoreCol) => {
+  console.debug("Starting triggerPostScoreDailyProcess");
+
+  console.log("Batch size: ", batchSize);
+
+  const processTime = moment.utc().format(REGULAR_TIME_FORMAT);
+
+  // get all post ids
+  const cursors = postScoreCol.aggregate([
+    { $match : { "has_done_final_process": { $eq: false } } },
+    { $lookup: {
+      from: DB_COLLECTION_USER_SCORE,
+      localField: "author_id",
+      foreignField: "_id",
+      as: "user_doc",
+      pipeline: [
+        { $project: { user_score: 1 } },
+      ],
+    }},
+    { $unwind: "$user_doc" },
+  ]);
+
+  let result;
+  let counter = 0;
+  let postIds = [];
+  let userScoreListByPostId = {};
+  while (await cursors.hasNext()) {
+
+    result = await cursors.next();
+
+    // create list if post id to be processed later
+    postIds.push(result._id);
+    // also create list of user score by post id, to be processed later too
+    // on daily process of post score
+    userScoreListByPostId[result._id] = result.user_doc.user_score;
+
+    counter++;
+
+    if (counter >= batchSize) {
+      //console.log("Batch size limit");
+      if (await cursors.hasNext()) {
+        //console.log("Sending queue");
+        sendQueuePostScore(postIds, processTime, false, userScoreListByPostId);
+      } else {
+        //console.log("Sending queue for last batch");
+        sendQueuePostScore(postIds, processTime, true, userScoreListByPostId);
+      }
+
+      counter = 0;
+      postIds = [];
+      userScoreListByPostId = {};
+    }
+  }
+
+  // send the last batch of the post ids
+  if (postIds.length !== 0) {
+    //console.log("Sending queue for last batch outside loop");
+    sendQueuePostScore(postIds, processTime, true, userScoreListByPostId);
+  }
+};
+
+function sendQueuePostScore(postIds, processTime, lastBatch, userScoreListByPostId) {
+  // sending queue for scoring process on follow user event
+  const scoringProcessData = {
+    process_time: processTime,
+    post_ids: postIds,
+    last_batch: lastBatch,
+    user_scores: userScoreListByPostId,
+  };
+  scoringProcessQueue.sendQueueForDailyProcess(EVENT_DAILY_PROCESS_POST_SCORE, scoringProcessData);
+}
 
 module.exports = {
   updateFinalUserScoreOnDailyProcess,
