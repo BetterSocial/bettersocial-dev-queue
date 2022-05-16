@@ -12,7 +12,6 @@ const {
   updateUserScoreOnDailyProcessPhase1,
   updateFinalUserScoreOnDailyProcess,
   updatePostScoreOnDailyProcess,
-  triggerPostScoreDailyProcess,
   triggerUserScoreDailyProcess,
 } = require("./scoring");
 
@@ -57,10 +56,8 @@ const onDailyProcessTrigger = async (data, job) => {
   console.debug("onDailyProcessTrigger");
   const db = await getDb();
   const userScoreCol = await db.collection(DB_COLLECTION_USER_SCORE);
-  const postScoreCol = await db.collection(DB_COLLECTION_POST_SCORE);
 
-  triggerUserScoreDailyProcess(userScoreCol);
-  triggerPostScoreDailyProcess(postScoreCol);
+  return await triggerUserScoreDailyProcess(userScoreCol);
 };
 
 /*
@@ -89,8 +86,9 @@ const onDailyProcessUserScorePhase2 = async (data) => {
   console.debug("onDailyProcessUserScorePhase2");
   const db = await getDb();
   const userScoreCol = await db.collection(DB_COLLECTION_USER_SCORE);
+  const postScoreCol = await db.collection(DB_COLLECTION_POST_SCORE);
 
-  return await updateFinalUserScoreOnDailyProcess(userScoreCol, data.process_time);
+  return await updateFinalUserScoreOnDailyProcess(userScoreCol, data.process_time, postScoreCol);
 }
 
 /*
@@ -98,7 +96,9 @@ const onDailyProcessUserScorePhase2 = async (data) => {
  *   - process_time : text, daily process time. Currently, it just for information, not used yet
  *   - post_ids : array of text, contains list of post id that should be processed
  *   - last_batch : boolean, whether this is the last batch.
- *        Currently, it just for information, not used yet
+ *        Currently, it just for information, not used yet.
+ *   - user_scores : JSON of user score by post id.
+ *        It will be used to update user score in post score.
  */
 const onDailyProcessPostScore = async (data, job) => {
   console.debug("onDailyProcessPostScore");
@@ -106,7 +106,8 @@ const onDailyProcessPostScore = async (data, job) => {
   const postScoreCol = await db.collection(DB_COLLECTION_POST_SCORE);
 
   return await updatePostScoreOnDailyProcess(
-        job, postScoreCol, data.process_time, data.post_ids, data.last_batch);
+        job, postScoreCol, data.process_time, data.post_ids,
+        data.last_batch, data.user_scores);
 };
 
 module.exports = {
