@@ -1,5 +1,6 @@
 const moment = require("moment");
 const { calcPostScore } = require("./calc-post-score");
+const { updateScoreToStream } = require("./update-score-to-stream");
 const {
   REGULAR_TIME_FORMAT
 } = require("../scoring-constant");
@@ -8,7 +9,7 @@ const scoringProcessQueue = require("../../queues/queueSenderForRedis"); // unco
 //const scoringProcessQueue = require("../../queues/queueSenderForKafka"); // uncomment this line if using kafka as message queue server
 
 const updatePostScoreOnDailyProcess = async(
-        job, postScoreCol, processTime, postIds, lastBatch) => {
+        job, postScoreCol, processTime, postIds, lastBatch, userScoreListByPostId) => {
   console.debug("Starting updatePostScoreOnDailyProcess");
 
   // get complete doc from the db, by given user ids
@@ -31,6 +32,7 @@ const updatePostScoreOnDailyProcess = async(
       postDoc.has_done_final_process = true;
     }
 
+    postDoc.u_score = userScoreListByPostId[postDoc._id];
     await calcPostScore(postDoc);
     postDoc.updated_at = moment().utc().format(REGULAR_TIME_FORMAT);
 
@@ -42,6 +44,9 @@ const updatePostScoreOnDailyProcess = async(
         }
       }
     );
+
+    // Update getstream
+    updateScoreToStream(postDoc);
 
     // update job progress
     job.progress(counter * progressPerDoc);
