@@ -1,8 +1,9 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { DomainPage, NewsLink } = require("../databases/models");
-const { dateCreted } = require("../utils");
+const { dateCreted, updateDomainCredderScore } = require("../utils");
 const { v4: uuidv4 } = require("uuid");
+const { credderScoreQueue } = require('../config');
 
 const validateDomain = async (resp) => {
   try {
@@ -11,6 +12,7 @@ const validateDomain = async (resp) => {
     const getDomain = await DomainPage.findOne({
       where: { domain_name: removeWww }
     })
+
     let domain_id;
     let name;
     let info;
@@ -47,6 +49,18 @@ const validateDomain = async (resp) => {
       domain_image = data.logo;
       created_domain = data.created_at;
     }
+    
+    const queueOptions = {
+      limiter: {
+        max: 300,
+        duration: 60 * 1000 //60k ms = 1 minute
+      }
+    }
+    
+    console.log(`adding credder score queue ${removeWww}`)
+    credderScoreQueue.add({
+      domainName: removeWww
+    }, queueOptions)
 
     return { domain_id, name, info, domain_image, created_domain }
   } catch (error) {
@@ -187,5 +201,6 @@ const newsJob = async (job, done) => {
 }
 
 module.exports = {
-  newsJob
+  newsJob,
+  // validateDomain
 };

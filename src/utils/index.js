@@ -3,4 +3,5 @@ module.exports = {
   ...require('./custom'),
   ...require('./formula'),
   ...require('./response'),
+  ...require('./credder')
 }

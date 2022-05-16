@@ -14,18 +14,20 @@ const {
 } = require("./handler");
 
 const {
-  newsQueue,
-  postTimeQueue,
-  locationQueue,
-  followTopicQueue,
-  followUserQueue,
-  testQueue,
   addUserToChannelQueue,
   addUserToTopicChannelQueue,
+  followTopicQueue,
+  followUserQueue,
+  locationQueue,
+  newsQueue,
+  postTimeQueue,
   prepopulatedDmQueue,
   registerQueue,
-  scoringProcessQueue,
   scoringDailyProcessQueue,
+  scoringProcessQueue,
+  testQueue,
+  credderScoreQueue,
+  weeklyCredderUpdateQueue,
 } = require("../config");
 
 const {
@@ -34,6 +36,10 @@ const {
 } = require("../processes/chat-process");
 const { prepopulatedDm } = require("../processes/prepopulate-dm-process");
 const { registerProcess } = require("../processes/register-process");
+const { testProcess } = require("../processes/test-process");
+const { updateDomainCredderScore } = require("../utils");
+const { credderScoreProcess } = require("../processes/credder-score-process");
+const { credderWeeklyScoreProcess } = require("../processes/credder-weekly-score-process");
 
 /*
   @description initial all job queue
@@ -100,6 +106,17 @@ const initQueue = () => {
   // prepopulatedDmQueue.on("failed", handlerFailure);
   // prepopulatedDmQueue.on("completed", handlerCompleted);
   // prepopulatedDmQueue.on("stalled", handlerStalled);
+  console.log('Test Queue job is working');
+  testQueue.process(testProcess);
+  testQueue.on("failed", handlerFailure);
+  testQueue.on("completed", handlerCompleted);
+  testQueue.on("stalled", handlerStalled);
+
+  console.log('Credder Score Queue job is working');
+  credderScoreQueue.process(credderScoreProcess);
+  credderScoreQueue.on("failed", handlerFailure);
+  credderScoreQueue.on("completed", handlerCompleted);
+  credderScoreQueue.on("stalled", handlerStalled);
 
   console.log('Register Queue job is working');
   registerQueue.process(registerProcess);
@@ -124,6 +141,18 @@ const initQueue = () => {
   scoringDailyProcessQueue.on("error", (err) => {
     console.log("scoringDailyProcessQueue error : ", err);
   });
+
+  console.log('Credder Weekly Score Queue job is working');
+  weeklyCredderUpdateQueue.process(credderWeeklyScoreProcess);
+  weeklyCredderUpdateQueue.on("failed", handlerFailure);
+  weeklyCredderUpdateQueue.on("completed", handlerCompleted);
+  weeklyCredderUpdateQueue.on("stalled", handlerStalled);
+
+  weeklyCredderUpdateQueue.add({}, {
+    repeat: {
+      cron: "0 12 * * *"
+    }
+  })
 };
 
 initQueue();
