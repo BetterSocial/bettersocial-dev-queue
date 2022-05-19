@@ -1,5 +1,5 @@
 const Bull = require("bull");
-const { QUEUE_NAME_CREDDER_SCORE, QUEUE_NAME_WEEKLY_CREDDER_SCORE } = require("../utils");
+const { QUEUE_NAME_CREDDER_SCORE, QUEUE_NAME_WEEKLY_CREDDER_SCORE, QUEUE_RSS } = require("../utils");
 
 const connectRedis = process.env.REDIS_URL;
 
@@ -46,7 +46,10 @@ const scoringProcessQueue = new Bull("scoringProcessQueue", connectRedis, queueO
 const scoringDailyProcessQueue = new Bull("scoringDailyProcessQueue", connectRedis, queueOptions);
 
 // special queue for weekly credder updating process
-const weeklyCredderUpdateQueue = new Bull(QUEUE_NAME_WEEKLY_CREDDER_SCORE, connectRedis, queueOptions)
+const weeklyCredderUpdateQueue = new Bull(QUEUE_NAME_WEEKLY_CREDDER_SCORE, connectRedis, queueOptions);
+
+// Queue for rss
+const dailyRssUpdateQueue = new Bull(QUEUE_RSS, connectRedis, queueOptions)
 
 module.exports = {
   // addUserToChannelQueue,
@@ -62,5 +65,6 @@ module.exports = {
   scoringDailyProcessQueue,
   scoringProcessQueue,
   testQueue,
-  weeklyCredderUpdateQueue
+  weeklyCredderUpdateQueue,
+  dailyRssUpdateQueue,
 };

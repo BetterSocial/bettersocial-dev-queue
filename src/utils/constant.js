@@ -16,4 +16,7 @@ module.exports = {
 
   CREDDER_SCORE_NOT_INDEXED : -1,
   CREDDER_SCORE_NOT_VALID : -2,
+
+  QUEUE_RSS : 'queueRss',
+  
 };
