@@ -4,6 +4,5 @@ module.exports = {
   ...require("./refreshPostViewTime"),
   ...require("./followLocation"),
   ...require("./followUser"),
-  ...require("./followTopic"),
-  ...require("./postgres")
+  ...require("./followTopic")
 };
