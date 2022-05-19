@@ -6,8 +6,6 @@ const DomainPageService = require("../services/postgres/domainPageService");
 const LinkRssService = require('../services/postgres/LinkRssService');
 const NewsLinkService = require('../services/postgres/NewsLinkService');
 const { dateCreted } = require('../utils/custom');
-const domainService = new DomainPageService();
-let newsLinkService = new NewsLinkService();
 
 const insertDomain = async (link) => {
   const domainName = link.hostname.replace("www.", "");
@@ -16,6 +14,8 @@ const insertDomain = async (link) => {
   const $ = cheerio.load(crawls.data);
   const logo = $('meta[property="og:image"]').attr('content') || "";
   const description = $('meta[property="og:description"]').attr('content') || "";
+  
+  const domainService = new DomainPageService();
   let domain_id = await domainService.addDomain({domain_name: domainName, logo, short_description: description.length > 254 ? description.substring(0, 230) : description});
   let name = domainName;
   let info = description;
@@ -37,6 +37,7 @@ const insertNewsLink = async (link, domainPageid, name, info, logo, newsLinks) =
       const author = $('meta[name="author"]').attr('content') || "";
   const statusLink = getNewsLink(news_url, newsLinks);
   if (!statusLink) {
+    let newsLinkService = new NewsLinkService();
     await newsLinkService.addNewsLink({
       news_url,
       domain_page_id: domainPageid,
@@ -107,7 +108,10 @@ const rssProcess = async (job, done) => {
         item: ['media:content'],
       }
     });
+    
+    let newsLinkService = new NewsLinkService();
     const rssLinks = await getRssLinks();
+    const domainService = new DomainPageService();
     const domains = await domainService.getAllDomains();
     const newsLinks = await newsLinkService.getAllNewsLinks();
     rssLinks.map(async(rss) => {
