@@ -140,8 +140,6 @@ const rssProcess = async (job, done) => {
     });
 
   });
-  
-  
     done(null, 'success running rss');
   } catch (error) {
     console.log(error);
