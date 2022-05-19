@@ -62,7 +62,7 @@ const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime, post
   // reset update the y_score and user_score
   console.log("Updating last stat info, and reset y score");
   let cursor;
-  cursor = userScoreCol.aggregate( [
+  cursor = await userScoreCol.aggregate( [
     // Stage 1: lookup to user_post_score by user_id
     { $lookup : {
       from: DB_COLLECTION_USER_POST_SCORE,
@@ -220,6 +220,10 @@ const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime, post
     } },
   ] );
 
+  cursor.forEach((item) => {
+    console.dir(item, {depth: null});
+  });
+
   console.log("Updating y score and final user score");
   cursor = await userScoreCol.aggregate([
     { $unwind: "$following" },
@@ -244,6 +248,10 @@ const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime, post
     } },
   ]);
 
+  cursor.forEach((item) => {
+    console.dir(item, {depth: null});
+  });
+
   console.debug("Done updateFinalUserScoreOnDailyProcess");
 
   await triggerPostScoreDailyProcess(postScoreCol);
@@ -257,7 +265,7 @@ const triggerPostScoreDailyProcess = async(postScoreCol) => {
   const processTime = moment.utc().format(REGULAR_TIME_FORMAT);
 
   // get all post ids
-  const cursors = postScoreCol.aggregate([
+  const cursors = await postScoreCol.aggregate([
     { $match : { "has_done_final_process": { $eq: false } } },
     { $lookup: {
       from: DB_COLLECTION_USER_SCORE,
