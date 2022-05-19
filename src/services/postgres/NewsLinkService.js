@@ -1,7 +1,7 @@
 const { Pool, Client } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
 const { v4: uuidv4 } = require("uuid");
-class RssService {
+class NewsLinkService {
   constructor() {
     const config = {
       host: process.env.PGHOST,
@@ -65,6 +65,21 @@ class RssService {
     return result.rows[0].news_link_id;
   }
 
+  async getAllNewsLinks() {
+    const query = {
+      text: 'SELECT * FROM news_link ',
+      values: []
+    }
+
+    try {
+      let result = await this._pool.query(query);
+      return result.rows;
+    } catch (error) {
+      console.log(error);
+        return [];
+    }
+  }
+
   async isExsistNewsLink(link) {
     console.log(link);
     const query = {
@@ -112,4 +127,4 @@ class RssService {
   }
 }
 
-module.exports = RssService;
+module.exports = NewsLinkService;

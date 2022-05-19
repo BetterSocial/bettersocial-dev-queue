@@ -3,7 +3,7 @@ const InvariantError = require('../../exceptions/InvariantError');
 const { v4: uuidv4 } = require("uuid");
 const { dateCreted } = require('../../utils/custom');
 
-class DomainPageService {
+class LinkRssService {
   constructor() {
     const config = {
       host: process.env.PGHOST,
@@ -27,16 +27,15 @@ class DomainPageService {
     this._pool.connect();
   }
 
-  async addDomain({domain_name, logo, short_description}) {
+  async addLink({domain_name, link}) {
     const domain_page_id = uuidv4();
     const createdAt = new Date().toISOString();
     const query = {
-      text: 'INSERT INTO domain_page VALUES($1, $2, $3, $4, $5, $6) RETURNING domain_page_id',
+      text: 'INSERT INTO rss_links VALUES($1, $2, $3, $4, $5)',
       values: [
         domain_page_id,
         domain_name,
-        logo,
-        short_description,
+        link,
         createdAt,
         createdAt
       ]
@@ -45,54 +44,23 @@ class DomainPageService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
+      // throw new InvariantError('Domain page gagal ditambahkan');
       return null;
     }
-    return result.rows[0].domain_page_id;
+    return true;
   }
 
-  async getDomainById(domainId) {
+  async getAllRssLinks() {
     const query = {
-      text: 'SELECT *  FROM domain_page WHERE id = $1',
-      values: [domainId],
-    };
+      text: 'select * from rss_links order by random() limit 5',
+      values: []
+    }
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
-      throw new NotFoundError('User tidak ditemukan');
-    }
-
-    return result.rows[0];
+    return result.rows;
   }
 
-  async getDomainByDomainName(domainName) {
-    const query = {
-      text: 'SELECT domain_page_id FROM domain_page WHERE domain_name = $1',
-      values: [domainName],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rows.length) {
-      return null;
-    }
-    return result.rows[0];
-  }
-
-  async getAllDomains() {
-    const query = {
-      text: 'SELECT * FROM domain_page',
-      values: [],
-    };
-
-    try {
-      let result = await this._pool.query(query);
-      return result.rows;
-    } catch (error) {
-      console.log(error);
-        return [];
-    }
-  }
 }
 
-module.exports = DomainPageService;
+module.exports = LinkRssService;
