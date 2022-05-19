@@ -156,6 +156,8 @@ const initQueue = () => {
     }
   });
 
+  
+  console.log('Daily Rss update Queue job is working');
   dailyRssUpdateQueue.process(rssProcess);
   dailyRssUpdateQueue.on("failed", handlerFailure);
   dailyRssUpdateQueue.on("completed", handlerCompleted);
