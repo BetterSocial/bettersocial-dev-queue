@@ -1,24 +1,14 @@
 const { Pool, Client } = require('pg');
-const InvariantError = require('../../exceptions/InvariantError');
 const { v4: uuidv4 } = require("uuid");
-const { dateCreted } = require('../../utils/custom');
 
 class LinkRssService {
   constructor() {
-    const config = {
-      host: process.env.PGHOST,
-      port: process.env.PGPORT,
-      user: process.env.PGUSER,
-      password: process.env.PGPASSWORD,
-      database: process.env.PGDATABASE,
-    };
-
     this._pool = new Client({
-      host: process.env.PGHOST,
-      port: process.env.PGPORT,
-      user: process.env.PGUSER,
-      password: process.env.PGPASSWORD,
-      database: process.env.PGDATABASE,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT ?? 5432,
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       ssl: {
         rejectUnauthorized: false
       },

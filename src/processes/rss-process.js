@@ -60,7 +60,7 @@ const insertNewsLink = async (link, domainPageid, name, info, logo, newsLinks) =
       
       content: { ...data, ...dateCreted }
     }
-
+    console.info('activity: ', activity);
     await postToGetstream(activity);
   } else {
     console.info('link sudah ada');
@@ -102,20 +102,20 @@ const getNewsLink = (link, newsLinks) => {
 
 const rssProcess = async (job, done) => {
   try {
-  let parser = new Parser({
-    customFields: {
-      item: ['media:content'],
-    }
-  });
-  const rssLinks = await getRssLinks();
-  const domains = await domainService.getAllDomains();
-  const newsLinks = await newsLinkService.getAllNewsLinks();
-  
-
+    let parser = new Parser({
+      customFields: {
+        item: ['media:content'],
+      }
+    });
+    const rssLinks = await getRssLinks();
+    const domains = await domainService.getAllDomains();
+    const newsLinks = await newsLinkService.getAllNewsLinks();
     rssLinks.map(async(rss) => {
+      console.info('link: ', rss.link);
     let feed = await parser.parseURL(rss.link );
     let link = new URL(feed.link);
     const domainName =  link.hostname.replace("www.", "");
+    console.info('domain name: ', domainName);
     let domain = await getDomain(domainName, domains);
     let domainId = null;
     let name = null;
@@ -136,6 +136,7 @@ const rssProcess = async (job, done) => {
     });
 
   });
+  
   
     done(null, 'success running rss');
   } catch (error) {

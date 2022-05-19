@@ -1,4 +1,4 @@
-const { convertString } = require('../../utils/custom');
+const { convertString } = require('../utils');
 const { postStream } = require('./postStream');
 
 const postToGetstream = async (activity) => {
