@@ -2,10 +2,10 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 let Parser = require('rss-parser');
 const { postToGetstream } = require('../services/DomainProses');
-const DomainPageService = require("../services/postgres/domainPageService");
 const LinkRssService = require('../services/postgres/LinkRssService');
 const NewsLinkService = require('../services/postgres/NewsLinkService');
 const { dateCreted } = require('../utils/custom');
+const {addDomain}  = require('../services/postgres/DomainPageService');
 
 const insertDomain = async (link) => {
   const domainName = link.hostname.replace("www.", "");
@@ -14,9 +14,7 @@ const insertDomain = async (link) => {
   const $ = cheerio.load(crawls.data);
   const logo = $('meta[property="og:image"]').attr('content') || "";
   const description = $('meta[property="og:description"]').attr('content') || "";
-  
-  const domainService = new DomainPageService();
-  let domain_id = await domainService.addDomain({domain_name: domainName, logo, short_description: description.length > 254 ? description.substring(0, 230) : description});
+  let domain_id = await addDomain({domain_name: domainName, logo, short_description: description.length > 254 ? description.substring(0, 230) : description});
   let name = domainName;
   let info = description;
   let domain_image = logo;
