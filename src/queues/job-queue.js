@@ -28,6 +28,7 @@ const {
   testQueue,
   credderScoreQueue,
   weeklyCredderUpdateQueue,
+  dailyRssUpdateQueue,
 } = require("../config");
 
 const {
@@ -40,6 +41,7 @@ const { testProcess } = require("../processes/test-process");
 const { updateDomainCredderScore } = require("../utils");
 const { credderScoreProcess } = require("../processes/credder-score-process");
 const { credderWeeklyScoreProcess } = require("../processes/credder-weekly-score-process");
+const { rssProcess } = require("../processes/rss-process");
 
 /*
   @description initial all job queue
@@ -152,7 +154,21 @@ const initQueue = () => {
     repeat: {
       cron: "0 12 * * *"
     }
-  })
+  });
+
+  
+  console.log('Daily Rss update Queue job is working');
+  dailyRssUpdateQueue.process(rssProcess);
+  dailyRssUpdateQueue.on("failed", handlerFailure);
+  dailyRssUpdateQueue.on("completed", handlerCompleted);
+  dailyRssUpdateQueue.on("stalled", handlerStalled);
+
+  dailyRssUpdateQueue.add({}, {
+    repeat: {
+      cron: "0 11 * * *"
+    }
+  });
+
 };
 
 initQueue();
