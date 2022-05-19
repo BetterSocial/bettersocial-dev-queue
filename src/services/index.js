@@ -5,4 +5,5 @@ module.exports = {
   ...require("./followLocation"),
   ...require("./followUser"),
   ...require("./followTopic"),
+  ...require("./postgres")
 };
