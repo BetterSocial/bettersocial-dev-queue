@@ -108,11 +108,11 @@ const initQueue = () => {
   // prepopulatedDmQueue.on("failed", handlerFailure);
   // prepopulatedDmQueue.on("completed", handlerCompleted);
   // prepopulatedDmQueue.on("stalled", handlerStalled);
-  console.log('Test Queue job is working');
+/*  console.log('Test Queue job is working');
   testQueue.process(testProcess);
   testQueue.on("failed", handlerFailure);
   testQueue.on("completed", handlerCompleted);
-  testQueue.on("stalled", handlerStalled);
+  testQueue.on("stalled", handlerStalled);*/
 
   console.log('Credder Score Queue job is working');
   credderScoreQueue.process(credderScoreProcess);
