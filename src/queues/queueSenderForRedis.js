@@ -4,6 +4,7 @@ const connectRedis = process.env.REDIS_URL;
 
 // init the scoring process queue object, to be used on sending message to the queue
 // For production
+/*
 const redisOptions = {
     redis: {
       tls: { rejectUnauthorized: false, requestCert: true, agent: false, },
@@ -11,8 +12,9 @@ const redisOptions = {
       connectTimeout: 30000
     }
 }
+*/
 // For local
-//const redisOptions = {};
+const redisOptions = {};
 
 const scoringDailyProcessQueue = new Bull(
   "scoringDailyProcessQueue",
