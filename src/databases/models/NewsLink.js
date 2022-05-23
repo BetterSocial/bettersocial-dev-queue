@@ -31,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     author: DataTypes.STRING,
     created_at: DataTypes.DATE,
     updated_at: DataTypes.DATE,
+    post_id: DataTypes.TEXT,
   }, {
     sequelize,
     modelName: 'NewsLink',

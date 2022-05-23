@@ -136,9 +136,10 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
       let result = await postToGetstream(activity, job.user_id);
 
       let postId = result.returnActivityId
+      console.info(result);
       console.info(`postId in Process : ${postId}`);
 
-      await NewsLink.create({ ...data, ...dateCreted, post_id: postId })
+      await NewsLink.create({ ...data, ...dateCreted, post_id: result.id })
       message = 'news link created'
     }
 
