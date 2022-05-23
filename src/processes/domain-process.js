@@ -3,19 +3,25 @@ const { DOMAIN, convertString, postCountScore } = require('../utils')
 const postToGetstream = async (activity) => {
   const { v4: uuidv4 } = require('uuid');
   try {
+    let activityId = uuidv4()
 
     activity.actor = []
     activity.object = []
     activity.count_downvote = 0
     activity.count_upvote = 0
-    activity.id = uuidv4()
+    activity.id = activityId
     activity.foreign_id = `${uuidv4()}${new Date().getTime()}`
     activity.verb = "post"
     // activity.to = ['domain:all'];
 
     const result = await postStream(DOMAIN, convertString(activity.domain.name, '.', '-'), activity);
     console.info('success post to getstream');
-    return result
+    console.info(`postId : ${activityId}`);
+    return {
+      ...result,
+      returnActivityId: activityId
+    }
+    
   } catch (error) {
     console.info(error);
     return error;

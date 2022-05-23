@@ -124,8 +124,6 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
       data.news_link_id = uuidv4();
       data.url = data.news_url;
 
-      await NewsLink.create({ ...data, ...dateCreted })
-
       const site_name = data.site_name
       const activity = {
         domain: {
@@ -135,7 +133,12 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
       }
 
       await putMainFeed(job, name, logo, created_domain, data);
-      await postToGetstream(activity, job.user_id);
+      let result = await postToGetstream(activity, job.user_id);
+
+      let postId = result.returnActivityId
+      console.info(`postId in Process : ${postId}`);
+
+      await NewsLink.create({ ...data, ...dateCreted, post_id: postId })
       message = 'news link created'
     }
 
