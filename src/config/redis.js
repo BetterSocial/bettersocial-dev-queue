@@ -1,11 +1,11 @@
 const Bull = require("bull");
-const { QUEUE_NAME_CREDDER_SCORE, QUEUE_NAME_WEEKLY_CREDDER_SCORE, QUEUE_RSS, QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW } = require("../utils");
+const { QUEUE_NAME_CREDDER_SCORE, QUEUE_NAME_WEEKLY_CREDDER_SCORE, QUEUE_RSS, QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW,QUEUE_RSS_SECOND } = require("../utils");
 
 const connectRedis = process.env.REDIS_URL;
 
 // for production
 const queueOptions = {
-  redis: { tls: { rejectUnauthorized: false, requestCert: true, } }
+    redis: { tls: { rejectUnauthorized: false, requestCert: true, } }
 };
 
 // for development
@@ -50,6 +50,8 @@ const weeklyCredderUpdateQueue = new Bull(QUEUE_NAME_WEEKLY_CREDDER_SCORE, conne
 
 // Queue for rss
 const dailyRssUpdateQueue = new Bull(QUEUE_RSS, connectRedis, queueOptions)
+// Queue for rss
+const dailyRssUpdateQueueSecond = new Bull(QUEUE_RSS_SECOND, connectRedis, queueOptions)
 
 // Queue for refresh user follower count materialized view
 const refreshUserFollowerCountMaterializedViewQueue = new Bull(QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW, connectRedis, queueOptions)
@@ -79,5 +81,6 @@ module.exports = {
   dailyRssUpdateQueue,
   refreshUserFollowerCountMaterializedViewQueue,
   refreshUserTopicMaterializedViewQueue,
-  refreshUserLocationMaterializedViewQueue
+  refreshUserLocationMaterializedViewQueue,
+    dailyRssUpdateQueueSecond
 };

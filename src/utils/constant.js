@@ -1,25 +1,26 @@
 module.exports = {
-  DOMAIN: "domain",
+    DOMAIN: "domain",
 
-  CHANNEL_TYPE_PERSONAL: 0,
-  CHANNEL_TYPE_GROUP: 1,
-  CHANNEL_TYPE_GROUP_LOCATION: 2,
-  CHANNEL_TYPE_TOPIC: 3,
+    CHANNEL_TYPE_PERSONAL: 0,
+    CHANNEL_TYPE_GROUP: 1,
+    CHANNEL_TYPE_GROUP_LOCATION: 2,
+    CHANNEL_TYPE_TOPIC: 3,
 
-  ICON_TOPIC_CHANNEL: "https://res.cloudinary.com/hpjivutj2/image/upload/v1636632905/vdg8solozeepgvzxyfbv.png",
-  ICON_LOCATION_CHANNEL: "https://res.cloudinary.com/hpjivutj2/image/upload/v1637078306/fkeyjmvxoeme6nqyp00z.png",
-  ICON_GROUP_CHANNEL: "https://res.cloudinary.com/hpjivutj2/image/upload/v1636633216/ru8itxe3erw7vuy42vv7.png",
+    ICON_TOPIC_CHANNEL: "https://res.cloudinary.com/hpjivutj2/image/upload/v1636632905/vdg8solozeepgvzxyfbv.png",
+    ICON_LOCATION_CHANNEL: "https://res.cloudinary.com/hpjivutj2/image/upload/v1637078306/fkeyjmvxoeme6nqyp00z.png",
+    ICON_GROUP_CHANNEL: "https://res.cloudinary.com/hpjivutj2/image/upload/v1636633216/ru8itxe3erw7vuy42vv7.png",
 
-  QUEUE_NAME_CREDDER_SCORE : 'credderScoreQueue',
-  QUEUE_NAME_WEEKLY_CREDDER_SCORE : 'weeklyCredderScoreQueue',
-  QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW : 'refreshUserFollowerCountMaterializedView',
-  QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW : 'refreshUserTopicMaterializedView',
-  QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW : 'refreshUserLocationMaterializedView',
-  QUEUE_CREDDER_INTERVAL_IN_DAYS : 3,
+    QUEUE_NAME_CREDDER_SCORE: 'credderScoreQueue',
+    QUEUE_NAME_WEEKLY_CREDDER_SCORE: 'weeklyCredderScoreQueue',
+    QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW: 'refreshUserFollowerCountMaterializedView',
+    QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW: 'refreshUserTopicMaterializedView',
+    QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW: 'refreshUserLocationMaterializedView',
+    QUEUE_CREDDER_INTERVAL_IN_DAYS: 3,
 
-  CREDDER_SCORE_NOT_INDEXED : -1,
-  CREDDER_SCORE_NOT_VALID : -2,
+    CREDDER_SCORE_NOT_INDEXED: -1,
+    CREDDER_SCORE_NOT_VALID: -2,
 
-  QUEUE_RSS : 'queueRss',
-  
+    QUEUE_RSS: 'queueRss',
+    QUEUE_RSS_SECOND: 'queueRssSecond',
+
 };
