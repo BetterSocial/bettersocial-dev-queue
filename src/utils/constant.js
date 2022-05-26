@@ -12,6 +12,9 @@ module.exports = {
 
   QUEUE_NAME_CREDDER_SCORE : 'credderScoreQueue',
   QUEUE_NAME_WEEKLY_CREDDER_SCORE : 'weeklyCredderScoreQueue',
+  QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW : 'refreshUserFollowerCountMaterializedView',
+  QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW : 'refreshUserTopicMaterializedView',
+  QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW : 'refreshUserLocationMaterializedView',
   QUEUE_CREDDER_INTERVAL_IN_DAYS : 3,
 
   CREDDER_SCORE_NOT_INDEXED : -1,

@@ -29,6 +29,9 @@ const {
   credderScoreQueue,
   weeklyCredderUpdateQueue,
   dailyRssUpdateQueue,
+  refreshUserFollowerCountMaterializedViewQueue,
+  refreshUserTopicMaterializedViewQueue,
+  refreshUserLocationMaterializedViewQueue,
 } = require("../config");
 
 const {
@@ -42,6 +45,9 @@ const { updateDomainCredderScore } = require("../utils");
 const { credderScoreProcess } = require("../processes/credder-score-process");
 const { credderWeeklyScoreProcess } = require("../processes/credder-weekly-score-process");
 const { rssProcess } = require("../processes/rss-process");
+const { refreshUserFollowerCount } = require("../processes/refresh-user-follower-count-process");
+const { refreshUserTopicFollower } = require("../processes/refresh-user-topic-process");
+const { refreshUserLocationFollower } = require("../processes/refresh-user-location-process");
 
 /*
   @description initial all job queue
@@ -153,6 +159,39 @@ const initQueue = () => {
   weeklyCredderUpdateQueue.add({}, {
     repeat: {
       cron: "0 12 * * *"
+    }
+  });
+
+  console.log('Hourly refresh user follower count materialized view job is working');
+  refreshUserFollowerCountMaterializedViewQueue.process(refreshUserFollowerCount);
+  refreshUserFollowerCountMaterializedViewQueue.on("failed", handlerFailure);
+  refreshUserFollowerCountMaterializedViewQueue.on("completed", handlerCompleted);
+  refreshUserFollowerCountMaterializedViewQueue.on("stalled", handlerStalled);
+  refreshUserFollowerCountMaterializedViewQueue.add({}, {
+    repeat: {
+      cron: "0 * * * *"
+    }
+  });
+
+  console.log('Hourly refresh user topic materialized view job is working');
+  refreshUserTopicMaterializedViewQueue.process(refreshUserTopicFollower);
+  refreshUserTopicMaterializedViewQueue.on("failed", handlerFailure);
+  refreshUserTopicMaterializedViewQueue.on("completed", handlerCompleted);
+  refreshUserTopicMaterializedViewQueue.on("stalled", handlerStalled);
+  refreshUserTopicMaterializedViewQueue.add({}, {
+    repeat: {
+      cron: "5 * * * *"
+    }
+  });
+
+  console.log('Hourly refresh user follower count materialized view job is working');
+  refreshUserLocationMaterializedViewQueue.process(refreshUserLocationFollower);
+  refreshUserLocationMaterializedViewQueue.on("failed", handlerFailure);
+  refreshUserLocationMaterializedViewQueue.on("completed", handlerCompleted);
+  refreshUserLocationMaterializedViewQueue.on("stalled", handlerStalled);
+  refreshUserLocationMaterializedViewQueue.add({}, {
+    repeat: {
+      cron: "10 * * * *"
     }
   });
 
