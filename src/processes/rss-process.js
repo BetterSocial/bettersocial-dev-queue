@@ -60,7 +60,7 @@ const insertNewsLink = async (link, domainPageid, name, info, logo, newsLinks) =
             content: { ...data, ...dateCreted }
         }
         console.info('activity: ', activity);
-        // await postToGetstream(activity);
+        await postToGetstream(activity);
     } else {
         console.info('link sudah ada');
     }
