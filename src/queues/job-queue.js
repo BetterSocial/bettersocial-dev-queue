@@ -174,27 +174,27 @@ const initQueue = () => {
         }
     });
 
-    console.log('Hourly refresh user topic materialized view job is working');
-    refreshUserTopicMaterializedViewQueue.process(refreshUserTopicFollower);
-    refreshUserTopicMaterializedViewQueue.on("failed", handlerFailure);
-    refreshUserTopicMaterializedViewQueue.on("completed", handlerCompleted);
-    refreshUserTopicMaterializedViewQueue.on("stalled", handlerStalled);
-    refreshUserTopicMaterializedViewQueue.add({}, {
-        repeat: {
-            cron: "5 * * * *"
-        }
-    });
+    // console.log('Hourly refresh user topic materialized view job is working');
+    // refreshUserTopicMaterializedViewQueue.process(refreshUserTopicFollower);
+    // refreshUserTopicMaterializedViewQueue.on("failed", handlerFailure);
+    // refreshUserTopicMaterializedViewQueue.on("completed", handlerCompleted);
+    // refreshUserTopicMaterializedViewQueue.on("stalled", handlerStalled);
+    // refreshUserTopicMaterializedViewQueue.add({}, {
+    //     repeat: {
+    //         cron: "5 * * * *"
+    //     }
+    // });
 
-    console.log('Hourly refresh user follower count materialized view job is working');
-    refreshUserLocationMaterializedViewQueue.process(refreshUserLocationFollower);
-    refreshUserLocationMaterializedViewQueue.on("failed", handlerFailure);
-    refreshUserLocationMaterializedViewQueue.on("completed", handlerCompleted);
-    refreshUserLocationMaterializedViewQueue.on("stalled", handlerStalled);
-    refreshUserLocationMaterializedViewQueue.add({}, {
-        repeat: {
-            cron: "10 * * * *"
-        }
-    });
+    // console.log('Hourly refresh user follower count materialized view job is working');
+    // refreshUserLocationMaterializedViewQueue.process(refreshUserLocationFollower);
+    // refreshUserLocationMaterializedViewQueue.on("failed", handlerFailure);
+    // refreshUserLocationMaterializedViewQueue.on("completed", handlerCompleted);
+    // refreshUserLocationMaterializedViewQueue.on("stalled", handlerStalled);
+    // refreshUserLocationMaterializedViewQueue.add({}, {
+    //     repeat: {
+    //         cron: "10 * * * *"
+    //     }
+    // });
 
 
     console.log('Daily Rss update Queue job is working');
@@ -205,21 +205,21 @@ const initQueue = () => {
 
     dailyRssUpdateQueue.add({}, {
         repeat: {
-            cron: "0 11 * * *"
+            cron: "0 0,12 * * *"
         }
     });
 
-    console.log('Daily Rss Second update Queue job is working');
-    dailyRssUpdateQueueSecond.process(rssProcess);
-    dailyRssUpdateQueueSecond.on("failed", handlerFailure);
-    dailyRssUpdateQueueSecond.on("completed", handlerCompleted);
-    dailyRssUpdateQueueSecond.on("stalled", handlerStalled);
+    // console.log('Daily Rss Second update Queue job is working');
+    // dailyRssUpdateQueueSecond.process(rssProcess);
+    // dailyRssUpdateQueueSecond.on("failed", handlerFailure);
+    // dailyRssUpdateQueueSecond.on("completed", handlerCompleted);
+    // dailyRssUpdateQueueSecond.on("stalled", handlerStalled);
 
-    dailyRssUpdateQueueSecond.add({}, {
-        repeat: {
-            cron: "0 18 * * *"
-        }
-    });
+    // dailyRssUpdateQueueSecond.add({}, {
+    //     repeat: {
+    //         cron: "0 18 * * *"
+    //     }
+    // });
 
 };
 
