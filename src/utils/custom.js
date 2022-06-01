@@ -1,3 +1,5 @@
+const { parse, tldExists } = require('tldjs');
+
 const convertString = (str, from, to) => {
     return str.split(from).join(to);
 };
@@ -113,9 +115,13 @@ const countCharactersWithoutLink = (str) => {
     return filteredStr.length;
 }
 const isSubDomain = (domain) => {// just for the example
-    var regex = new RegExp(/^([a-z]+\:\/{2})?([\w-]+\.[\w-]+\.\w+)$/);
 
-    return !!domain.match(regex); // make sure it returns boolean
+    const { parse, tldExists, getDomain, getSubdomain, getPublicSuffix } = require('tldjs');
+    if (getSubdomain(domain)) {
+        return true;
+    } else {
+        return false;
+    }
 }
 const removeSubDomain = (domain) => {
     if (isSubDomain(domain)) {
@@ -124,6 +130,7 @@ const removeSubDomain = (domain) => {
         return domain;
     }
 }
+
 
 module.exports = {
     convertString,

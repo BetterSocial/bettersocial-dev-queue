@@ -68,7 +68,7 @@ describe('testing utils custom removeSubDomain', () => {
     it("domain don't have subdomain", () => {
         expect(removeSubDomain('detik.com')).toBe('detik.com');
     })
-    it("domain don't have subdomain eg: abcnews.go.com", () => {
-        expect(removeSubDomain('abcnews.go.com')).toBe('abcnews.go.com');
+    it("domain don't have subdomain eg: detik.co.id", () => {
+        expect(removeSubDomain('detik.co.id')).toBe('detik.co.id');
     })
 })
