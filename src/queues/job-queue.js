@@ -151,28 +151,28 @@ const initQueue = () => {
         console.log("scoringDailyProcessQueue error : ", err);
     });
 
-    console.log('Credder Weekly Score Queue job is working');
-    weeklyCredderUpdateQueue.process(credderWeeklyScoreProcess);
-    weeklyCredderUpdateQueue.on("failed", handlerFailure);
-    weeklyCredderUpdateQueue.on("completed", handlerCompleted);
-    weeklyCredderUpdateQueue.on("stalled", handlerStalled);
+    // console.log('Credder Weekly Score Queue job is working');
+    // weeklyCredderUpdateQueue.process(credderWeeklyScoreProcess);
+    // weeklyCredderUpdateQueue.on("failed", handlerFailure);
+    // weeklyCredderUpdateQueue.on("completed", handlerCompleted);
+    // weeklyCredderUpdateQueue.on("stalled", handlerStalled);
 
-    weeklyCredderUpdateQueue.add({}, {
-        repeat: {
-            cron: "0 12 * * *"
-        }
-    });
+    // weeklyCredderUpdateQueue.add({}, {
+    //     repeat: {
+    //         cron: "0 12 * * *"
+    //     }
+    // });
 
-    console.log('Hourly refresh user follower count materialized view job is working');
-    refreshUserFollowerCountMaterializedViewQueue.process(refreshUserFollowerCount);
-    refreshUserFollowerCountMaterializedViewQueue.on("failed", handlerFailure);
-    refreshUserFollowerCountMaterializedViewQueue.on("completed", handlerCompleted);
-    refreshUserFollowerCountMaterializedViewQueue.on("stalled", handlerStalled);
-    refreshUserFollowerCountMaterializedViewQueue.add({}, {
-        repeat: {
-            cron: "0 * * * *"
-        }
-    });
+    // console.log('Hourly refresh user follower count materialized view job is working');
+    // refreshUserFollowerCountMaterializedViewQueue.process(refreshUserFollowerCount);
+    // refreshUserFollowerCountMaterializedViewQueue.on("failed", handlerFailure);
+    // refreshUserFollowerCountMaterializedViewQueue.on("completed", handlerCompleted);
+    // refreshUserFollowerCountMaterializedViewQueue.on("stalled", handlerStalled);
+    // refreshUserFollowerCountMaterializedViewQueue.add({}, {
+    //     repeat: {
+    //         cron: "0 * * * *"
+    //     }
+    // });
 
     // console.log('Hourly refresh user topic materialized view job is working');
     // refreshUserTopicMaterializedViewQueue.process(refreshUserTopicFollower);
