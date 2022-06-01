@@ -205,7 +205,7 @@ const initQueue = () => {
 
     dailyRssUpdateQueue.add({}, {
         repeat: {
-            cron: "0 0,12 * * *"
+            cron: "0 0,12,18 * * *"
         }
     });
 
