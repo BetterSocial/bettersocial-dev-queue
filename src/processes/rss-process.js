@@ -2,7 +2,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 let Parser = require('rss-parser');
 const { postToGetstream } = require('../services/DomainProses');
-const { dateCreted } = require('../utils/custom');
+const { dateCreted, removeSubDomain } = require('../utils/custom');
 const { addDomain, getAllDomains } = require('../services/postgres/DomainPageService');
 const { getAllRssLinks } = require('../services/postgres/LinkRssService');
 const { getAllNewsLinks, addNewsLink } = require('../services/postgres/NewsLinkService');
@@ -114,7 +114,10 @@ const rssProcess = async (job, done) => {
         console.info('link: ', rss.link);
         let feed = await parser.parseURL(rss.link);
         let link = new URL(feed.link);
-        const domainName = link.hostname.replace("www.", "");
+        let domainName = link.hostname.replace("www.", "");
+        console.log('before: ', domainName);
+        domainName = removeSubDomain(domainName);
+        console.log('after: ', domainName);
         let data = {
             'domain_name': domainName,
             'link': link
