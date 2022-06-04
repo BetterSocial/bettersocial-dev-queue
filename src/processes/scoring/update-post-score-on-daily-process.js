@@ -1,6 +1,7 @@
 const moment = require("moment");
 const { calcPostScore } = require("./calc-post-score");
 const { updateScoreToStream } = require("./update-score-to-stream");
+const { deleteStream } = require('../../services');
 const {
   REGULAR_TIME_FORMAT
 } = require("../scoring-constant");
@@ -21,6 +22,7 @@ const updatePostScoreOnDailyProcess = async(
 
   let postDoc;
   const updatedDocs = [];
+  const expiredDocs = [];
   while (await cursors.hasNext()) {
     counter++;
     postDoc = await cursors.next();
@@ -30,6 +32,7 @@ const updatePostScoreOnDailyProcess = async(
       moment().utc().diff(moment(postDoc.expired_at, REGULAR_TIME_FORMAT)) > 0) {
       console.log("setting done final process");
       postDoc.has_done_final_process = true;
+      expiredDocs.push(postDoc);
     }
 
     postDoc.u_score = userScoreListByPostId[postDoc._id];
@@ -54,6 +57,11 @@ const updatePostScoreOnDailyProcess = async(
 
   // Push the updated docs to db
   const result = postScoreCol.bulkWrite(updatedDocs);
+
+  // Remove the expired posts
+  for (const expPostDoc of expiredDocs) {
+    deleteStream('user_excl', expPostDoc.author_id, expPostDoc._id);
+  }
 
   console.debug("Done updatePostScoreOnDailyProcess, with result: ", result);
 
