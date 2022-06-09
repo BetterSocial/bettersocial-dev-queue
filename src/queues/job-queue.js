@@ -197,17 +197,17 @@ const initQueue = () => {
     // });
 
 
-    console.log('Daily Rss update Queue job is working');
-    dailyRssUpdateQueue.process(rssProcess);
-    dailyRssUpdateQueue.on("failed", handlerFailure);
-    dailyRssUpdateQueue.on("completed", handlerCompleted);
-    dailyRssUpdateQueue.on("stalled", handlerStalled);
+    // console.log('Daily Rss update Queue job is working');
+    // dailyRssUpdateQueue.process(rssProcess);
+    // dailyRssUpdateQueue.on("failed", handlerFailure);
+    // dailyRssUpdateQueue.on("completed", handlerCompleted);
+    // dailyRssUpdateQueue.on("stalled", handlerStalled);
 
-    dailyRssUpdateQueue.add({}, {
-        repeat: {
-            cron: "0 0,12,18 * * *"
-        }
-    });
+    // dailyRssUpdateQueue.add({}, {
+    //     repeat: {
+    //         cron: "0 0,12,18 * * *"
+    //     }
+    // });
 
     // console.log('Daily Rss Second update Queue job is working');
     // dailyRssUpdateQueueSecond.process(rssProcess);
