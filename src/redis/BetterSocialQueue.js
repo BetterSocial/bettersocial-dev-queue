@@ -14,7 +14,7 @@ class BetterSocialQueue {
      */
     static generate(queueName, additionalQueueOptions = {}) {
         let redisUrl = process.env.NODE_ENV === 'production' ?
-            process.env.HEROKU_REDIS_MAUVE_TLS_URL : process.env.HEROKU_REDIS_MAUVE_URL
+            process.env.HEROKU_REDIS_MAUVE_URL : process.env.HEROKU_REDIS_MAUVE_URL
 
         console.log('redisUrl')
         console.log(redisUrl)
@@ -42,8 +42,6 @@ class BetterSocialQueue {
                 }
             }
         }
-
-
 
         let queueOptions = process.env.NODE_ENV === 'production' ?
             { redis: { tls: { rejectUnauthorized: false, requestCert: true, } }, ...createClientOptions, ...additionalQueueOptions }
