@@ -1,76 +1,51 @@
 const Bull = require("bull");
-const { QUEUE_NAME_CREDDER_SCORE, QUEUE_NAME_WEEKLY_CREDDER_SCORE, QUEUE_RSS, QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW,QUEUE_RSS_SECOND } = require("../utils");
+const BetterSocialQueue = require("../redis/BetterSocialQueue")
+const { QUEUE_NAME_CREDDER_SCORE, QUEUE_NAME_WEEKLY_CREDDER_SCORE, QUEUE_RSS, 
+  QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW, 
+  QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW, QUEUE_RSS_SECOND, QUEUE_NAME_ADD_QUEUE_POST_TIME, QUEUE_NAME_TEST } = require("../utils");
+
+
 
 const connectRedis = process.env.REDIS_URL;
 
 // for production
 const queueOptions = {
-    redis: { tls: { rejectUnauthorized: false, requestCert: true, } }
+  redis: { tls: { rejectUnauthorized: false, requestCert: true, } }
 };
 
 // for development
 // const queueOptions = {};
 
+/**
+ * (START) List of queues that uses scoring redis
+ */
 const newsQueue = new Bull("newsQueue", connectRedis, queueOptions);
-const testQueue = new Bull('testQueue', connectRedis, queueOptions);
-const credderScoreQueue = new Bull(QUEUE_NAME_CREDDER_SCORE, connectRedis, queueOptions);
-// const testQueue = new Bull("testQueue", process.env.REDIS_URL, {
-// redis: { tls: { rejectUnauthorized: false } },
-// }, {
-//   redis: { tls: { rejectUnauthorized: false } },
-// });
-// testQueue.on("error", (err) => {
-//   console.log("err test ", err);
-// });
-
-const postTimeQueue = new Bull("addQueuePostTime", connectRedis, queueOptions);
-
-//const locationQueue = new Bull("followLocationQueue", connectRedis, queueOptions);
-
-//const followUserQueue = new Bull("followUserQueue", connectRedis, queueOptions);
-
-//const followTopicQueue = new Bull( "followTopicQueue", connectRedis, queueOptions);
-
-//const addUserToChannelQueue = new Bull("addUserToChannelQueue", connectRedis, queueOptions);
-
-//const addUserToTopicChannelQueue = new Bull("addUserToTopicChannelQueue", connectRedis, queueOptions);
-
-//const prepopulatedDmQueue = new Bull("prepopulatedDmQueue", connectRedis, queueOptions);
-
 const registerQueue = new Bull("registerQueue", connectRedis, queueOptions);
-
-// special queue for scoring process
 const scoringProcessQueue = new Bull("scoringProcessQueue", connectRedis, queueOptions);
-
-// special queue for scoring daily process
 const scoringDailyProcessQueue = new Bull("scoringDailyProcessQueue", connectRedis, queueOptions);
+/**
+ * (END) of list of queues that uses scoring redis
+ */
 
-// special queue for weekly credder updating process
-const weeklyCredderUpdateQueue = new Bull(QUEUE_NAME_WEEKLY_CREDDER_SCORE, connectRedis, queueOptions);
 
-// Queue for rss
-const dailyRssUpdateQueue = new Bull(QUEUE_RSS, connectRedis, queueOptions)
-// Queue for rss
-const dailyRssUpdateQueueSecond = new Bull(QUEUE_RSS_SECOND, connectRedis, queueOptions)
-
-// Queue for refresh user follower count materialized view
-const refreshUserFollowerCountMaterializedViewQueue = new Bull(QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW, connectRedis, queueOptions)
-
-// Queue for refresh user topic materialized view
-const refreshUserTopicMaterializedViewQueue = new Bull(QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW, connectRedis, queueOptions)
-
-// Queue for refresh user location materialized view
-const refreshUserLocationMaterializedViewQueue = new Bull(QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW, connectRedis, queueOptions)
-
+/**
+ * (START) List of queues that uses general redis
+ */
+const credderScoreQueue = BetterSocialQueue.generate(QUEUE_NAME_CREDDER_SCORE);
+const dailyRssUpdateQueue = BetterSocialQueue.generate(QUEUE_RSS)
+const dailyRssUpdateQueueSecond = BetterSocialQueue.generate(QUEUE_RSS_SECOND)
+const postTimeQueue = BetterSocialQueue.generate(QUEUE_NAME_ADD_QUEUE_POST_TIME);
+const refreshUserFollowerCountMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW)
+const refreshUserLocationMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW)
+const refreshUserTopicMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW)
+const testQueue = BetterSocialQueue.generate(QUEUE_NAME_TEST);
+const weeklyCredderUpdateQueue = BetterSocialQueue.generate(QUEUE_NAME_WEEKLY_CREDDER_SCORE);
+/**
+ * (END) of list of queues that uses general redis
+ */
 
 module.exports = {
-  // addUserToChannelQueue,
-  // addUserToTopicChannelQueue,
   credderScoreQueue,
-  // followTopicQueue,
-  // followUserQueue,
-  // locationQueue,
-  // prepopulatedDmQueue,
   newsQueue,
   postTimeQueue,
   registerQueue,
@@ -82,5 +57,5 @@ module.exports = {
   refreshUserFollowerCountMaterializedViewQueue,
   refreshUserTopicMaterializedViewQueue,
   refreshUserLocationMaterializedViewQueue,
-    dailyRssUpdateQueueSecond
+  dailyRssUpdateQueueSecond
 };

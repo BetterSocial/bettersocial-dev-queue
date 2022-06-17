@@ -10,11 +10,13 @@ module.exports = {
     ICON_LOCATION_CHANNEL: "https://res.cloudinary.com/hpjivutj2/image/upload/v1637078306/fkeyjmvxoeme6nqyp00z.png",
     ICON_GROUP_CHANNEL: "https://res.cloudinary.com/hpjivutj2/image/upload/v1636633216/ru8itxe3erw7vuy42vv7.png",
 
+    QUEUE_NAME_ADD_QUEUE_POST_TIME: 'addQueuePostTime',
     QUEUE_NAME_CREDDER_SCORE: 'credderScoreQueue',
     QUEUE_NAME_WEEKLY_CREDDER_SCORE: 'weeklyCredderScoreQueue',
     QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW: 'refreshUserFollowerCountMaterializedView',
     QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW: 'refreshUserTopicMaterializedView',
     QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW: 'refreshUserLocationMaterializedView',
+    QUEUE_NAME_TEST: 'testQueue',
     QUEUE_CREDDER_INTERVAL_IN_DAYS: 3,
 
     CREDDER_SCORE_NOT_INDEXED: -1,

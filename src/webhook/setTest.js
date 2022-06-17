@@ -1,23 +1,25 @@
-const { testQueue, weeklyCredderUpdateQueue } = require("../config");
+const { testQueue, weeklyCredderUpdateQueue, credderScoreQueue } = require("../config");
 const { postToGetstream } = require("../processes/domain-process");
 const serviceTestQueue = async (req, res) => {
-  // let { url } = req.body
-  // try {
-  //   console.log("run test");
-  //   const job = await weeklyCredderUpdateQueue.add({});
-  //   console.log("job ", job.data);
-  //   return res.json({
-  //     ststus: "success",
-  //     message: job,
-  //   });
-  // } catch (error) {
-  //   console.log('error')
-  //   console.log(error)
-  //   return res.json({
-  //     ststus: "error",
-  //     message: error,
-  //   });
-  // }
+  let { url } = req.body
+  try {
+    console.log("run test");
+    const job = await weeklyCredderUpdateQueue.add({
+      domainName: 'kicker.de'
+    })
+    console.log("job ", job.data);
+    return res.json({
+      ststus: "success",
+      message: job,
+    });
+  } catch (error) {
+    console.log('error')
+    console.log(error)
+    return res.json({
+      ststus: "error",
+      message: error,
+    });
+  }
 
   // let data = {
   //   domain_page_id: "f30fbb55-5116-40cb-9999-f7a08afc6ddc",
