@@ -110,9 +110,9 @@ const initQueue = () => {
     BetterSocialQueue.setEventCallback(refreshUserLocationMaterializedViewQueue, refreshUserLocationFollower)
     BetterSocialQueue.setCron(refreshUserLocationMaterializedViewQueue, "2 * * * *")
 
-    // BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess)
-    // BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 0,12,18 * * *")
-    
+    BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess)
+    BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 0,12,18 * * *")
+
     // BetterSocialQueue.setEventCallback(dailyRssUpdateQueueSecond, rssProcess)
     // BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 18 * * *")
     /**
