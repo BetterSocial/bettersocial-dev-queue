@@ -10,7 +10,7 @@ const prepopulated = require("../services/chat/prepopulated");
 const UserService = require("../services/postgres/UserService");
 const { followTopics, followUsers, followLocations } = require("../services");
 
-const addUserToChannel = async (userId, channelIds) => {
+const addUserToLocationChannel = async (userId, channelIds) => {
     try {
         const serverClient = StreamChat.getInstance(
             process.env.API_KEY,
@@ -155,7 +155,7 @@ const registerProcess = async (job, done) => {
         console.log('topics: ', topics);
         console.log('locations: ', locations);
 
-        await addUserToChannel(userId, follows);
+        await addUserToLocationChannel(userId, locationsChannel);
         await addUserToTopicChannel(userId, topics);
         await prepopulatedDm(userId, follows);
         await followLocation(userId, locations);
