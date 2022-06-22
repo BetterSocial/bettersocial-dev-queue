@@ -33,6 +33,7 @@ const {
     refreshUserTopicMaterializedViewQueue,
     refreshUserLocationMaterializedViewQueue,
     dailyRssUpdateQueueSecond,
+    refreshUserCommonFollowerMaterializedViewQueue,
 } = require("../config");
 
 const {
@@ -50,6 +51,7 @@ const { refreshUserFollowerCount } = require("../processes/refresh-user-follower
 const { refreshUserTopicFollower } = require("../processes/refresh-user-topic-process");
 const { refreshUserLocationFollower } = require("../processes/refresh-user-location-process");
 const BetterSocialQueue = require("../redis/BetterSocialQueue");
+const { refreshUserCommonFollowerMaterializedViewProcess } = require("../processes/refresh-user-common-follower-count-process");
 
 /*
   @description initial all job queue
@@ -109,6 +111,9 @@ const initQueue = () => {
 
     BetterSocialQueue.setEventCallback(refreshUserLocationMaterializedViewQueue, refreshUserLocationFollower)
     BetterSocialQueue.setCron(refreshUserLocationMaterializedViewQueue, "2 * * * *")
+
+    BetterSocialQueue.setEventCallback(refreshUserCommonFollowerMaterializedViewQueue, refreshUserCommonFollowerMaterializedViewProcess)
+    BetterSocialQueue.setCron(refreshUserCommonFollowerMaterializedViewQueue, "57 * * * *")
 
     BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess)
     BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 0,12,18 * * *")

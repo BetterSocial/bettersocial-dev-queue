@@ -16,6 +16,7 @@ module.exports = {
     QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW: 'refreshUserFollowerCountMaterializedView',
     QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW: 'refreshUserTopicMaterializedView',
     QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW: 'refreshUserLocationMaterializedView',
+    QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW: 'refreshUserCommonFollowerQueueMaterializedView',
     QUEUE_NAME_TEST: 'testQueue',
     QUEUE_CREDDER_INTERVAL_IN_DAYS: 3,
 

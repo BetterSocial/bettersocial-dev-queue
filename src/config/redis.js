@@ -2,9 +2,8 @@ const Bull = require("bull");
 const BetterSocialQueue = require("../redis/BetterSocialQueue")
 const { QUEUE_NAME_CREDDER_SCORE, QUEUE_NAME_WEEKLY_CREDDER_SCORE, QUEUE_RSS, 
   QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW, 
-  QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW, QUEUE_RSS_SECOND, QUEUE_NAME_ADD_QUEUE_POST_TIME, QUEUE_NAME_TEST } = require("../utils");
-
-
+  QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW, QUEUE_RSS_SECOND, QUEUE_NAME_ADD_QUEUE_POST_TIME, QUEUE_NAME_TEST, 
+  QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW } = require("../utils");
 
 const connectRedis = process.env.REDIS_URL;
 
@@ -38,6 +37,7 @@ const postTimeQueue = BetterSocialQueue.generate(QUEUE_NAME_ADD_QUEUE_POST_TIME)
 const refreshUserFollowerCountMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW)
 const refreshUserLocationMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW)
 const refreshUserTopicMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW)
+const refreshUserCommonFollowerMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW)
 const testQueue = BetterSocialQueue.generate(QUEUE_NAME_TEST);
 const weeklyCredderUpdateQueue = BetterSocialQueue.generate(QUEUE_NAME_WEEKLY_CREDDER_SCORE);
 /**
@@ -57,5 +57,6 @@ module.exports = {
   refreshUserFollowerCountMaterializedViewQueue,
   refreshUserTopicMaterializedViewQueue,
   refreshUserLocationMaterializedViewQueue,
+  refreshUserCommonFollowerMaterializedViewQueue,
   dailyRssUpdateQueueSecond
 };
