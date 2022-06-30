@@ -1,20 +1,44 @@
-const { testQueue, weeklyCredderUpdateQueue, credderScoreQueue } = require("../config");
+const {
+  testQueue,
+  weeklyCredderUpdateQueue,
+  credderScoreQueue,
+  dailyRssUpdateQueue,
+} = require("../config");
 const { postToGetstream } = require("../processes/domain-process");
+const { rssProcess } = require("../processes/rss-process");
+const crawlingDomain = require("../services/rssService/crawlingDomain");
+const insertDomain = require("../services/rssService/insertDomain");
 const serviceTestQueue = async (req, res) => {
-  let { url } = req.body
+  let { url } = req.body;
   try {
     console.log("run test");
-    const job = await weeklyCredderUpdateQueue.add({
-      domainName: 'kicker.de'
-    })
-    console.log("job ", job.data);
+    // let rss = await rssProcess();
+    let link = {
+      href: "https://www.nytimes.com/section/world",
+      origin: "https://www.nytimes.com",
+      protocol: "https:",
+      username: "",
+      password: "",
+      host: "www.nytimes.com",
+      hostname: "www.nytimes.com",
+      port: "",
+      pathname: "/section/world",
+      search: "",
+      // searchParams: URLSearchParams {},
+      hash: "",
+    };
+    let rss = await crawlingDomain(link);
+    // const job = await dailyRssUpdateQueue.add({
+    //   domainName: "kicker.de",
+    // });
+    // console.log("job ", job.data);
     return res.json({
       ststus: "success",
-      message: job,
+      message: rss,
     });
   } catch (error) {
-    console.log('error')
-    console.log(error)
+    console.log("error");
+    console.log(error);
     return res.json({
       ststus: "error",
       message: error,
@@ -35,10 +59,10 @@ const serviceTestQueue = async (req, res) => {
 
   // const activity = {
   //   domain: {
-  //     name: "", 
-  //     site_name : "", 
-  //     info: "", 
-  //     image: null, 
+  //     name: "",
+  //     site_name : "",
+  //     info: "",
+  //     image: null,
   //     domain_page_id: data.domain_page_id
   //   },
 
