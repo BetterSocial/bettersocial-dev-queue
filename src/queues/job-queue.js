@@ -69,89 +69,89 @@ const {
   @description initial all job queue
 */
 const initQueue = () => {
-  // console.info("newsQueue job is working!");
-  // newsQueue.process(newsJob);
-  // newsQueue.on("failed", handlerFailure);
-  // newsQueue.on("completed", handlerCompleted);
-  // newsQueue.on("stalled", handlerStalled);
-  // newsQueue.on("error", (err) => {
-  //   console.log("newsQueue error : ", err);
-  // });
-  // newsQueue.on("active", (res) => {
-  //   console.log(res);
-  // });
+  console.info("newsQueue job is working!");
+  newsQueue.process(newsJob);
+  newsQueue.on("failed", handlerFailure);
+  newsQueue.on("completed", handlerCompleted);
+  newsQueue.on("stalled", handlerStalled);
+  newsQueue.on("error", (err) => {
+    console.log("newsQueue error : ", err);
+  });
+  newsQueue.on("active", (res) => {
+    console.log(res);
+  });
 
-  // console.log("Register Queue job is working");
-  // registerQueue.process(registerProcess);
-  // registerQueue.on("failed", handlerFailure);
-  // registerQueue.on("completed", handlerCompleted);
-  // registerQueue.on("stalled", handlerStalled);
+  console.log("Register Queue job is working");
+  registerQueue.process(registerProcess);
+  registerQueue.on("failed", handlerFailure);
+  registerQueue.on("completed", handlerCompleted);
+  registerQueue.on("stalled", handlerStalled);
 
-  // console.info("scoringProcessQueue job is working!");
-  // scoringProcessQueue.process(scoringProcessJob);
-  // scoringProcessQueue.on("failed", handlerFailure);
-  // scoringProcessQueue.on("completed", handlerCompleted);
-  // scoringProcessQueue.on("stalled", handlerStalled);
-  // scoringProcessQueue.on("error", (err) => {
-  //   console.log("scoringProcessQueue error : ", err);
-  // });
+  console.info("scoringProcessQueue job is working!");
+  scoringProcessQueue.process(scoringProcessJob);
+  scoringProcessQueue.on("failed", handlerFailure);
+  scoringProcessQueue.on("completed", handlerCompleted);
+  scoringProcessQueue.on("stalled", handlerStalled);
+  scoringProcessQueue.on("error", (err) => {
+    console.log("scoringProcessQueue error : ", err);
+  });
 
-  // console.info("scoringDailyProcessQueue job is working!");
-  // scoringDailyProcessQueue.process(scoringDailyProcessJob);
-  // scoringDailyProcessQueue.on("failed", handlerFailure);
-  // scoringDailyProcessQueue.on("completed", handlerCompleted);
-  // scoringDailyProcessQueue.on("stalled", handlerStalled);
-  // scoringDailyProcessQueue.on("error", (err) => {
-  //   console.log("scoringDailyProcessQueue error : ", err);
-  // });
+  console.info("scoringDailyProcessQueue job is working!");
+  scoringDailyProcessQueue.process(scoringDailyProcessJob);
+  scoringDailyProcessQueue.on("failed", handlerFailure);
+  scoringDailyProcessQueue.on("completed", handlerCompleted);
+  scoringDailyProcessQueue.on("stalled", handlerStalled);
+  scoringDailyProcessQueue.on("error", (err) => {
+    console.log("scoringDailyProcessQueue error : ", err);
+  });
 
-  // /**
-  //  * (START) General Queue
-  //  */
-  // BetterSocialQueue.setEventCallback(credderScoreQueue, credderScoreProcess);
-  // // BetterSocialQueue.setEventCallback(testQueue, testProcess)
+  /**
+   * (START) General Queue
+   */
+  BetterSocialQueue.setEventCallback(credderScoreQueue, credderScoreProcess);
+  // BetterSocialQueue.setEventCallback(testQueue, testProcess)
 
-  // BetterSocialQueue.setEventCallback(
-  //   weeklyCredderUpdateQueue,
-  //   credderWeeklyScoreProcess
-  // );
-  // BetterSocialQueue.setCron(weeklyCredderUpdateQueue, "0 12 * * *");
+  BetterSocialQueue.setEventCallback(
+    weeklyCredderUpdateQueue,
+    credderWeeklyScoreProcess
+  );
+  BetterSocialQueue.setCron(weeklyCredderUpdateQueue, "0 12 * * *");
 
-  // BetterSocialQueue.setEventCallback(
-  //   refreshUserFollowerCountMaterializedViewQueue,
-  //   refreshUserFollowerCount
-  // );
-  // BetterSocialQueue.setCron(
-  //   refreshUserFollowerCountMaterializedViewQueue,
-  //   "0 * * * *"
-  // );
+  BetterSocialQueue.setEventCallback(
+    refreshUserFollowerCountMaterializedViewQueue,
+    refreshUserFollowerCount
+  );
+  BetterSocialQueue.setCron(
+    refreshUserFollowerCountMaterializedViewQueue,
+    "0 * * * *"
+  );
 
-  // BetterSocialQueue.setEventCallback(
-  //   refreshUserTopicMaterializedViewQueue,
-  //   refreshUserTopicFollower
-  // );
-  // BetterSocialQueue.setCron(refreshUserTopicMaterializedViewQueue, "1 * * * *");
+  BetterSocialQueue.setEventCallback(
+    refreshUserTopicMaterializedViewQueue,
+    refreshUserTopicFollower
+  );
+  BetterSocialQueue.setCron(refreshUserTopicMaterializedViewQueue, "1 * * * *");
 
-  // BetterSocialQueue.setEventCallback(
-  //   refreshUserLocationMaterializedViewQueue,
-  //   refreshUserLocationFollower
-  // );
-  // BetterSocialQueue.setCron(
-  //   refreshUserLocationMaterializedViewQueue,
-  //   "2 * * * *"
-  // );
+  BetterSocialQueue.setEventCallback(
+    refreshUserLocationMaterializedViewQueue,
+    refreshUserLocationFollower
+  );
+  BetterSocialQueue.setCron(
+    refreshUserLocationMaterializedViewQueue,
+    "2 * * * *"
+  );
 
-  // BetterSocialQueue.setEventCallback(
-  //   refreshUserCommonFollowerMaterializedViewQueue,
-  //   refreshUserCommonFollowerMaterializedViewProcess
-  // );
-  // BetterSocialQueue.setCron(
-  //   refreshUserCommonFollowerMaterializedViewQueue,
-  //   "3 * * * *"
-  // );
+  BetterSocialQueue.setEventCallback(
+    refreshUserCommonFollowerMaterializedViewQueue,
+    refreshUserCommonFollowerMaterializedViewProcess
+  );
+  BetterSocialQueue.setCron(
+    refreshUserCommonFollowerMaterializedViewQueue,
+    "3 * * * *"
+  );
 
   BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess);
-  BetterSocialQueue.setCron(dailyRssUpdateQueue, "5 22 * * *");
+  BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 7,13 * * *");
 
   // BetterSocialQueue.setEventCallback(dailyRssUpdateQueueSecond, rssProcess)
   // BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 18 * * *")
