@@ -6,12 +6,12 @@ const connectRedis = process.env.REDIS_URL;
 // For production
 
 const redisOptions = {
-    redis: {
-      tls: { rejectUnauthorized: false, requestCert: true, agent: false, },
-      maxRetriesPerRequest: 100,
-      connectTimeout: 30000
-    }
-}
+  redis: {
+    // tls: { rejectUnauthorized: false, requestCert: true, agent: false, },
+    maxRetriesPerRequest: 100,
+    connectTimeout: 30000,
+  },
+};
 
 // For local
 // const redisOptions = {};
@@ -19,15 +19,24 @@ const redisOptions = {
 const scoringDailyProcessQueue = new Bull(
   "scoringDailyProcessQueue",
   connectRedis,
-  redisOptions);
-scoringDailyProcessQueue.on('error', (err) => console.log('scoringDailyProcessQueue', err));
+  redisOptions
+);
+scoringDailyProcessQueue.on("error", (err) =>
+  console.log("scoringDailyProcessQueue", err)
+);
 
 const sendQueueForDailyProcess = async (event, data) => {
-  console.log("queueSenderForRedis.sendQueueForDailyProcess called with event[" + event + "] and data [" + JSON.stringify(data) + "]");
+  console.log(
+    "queueSenderForRedis.sendQueueForDailyProcess called with event[" +
+      event +
+      "] and data [" +
+      JSON.stringify(data) +
+      "]"
+  );
 
   let queueData = {
     event: event,
-    data: data
+    data: data,
   };
 
   const options = {
@@ -41,11 +50,17 @@ const sendQueueForDailyProcess = async (event, data) => {
 };
 
 const sendQueueForCronDailyProcess = async (event, data) => {
-  console.log("queueSenderForRedis.sendQueueForDailyProcess called with event[" + event + "] and data [" + JSON.stringify(data) + "]");
+  console.log(
+    "queueSenderForRedis.sendQueueForDailyProcess called with event[" +
+      event +
+      "] and data [" +
+      JSON.stringify(data) +
+      "]"
+  );
 
   let queueData = {
     event: event,
-    data: data
+    data: data,
   };
 
   const options = {
