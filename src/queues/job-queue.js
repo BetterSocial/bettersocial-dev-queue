@@ -151,7 +151,7 @@ const initQueue = () => {
   );
 
   BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess);
-  BetterSocialQueue.setCron(dailyRssUpdateQueue, "19 19 * * *");
+  BetterSocialQueue.setCron(dailyRssUpdateQueue, "24 19 * * *");
 
   /**
    * (END) General Queue

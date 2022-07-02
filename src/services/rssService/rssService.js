@@ -32,7 +32,10 @@ const rssService = async () => {
     }
   }
 
-  await addRssHistory({ domain_name: "test domain", link: rss.link });
+  await addRssHistory({
+    domain_name: "test domain",
+    link: rsslinks[rsslinks.length - 1].link,
+  });
 };
 
 module.exports = rssService;
