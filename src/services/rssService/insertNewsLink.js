@@ -14,6 +14,7 @@ const insertNewsLink = async (
   newsLinks,
   created_article
 ) => {
+  let current = new Date(created_article).getTime();
   const crawls = await axios.get(link, {
     headers: { "User-Agent": "bettersocial" },
   });
@@ -39,7 +40,7 @@ const insertNewsLink = async (
       keyword,
       author,
       url_compact,
-      created_article,
+      created_article: current,
     });
     let data = {
       domain_page_id: domainPageid,

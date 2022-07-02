@@ -14,6 +14,7 @@ const addNewsLink = async ({
   url_compact,
   created_article,
 }) => {
+  console.log("current millis", created_article);
   const news_link_id = uuidv4();
   const createdAt = new Date().toISOString();
   let postId = null;
