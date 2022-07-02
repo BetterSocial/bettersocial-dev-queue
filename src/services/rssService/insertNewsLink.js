@@ -16,7 +16,7 @@ const insertNewsLink = async (
   const crawls = await axios.get(link, {
     headers: { "User-Agent": "bettersocial" },
   });
-  const $ = await cheerio.load(crawls.data);
+  const $ = cheerio.load(crawls.data);
   const site_name = $('meta[property="og:site_name"]').attr("content") || "";
   const title = $('meta[property="og:title"]').attr("content") || "";
   const image = $('meta[property="og:image"]').attr("content") || "";
@@ -64,9 +64,7 @@ const insertNewsLink = async (
 
       content: { ...data, ...dateCreted },
     };
-    // console.info("activity: ", activity);
-    // console.log("link status: ", "link blm ada");
-    // await postToGetstream(activity);
+    console.log("link status: ", "link blm ada");
   } else {
     console.info("link status: ", "link sudah ada");
   }
