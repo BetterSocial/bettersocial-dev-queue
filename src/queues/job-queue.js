@@ -97,13 +97,13 @@ const initQueue = () => {
   });
 
   console.info("scoringDailyProcessQueue job is working!");
-  scoringDailyProcessQueue.process(scoringDailyProcessJob);
-  scoringDailyProcessQueue.on("failed", handlerFailure);
-  scoringDailyProcessQueue.on("completed", handlerCompleted);
-  scoringDailyProcessQueue.on("stalled", handlerStalled);
-  scoringDailyProcessQueue.on("error", (err) => {
-    console.log("scoringDailyProcessQueue error : ", err);
-  });
+  // scoringDailyProcessQueue.process(scoringDailyProcessJob);
+  // scoringDailyProcessQueue.on("failed", handlerFailure);
+  // scoringDailyProcessQueue.on("completed", handlerCompleted);
+  // scoringDailyProcessQueue.on("stalled", handlerStalled);
+  // scoringDailyProcessQueue.on("error", (err) => {
+  //   console.log("scoringDailyProcessQueue error : ", err);
+  // });
 
   /**
    * (START) General Queue
