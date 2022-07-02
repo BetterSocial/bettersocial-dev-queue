@@ -21,6 +21,7 @@ const insertContentRss = async (
       );
     } catch (error) {
       console.log(error);
+      console.log("error content rss");
       console.log("error insert content rss: ", item.link);
     }
   });

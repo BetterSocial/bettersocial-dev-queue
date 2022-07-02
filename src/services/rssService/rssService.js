@@ -26,12 +26,13 @@ const rssService = async () => {
         logo,
         newsLinks
       );
-
-      await addRssHistory({ domain_name: domainName, link: rss.link });
     } catch (error) {
+      console.log("error rss");
       console.log("error in di: ", error);
     }
   }
+
+  await addRssHistory({ domain_name: "test domain", link: rss.link });
 };
 
 module.exports = rssService;

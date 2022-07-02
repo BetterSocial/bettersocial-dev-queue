@@ -16,10 +16,7 @@ const addNewsLink = async ({
 }) => {
   const news_link_id = uuidv4();
   const createdAt = new Date().toISOString();
-  console.log("created profile", created_article);
-  console.log("created_at", createdAt);
   let postId = null;
-  let createdArticle = new Date(created_article).toISOString();
   const query = {
     text: "INSERT INTO news_link VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING news_link_id",
     values: [

@@ -3,7 +3,6 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 
 const insertDomain = async (link, domainName) => {
-  // const domainName = link.hostname.replace("www.", "");
   const crawls = await axios.get(`${link.protocol}//${link.hostname}`, {
     headers: { "User-Agent": "bettersocial" },
   });

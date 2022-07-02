@@ -8,10 +8,12 @@ const { postToGetstream } = require("../processes/domain-process");
 const { rssProcess } = require("../processes/rss-process");
 const crawlingDomain = require("../services/rssService/crawlingDomain");
 const insertDomain = require("../services/rssService/insertDomain");
+const rssService = require("../services/rssService/rssService");
 const serviceTestQueue = async (req, res) => {
   let { url } = req.body;
   try {
-    console.log("run test");
+    // console.log("run test");
+    let test = await rssService();
     // let rss = await rssProcess();
     let link = {
       href: "https://www.nytimes.com/section/world",
@@ -27,14 +29,14 @@ const serviceTestQueue = async (req, res) => {
       // searchParams: URLSearchParams {},
       hash: "",
     };
-    let rss = await crawlingDomain(link);
+    // let rss = await crawlingDomain(link);
     // const job = await dailyRssUpdateQueue.add({
     //   domainName: "kicker.de",
     // });
     // console.log("job ", job.data);
     return res.json({
       ststus: "success",
-      message: rss,
+      message: test,
     });
   } catch (error) {
     console.log("error");
