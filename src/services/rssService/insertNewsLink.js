@@ -64,7 +64,9 @@ const insertNewsLink = async (
 
       content: { ...data, ...dateCreted },
     };
+    // console.info("activity: ", activity);
     console.log("link status: ", "link blm ada");
+    await postToGetstream(activity);
   } else {
     console.info("link status: ", "link sudah ada");
   }
