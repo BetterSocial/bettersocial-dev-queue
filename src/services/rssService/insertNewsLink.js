@@ -1,5 +1,6 @@
 const { default: axios } = require("axios");
 const cheerio = require("cheerio");
+const { postToGetstream } = require("../../processes/domain-process");
 const { dateCreted } = require("../../utils");
 const { addNewsLink } = require("../postgres/NewsLinkService");
 const validateNewsLink = require("./validateNewsLink");
