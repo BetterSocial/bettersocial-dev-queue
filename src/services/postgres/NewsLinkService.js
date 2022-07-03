@@ -57,7 +57,6 @@ const getAllNewsLinks = async () => {
     let result = await client.query(query);
     return result.rows;
   } catch (error) {
-    console.log(error);
     return [];
   }
 };
