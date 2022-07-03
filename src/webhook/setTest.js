@@ -9,6 +9,7 @@ const { rssProcess } = require("../processes/rss-process");
 const crawlingDomain = require("../services/rssService/crawlingDomain");
 const insertDomain = require("../services/rssService/insertDomain");
 const rssService = require("../services/rssService/rssService");
+const { dateCreted } = require("../utils");
 const serviceTestQueue = async (req, res) => {
   let { url } = req.body;
   try {
@@ -17,7 +18,7 @@ const serviceTestQueue = async (req, res) => {
     // let date = new Date(value === Number.is);
     // let test = date.toDateString();
     // let test = await rssService();
-    // let rss = await rssProcess();
+    let rss = await rssProcess();
     let link = {
       href: "https://www.nytimes.com/section/world",
       origin: "https://www.nytimes.com",
@@ -37,9 +38,12 @@ const serviceTestQueue = async (req, res) => {
     //   domainName: "kicker.de",
     // });
     // console.log("job ", job.data);
+    let data = {
+      ...dateCreted,
+    };
     return res.json({
       ststus: "success",
-      message: test,
+      message: data,
     });
   } catch (error) {
     console.log("error");

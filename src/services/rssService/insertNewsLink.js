@@ -14,7 +14,8 @@ const insertNewsLink = async (
   newsLinks,
   created_article
 ) => {
-  let current = new Date(created_article).getTime();
+  let dateFromArticle = new Date(created_article);
+  let current = dateFromArticle.getTime();
   const crawls = await axios.get(link, {
     headers: { "User-Agent": "bettersocial" },
   });
@@ -64,11 +65,15 @@ const insertNewsLink = async (
         domain_page_id: domainPageid,
       },
 
-      content: { ...data, ...dateCreted },
+      content: {
+        ...data,
+        created_at: dateFromArticle.toISOString(),
+        updated_at: dateFromArticle.toISOString(),
+      },
     };
-    // console.info("activity: ", activity);
+    console.info("activity: ", activity);
     console.log("link status: ", "link blm ada");
-    await postToGetstream(activity);
+    // await postToGetstream(activity);
   } else {
     console.info("link status: ", "link sudah ada");
   }
