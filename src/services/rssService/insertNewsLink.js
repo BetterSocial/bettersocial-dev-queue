@@ -29,8 +29,9 @@ const insertNewsLink = async (
   const keyword = $('meta[name="keywords"]').attr("content") || "";
   const author = $('meta[name="author"]').attr("content") || "";
   const statusLink = validateNewsLink(news_url, newsLinks);
+
   if (!statusLink) {
-    await addNewsLink({
+    let newsLinkId = await addNewsLink({
       news_url,
       domain_page_id: domainPageid,
       site_name,
@@ -44,6 +45,7 @@ const insertNewsLink = async (
       created_article: current,
     });
     let data = {
+      news_link_id: newsLinkId,
       domain_page_id: domainPageid,
       title,
       site_name,
