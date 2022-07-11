@@ -2,6 +2,7 @@ const { newsJob } = require("../processes/news-process");
 const { createPostTime } = require("../processes/post-time-process");
 const { scoringProcessJob } = require("../processes/scoring-process");
 const { scoringDailyProcessJob } = require("../processes/scoring-daily-process");
+const { deleteActivityProcessJob } = require("../processes/delete-activity-process");
 const {
     followLocation,
     followTopic,
@@ -34,6 +35,8 @@ const {
     refreshUserLocationMaterializedViewQueue,
     dailyRssUpdateQueueSecond,
     refreshUserCommonFollowerMaterializedViewQueue,
+    deleteActivityProcessQueue,
+    deleteExpiredPost
 } = require("../config");
 
 const {
@@ -52,6 +55,7 @@ const { refreshUserTopicFollower } = require("../processes/refresh-user-topic-pr
 const { refreshUserLocationFollower } = require("../processes/refresh-user-location-process");
 const BetterSocialQueue = require("../redis/BetterSocialQueue");
 const { refreshUserCommonFollowerMaterializedViewProcess } = require("../processes/refresh-user-common-follower-count-process");
+const { deleteExpiredPostProcess } = require("../processes/delete-expired-post-process");
 
 /*
   @description initial all job queue
@@ -94,6 +98,14 @@ const initQueue = () => {
         console.log("scoringDailyProcessQueue error : ", err);
     });
 
+    console.info("deleteActivityProcessQueue job is working!");
+    deleteActivityProcessQueue.process(deleteActivityProcessJob);
+    deleteActivityProcessQueue.on("failed", handlerFailure);
+    deleteActivityProcessQueue.on("completed", handlerCompleted);
+    deleteActivityProcessQueue.on("stalled", handlerStalled);
+    deleteActivityProcessQueue.on("error", (err) => {
+        console.log("deleteActivityProcessQueue error : ", err);
+    });
     /**
      * (START) General Queue
      */
@@ -117,6 +129,9 @@ const initQueue = () => {
 
     BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess)
     BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 0,12,18 * * *")
+
+    BetterSocialQueue.setEventCallback(deleteExpiredPost, deleteExpiredPostProcess)
+    BetterSocialQueue.setCron(deleteExpiredPost, "* * * * *")
 
     // BetterSocialQueue.setEventCallback(dailyRssUpdateQueueSecond, rssProcess)
     // BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 18 * * *")

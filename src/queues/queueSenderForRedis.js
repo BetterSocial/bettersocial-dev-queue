@@ -6,11 +6,11 @@ const connectRedis = process.env.REDIS_URL;
 // For production
 
 const redisOptions = {
-    redis: {
-      tls: { rejectUnauthorized: false, requestCert: true, agent: false, },
-      maxRetriesPerRequest: 100,
-      connectTimeout: 30000
-    }
+  redis: {
+    tls: { rejectUnauthorized: false, requestCert: true, agent: false, },
+    maxRetriesPerRequest: 100,
+    connectTimeout: 30000
+  }
 }
 
 // For local
