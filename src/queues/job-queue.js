@@ -131,7 +131,7 @@ const initQueue = () => {
     BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 0,12,18 * * *")
 
     BetterSocialQueue.setEventCallback(deleteExpiredPost, deleteExpiredPostProcess)
-    BetterSocialQueue.setCron(deleteExpiredPost, "* * * * *")
+    BetterSocialQueue.setCron(deleteExpiredPost, "0 0 * * *")
 
     // BetterSocialQueue.setEventCallback(dailyRssUpdateQueueSecond, rssProcess)
     // BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 18 * * *")
