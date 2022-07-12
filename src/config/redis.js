@@ -1,9 +1,9 @@
 const Bull = require("bull");
 const BetterSocialQueue = require("../redis/BetterSocialQueue")
-const { QUEUE_NAME_CREDDER_SCORE, QUEUE_NAME_WEEKLY_CREDDER_SCORE, QUEUE_RSS, 
-  QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW, 
-  QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW, QUEUE_RSS_SECOND, QUEUE_NAME_ADD_QUEUE_POST_TIME, QUEUE_NAME_TEST, 
-  QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW } = require("../utils");
+const { QUEUE_NAME_CREDDER_SCORE, QUEUE_NAME_WEEKLY_CREDDER_SCORE, QUEUE_RSS,
+  QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW,
+  QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW, QUEUE_RSS_SECOND, QUEUE_NAME_ADD_QUEUE_POST_TIME, QUEUE_NAME_TEST,
+  QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW, QUEUE_NAME_DELETE_EXPIRED_POST } = require("../utils");
 
 const connectRedis = process.env.REDIS_URL;
 
@@ -22,6 +22,12 @@ const newsQueue = new Bull("newsQueue", connectRedis, queueOptions);
 const registerQueue = new Bull("registerQueue", connectRedis, queueOptions);
 const scoringProcessQueue = new Bull("scoringProcessQueue", connectRedis, queueOptions);
 const scoringDailyProcessQueue = new Bull("scoringDailyProcessQueue", connectRedis, queueOptions);
+const deleteActivityProcessQueue = new Bull("deleteActivityProcessQueue", connectRedis, queueOptions, {
+  limiter: {
+    max: 150,
+    duration: 60 * 1000 // 60 second
+  }
+});
 /**
  * (END) of list of queues that uses scoring redis
  */
@@ -40,6 +46,7 @@ const refreshUserTopicMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_N
 const refreshUserCommonFollowerMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW)
 const testQueue = BetterSocialQueue.generate(QUEUE_NAME_TEST);
 const weeklyCredderUpdateQueue = BetterSocialQueue.generate(QUEUE_NAME_WEEKLY_CREDDER_SCORE);
+const deleteExpiredPost = BetterSocialQueue.generate(QUEUE_NAME_DELETE_EXPIRED_POST)
 /**
  * (END) of list of queues that uses general redis
  */
@@ -51,6 +58,7 @@ module.exports = {
   registerQueue,
   scoringDailyProcessQueue,
   scoringProcessQueue,
+  deleteActivityProcessQueue,
   testQueue,
   weeklyCredderUpdateQueue,
   dailyRssUpdateQueue,
@@ -58,5 +66,6 @@ module.exports = {
   refreshUserTopicMaterializedViewQueue,
   refreshUserLocationMaterializedViewQueue,
   refreshUserCommonFollowerMaterializedViewQueue,
-  dailyRssUpdateQueueSecond
+  dailyRssUpdateQueueSecond,
+  deleteExpiredPost
 };

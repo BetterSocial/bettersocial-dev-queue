@@ -1,6 +1,8 @@
 const { newsJob } = require("../processes/news-process");
 const { createPostTime } = require("../processes/post-time-process");
 const { scoringProcessJob } = require("../processes/scoring-process");
+const { scoringDailyProcessJob } = require("../processes/scoring-daily-process");
+const { deleteActivityProcessJob } = require("../processes/delete-activity-process");
 const {
   scoringDailyProcessJob,
 } = require("../processes/scoring-daily-process");
@@ -16,26 +18,28 @@ const {
 } = require("./handler");
 
 const {
-  addUserToChannelQueue,
-  addUserToTopicChannelQueue,
-  followTopicQueue,
-  followUserQueue,
-  locationQueue,
-  newsQueue,
-  postTimeQueue,
-  prepopulatedDmQueue,
-  registerQueue,
-  scoringDailyProcessQueue,
-  scoringProcessQueue,
-  testQueue,
-  credderScoreQueue,
-  weeklyCredderUpdateQueue,
-  dailyRssUpdateQueue,
-  refreshUserFollowerCountMaterializedViewQueue,
-  refreshUserTopicMaterializedViewQueue,
-  refreshUserLocationMaterializedViewQueue,
-  dailyRssUpdateQueueSecond,
-  refreshUserCommonFollowerMaterializedViewQueue,
+    addUserToChannelQueue,
+    addUserToTopicChannelQueue,
+    followTopicQueue,
+    followUserQueue,
+    locationQueue,
+    newsQueue,
+    postTimeQueue,
+    prepopulatedDmQueue,
+    registerQueue,
+    scoringDailyProcessQueue,
+    scoringProcessQueue,
+    testQueue,
+    credderScoreQueue,
+    weeklyCredderUpdateQueue,
+    dailyRssUpdateQueue,
+    refreshUserFollowerCountMaterializedViewQueue,
+    refreshUserTopicMaterializedViewQueue,
+    refreshUserLocationMaterializedViewQueue,
+    dailyRssUpdateQueueSecond,
+    refreshUserCommonFollowerMaterializedViewQueue,
+    deleteActivityProcessQueue,
+    deleteExpiredPost
 } = require("../config");
 
 const {
@@ -61,9 +65,8 @@ const {
   refreshUserLocationFollower,
 } = require("../processes/refresh-user-location-process");
 const BetterSocialQueue = require("../redis/BetterSocialQueue");
-const {
-  refreshUserCommonFollowerMaterializedViewProcess,
-} = require("../processes/refresh-user-common-follower-count-process");
+const { refreshUserCommonFollowerMaterializedViewProcess } = require("../processes/refresh-user-common-follower-count-process");
+const { deleteExpiredPostProcess } = require("../processes/delete-expired-post-process");
 
 /*
   @description initial all job queue
@@ -111,11 +114,20 @@ const initQueue = () => {
   BetterSocialQueue.setEventCallback(credderScoreQueue, credderScoreProcess);
   // BetterSocialQueue.setEventCallback(testQueue, testProcess)
 
-  BetterSocialQueue.setEventCallback(
-    weeklyCredderUpdateQueue,
-    credderWeeklyScoreProcess
-  );
-  BetterSocialQueue.setCron(weeklyCredderUpdateQueue, "0 12 * * *");
+  console.info("deleteActivityProcessQueue job is working!");
+  deleteActivityProcessQueue.process(deleteActivityProcessJob);
+  deleteActivityProcessQueue.on("failed", handlerFailure);
+  deleteActivityProcessQueue.on("completed", handlerCompleted);
+  deleteActivityProcessQueue.on("stalled", handlerStalled);
+  deleteActivityProcessQueue.on("error", (err) => {
+    console.log("deleteActivityProcessQueue error : ", err);
+  });
+  
+  /**
+   * (START) General Queue
+   */
+  BetterSocialQueue.setEventCallback(credderScoreQueue, credderScoreProcess)
+  // BetterSocialQueue.setEventCallback(testQueue, testProcess)
 
   BetterSocialQueue.setEventCallback(
     refreshUserFollowerCountMaterializedViewQueue,
@@ -153,6 +165,14 @@ const initQueue = () => {
   BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess);
   BetterSocialQueue.setCron(dailyRssUpdateQueue, "30 * * * *");
 
+  BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess)
+  BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 0,12,18 * * *")
+
+  BetterSocialQueue.setEventCallback(deleteExpiredPost, deleteExpiredPostProcess)
+  BetterSocialQueue.setCron(deleteExpiredPost, "0 0 * * *")
+
+  // BetterSocialQueue.setEventCallback(dailyRssUpdateQueueSecond, rssProcess)
+  // BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 18 * * *")
   /**
    * (END) General Queue
    */
