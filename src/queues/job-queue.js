@@ -4,9 +4,6 @@ const { scoringProcessJob } = require("../processes/scoring-process");
 const { scoringDailyProcessJob } = require("../processes/scoring-daily-process");
 const { deleteActivityProcessJob } = require("../processes/delete-activity-process");
 const {
-  scoringDailyProcessJob,
-} = require("../processes/scoring-daily-process");
-const {
   followLocation,
   followTopic,
   followUser,
@@ -107,13 +104,6 @@ const initQueue = () => {
   // scoringDailyProcessQueue.on("error", (err) => {
   //   console.log("scoringDailyProcessQueue error : ", err);
   // });
-
-  /**
-   * (START) General Queue
-   */
-  BetterSocialQueue.setEventCallback(credderScoreQueue, credderScoreProcess);
-  // BetterSocialQueue.setEventCallback(testQueue, testProcess)
-
   console.info("deleteActivityProcessQueue job is working!");
   deleteActivityProcessQueue.process(deleteActivityProcessJob);
   deleteActivityProcessQueue.on("failed", handlerFailure);
@@ -162,8 +152,8 @@ const initQueue = () => {
     "3 * * * *"
   );
 
-  BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess);
-  BetterSocialQueue.setCron(dailyRssUpdateQueue, "30 * * * *");
+  // BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess);
+  // BetterSocialQueue.setCron(dailyRssUpdateQueue, "30 * * * *");
 
   BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess)
   BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 0,12,18 * * *")
