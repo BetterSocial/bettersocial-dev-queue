@@ -12,6 +12,7 @@ const postToGetstream = async (activity) => {
     activity.id = activityId
     activity.foreign_id = `${uuidv4()}${new Date().getTime()}`
     activity.verb = "post"
+    activity.content_created_at = activity.content.created_at
     // activity.to = ['domain:all'];
 
     const result = await postStream(DOMAIN, convertString(activity.domain.name, '.', '-'), activity);
@@ -21,7 +22,7 @@ const postToGetstream = async (activity) => {
       ...result,
       returnActivityId: activityId
     }
-    
+
   } catch (error) {
     console.info(error);
     return error;
@@ -41,7 +42,7 @@ const setPostScore = async (user_id) => {
     const post_count_score = postCountScore(post_score, postRec);
     const score_post = {
       score: post_count_score * 1,
-      defaults : { post_count_score }
+      defaults: { post_count_score }
     }
     console.info(`score : ${post_count_score * 1}, defaults : ${post_count_score}`);
     return score_post
