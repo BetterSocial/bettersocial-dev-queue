@@ -5,6 +5,7 @@ const {
     CHANNEL_TYPE_GROUP_LOCATION,
     ICON_TOPIC_CHANNEL,
     ICON_LOCATION_CHANNEL,
+    PREFIX_TOPIC,
 } = require("../utils/constant");
 const prepopulated = require("../services/chat/prepopulated");
 const UserService = require("../services/postgres/UserService");
@@ -54,7 +55,7 @@ const addUserToTopicChannel = async (user_id, topics) => {
         );
         topics.map(async (item) => {
             const token = serverClient.createToken(userId);
-            const channelId = "topic_" + item;
+            const channelId = PREFIX_TOPIC + item;
             const members = [];
             members.push(userId);
 
@@ -75,6 +76,7 @@ const addUserToTopicChannel = async (user_id, topics) => {
                 text: "A new user has joined the group.",
                 user_id: userId,
             });
+
         });
         console.log('addUserToTopicChannel', 'done');
     } catch (error) {
@@ -86,11 +88,13 @@ const prepopulatedDm = async (id, ids) => {
     try {
         let userService = new UserService();
         let userAdmin = await userService.getUserAdmin(process.env.USERNAME_ADMIN);
-        let idAdmin = userAdmin.user_id;
-        ids = ids.filter((element, i, ids) => {
-            return (element !== idAdmin);
-        })
-        ids.push(idAdmin);
+        if (userAdmin) {
+            let idAdmin = userAdmin.user_id;
+            ids = ids.filter((element, i, ids) => {
+                return (element !== idAdmin);
+            })
+            ids.push(idAdmin);
+        }
         let users = await userService.getUsersByIds(ids)
         const pre = await prepopulated(id, users);
         console.log('prepopulatedDm', 'done');
@@ -155,11 +159,10 @@ const registerProcess = async (job, done) => {
         console.log('topics: ', topics);
         console.log('locations: ', locations);
 
+        await prepopulatedDm(userId, follows);
         await addUserToLocationChannel(userId, locationsChannel);
         await addUserToTopicChannel(userId, topics);
-        await prepopulatedDm(userId, follows);
-        await followLocation(userId, locations);
-        await followUser(userId, follows);
+        await followLocation(userId, locationsChannel);
         await followTopic(userId, topics);
         done(null, 'ok');
     } catch (error) {

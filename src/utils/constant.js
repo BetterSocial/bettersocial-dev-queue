@@ -27,4 +27,6 @@ module.exports = {
     QUEUE_RSS: 'queueRss',
     QUEUE_RSS_SECOND: 'queueRssSecond',
 
+    PREFIX_TOPIC: 'topic_',
+
 };
