@@ -4,6 +4,7 @@ const { DomainPage, NewsLink } = require("../databases/models");
 const { dateCreted, updateDomainCredderScore, removeSubDomain } = require("../utils");
 const { v4: uuidv4 } = require("uuid");
 const { credderScoreQueue } = require('../config');
+const ElasticNewsLink = require('../elasticsearch/repo/newsLink/ElasticNewsLink');
 
 const validateDomain = async (resp) => {
     try {
@@ -118,6 +119,7 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
             }
 
             await putMainFeed(job, name, logo, created_domain, data);
+            await new ElasticNewsLink().putToIndexFromGetstreamObject(findNewsLink)
             // await postToGetstream(activity, job.user_id);
             message = 'url news not unique'
         } else {
@@ -140,7 +142,8 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
             console.info(result);
             console.info(`postId in Process : ${postId}`);
 
-            await NewsLink.create({ ...data, ...dateCreted, post_id: result.id })
+            let newsLink = await NewsLink.create({ ...data, ...dateCreted, post_id: result.id })
+            await new ElasticNewsLink().putToIndexFromGetstreamObject(newsLink)
             message = 'news link created'
         }
 

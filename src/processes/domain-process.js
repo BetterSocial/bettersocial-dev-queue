@@ -13,7 +13,7 @@ const postToGetstream = async (activity) => {
     activity.foreign_id = `${uuidv4()}${new Date().getTime()}`
     activity.verb = "post"
     activity.content_created_at = activity.content.created_at
-    // activity.to = ['domain:all'];
+    activity.to = ['domain:all'];
 
     const result = await postStream(DOMAIN, convertString(activity.domain.name, '.', '-'), activity);
     console.info('success post to getstream');

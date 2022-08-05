@@ -21,6 +21,8 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "elastic-builder": "^2.16.0",
+    "elasticsearch": "^16.7.3",
     "express": "^4.17.1",
     "getstream": "^7.2.9",
     "helmet": "^4.6.0",
