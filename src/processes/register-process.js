@@ -81,6 +81,9 @@ const addUserToTopicChannel = async (user_id, topics) => {
         });
         console.log('addUserToTopicChannel', 'done');
     } catch (error) {
+        await LogError.create({
+            message: error.message
+        })
         console.log('addUserToTopicChannel: ', error);
     }
 };
@@ -100,6 +103,9 @@ const prepopulatedDm = async (id, ids) => {
         const pre = await prepopulated(id, users);
         console.log('prepopulatedDm', 'done');
     } catch (error) {
+        await LogError.create({
+            message: error.message
+        })
         console.log('error prepopulatedDm: ', error);
     }
 }
@@ -110,6 +116,9 @@ const followLocation = async (userId, locations) => {
         let res = await followLocations(userId, locations);
         console.log('followLocation', 'done');
     } catch (error) {
+        await LogError.create({
+            message: error.message
+        })
         console.log('followLocation: ', error);
     }
 };
@@ -128,6 +137,9 @@ const followUser = async (userId, users) => {
         const pre = await prepopulated(id, result);
         console.log('followUser', 'done');
     } catch (error) {
+        await LogError.create({
+            message: error.message
+        })
         console.log('followUser: ', error);
     }
 };
@@ -137,6 +149,9 @@ const followTopic = async (userId, topics) => {
         let res = await followTopics(userId, topics);
         console.log('followTopic', 'done');
     } catch (error) {
+        await LogError.create({
+            message: error.message
+        })
         console.log('followTopic: ', error);
     }
 };
