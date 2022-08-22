@@ -10,6 +10,7 @@ const {
 const prepopulated = require("../services/chat/prepopulated");
 const UserService = require("../services/postgres/UserService");
 const { followTopics, followUsers, followLocations } = require("../services");
+const { LogError } = require('../databases/models');
 
 const addUserToLocationChannel = async (userId, channelIds) => {
     try {
@@ -62,7 +63,7 @@ const addUserToTopicChannel = async (user_id, topics) => {
             let name = capitalizing(item);
             let channelName = "#" + convertString(name, "-", "");
 
-            const channel = serverClient.channel("topics", channelId, {
+            const channel = serverClient.channel("messaging", channelId, {
                 name: channelName,
                 created_by_id: "system",
                 channel_type: CHANNEL_TYPE_TOPIC,
@@ -167,6 +168,9 @@ const registerProcess = async (job, done) => {
         done(null, 'ok');
     } catch (error) {
         console.log(error);
+        await LogError.create({
+            message: error.message
+        })
         done(null, error);
     }
 }
