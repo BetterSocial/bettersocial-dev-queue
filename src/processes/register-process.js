@@ -160,9 +160,6 @@ const followTopic = async (userId, topics) => {
 const registerProcess = async (job, done) => {
     try {
         console.info("running job register process ! with id " + job.id);
-        await LogError.create({
-            message: "running register process"
-        })
         let data = job.data;
         let { token,
             userId,
