@@ -63,7 +63,7 @@ const addUserToTopicChannel = async (user_id, topics) => {
             let name = capitalizing(item);
             let channelName = "#" + convertString(name, "-", "");
 
-            const channel = serverClient.channel("messaging", channelId, {
+            const channel = serverClient.channel("topics", channelId, {
                 name: channelName,
                 created_by_id: "system",
                 channel_type: CHANNEL_TYPE_TOPIC,
@@ -191,5 +191,5 @@ const registerProcess = async (job, done) => {
 }
 
 module.exports = {
-    registerProcess
+    registerProcess,
 }
