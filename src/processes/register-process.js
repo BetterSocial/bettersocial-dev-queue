@@ -180,6 +180,9 @@ const registerProcess = async (job, done) => {
         await addUserToTopicChannel(userId, topics);
         await followLocation(userId, locationsChannel);
         await followTopic(userId, topics);
+        await LogError.create({
+            message: `done register process userId: ${userId}`
+        })
         done(null, 'ok');
     } catch (error) {
         console.log(error);
