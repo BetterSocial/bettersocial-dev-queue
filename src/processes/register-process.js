@@ -73,10 +73,7 @@ const addUserToTopicChannel = async (user_id, topics) => {
             });
             await channel.create();
 
-            await channel.addMembers(members, {
-                text: "A new user has joined the group.",
-                user_id: userId,
-            });
+            await channel.addMembers(members);
 
         });
         console.log('addUserToTopicChannel', 'done');
