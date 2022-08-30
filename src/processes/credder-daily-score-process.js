@@ -7,7 +7,7 @@ const { credderScoreQueue } = require('../config')
 
 require('dotenv').config()
 
-const credderWeeklyScoreProcess = async (job, done) => {
+const credderDailyScoreProcess = async (job, done) => {
     // let { data } = job
     // let success = await updateDomainCredderScore(data.domainName);
     // if(success) return done(null, 'OK')
@@ -53,5 +53,5 @@ const credderWeeklyScoreProcess = async (job, done) => {
 }
 
 module.exports = {
-    credderWeeklyScoreProcess
+    credderDailyScoreProcess
 }

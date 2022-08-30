@@ -28,7 +28,7 @@ const {
     scoringProcessQueue,
     testQueue,
     credderScoreQueue,
-    weeklyCredderUpdateQueue,
+    dailyCredderUpdateQueue,
     dailyRssUpdateQueue,
     refreshUserFollowerCountMaterializedViewQueue,
     refreshUserTopicMaterializedViewQueue,
@@ -48,22 +48,15 @@ const { registerProcess } = require("../processes/register-process");
 const { testProcess } = require("../processes/test-process");
 const { updateDomainCredderScore } = require("../utils");
 const { credderScoreProcess } = require("../processes/credder-score-process");
-const {
-  credderWeeklyScoreProcess,
-} = require("../processes/credder-weekly-score-process");
+
 const { rssProcess } = require("../processes/rss-process");
-const {
-  refreshUserFollowerCount,
-} = require("../processes/refresh-user-follower-count-process");
-const {
-  refreshUserTopicFollower,
-} = require("../processes/refresh-user-topic-process");
-const {
-  refreshUserLocationFollower,
-} = require("../processes/refresh-user-location-process");
+const {refreshUserFollowerCount} = require("../processes/refresh-user-follower-count-process");
+const {refreshUserTopicFollower,} = require("../processes/refresh-user-topic-process");
+const {refreshUserLocationFollower,} = require("../processes/refresh-user-location-process");
 const BetterSocialQueue = require("../redis/BetterSocialQueue");
 const { refreshUserCommonFollowerMaterializedViewProcess } = require("../processes/refresh-user-common-follower-count-process");
 const { deleteExpiredPostProcess } = require("../processes/delete-expired-post-process");
+const { credderDailyScoreProcess } = require("../processes/credder-daily-score-process");
 
 /*
   @description initial all job queue
@@ -117,7 +110,9 @@ const initQueue = () => {
    * (START) General Queue
    */
   BetterSocialQueue.setEventCallback(credderScoreQueue, credderScoreProcess)
-  // BetterSocialQueue.setEventCallback(testQueue, testProcess)
+  BetterSocialQueue.setEventCallback(dailyCredderUpdateQueue,credderDailyScoreProcess);
+  BetterSocialQueue.setCron(dailyCredderUpdateQueue, "0 12 * * *");
+  BetterSocialQueue.setEventCallback(testQueue, credderDailyScoreProcess)
 
   BetterSocialQueue.setEventCallback(
     refreshUserFollowerCountMaterializedViewQueue,
@@ -152,17 +147,11 @@ const initQueue = () => {
     "3 * * * *"
   );
 
-  // BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess);
-  // BetterSocialQueue.setCron(dailyRssUpdateQueue, "30 * * * *");
-
   BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess)
   BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 0,12,18 * * *")
 
   BetterSocialQueue.setEventCallback(deleteExpiredPost, deleteExpiredPostProcess)
   BetterSocialQueue.setCron(deleteExpiredPost, "0 0 * * *")
-
-  // BetterSocialQueue.setEventCallback(dailyRssUpdateQueueSecond, rssProcess)
-  // BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 18 * * *")
   /**
    * (END) General Queue
    */

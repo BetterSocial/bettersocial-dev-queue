@@ -12,7 +12,7 @@ module.exports = {
 
     QUEUE_NAME_ADD_QUEUE_POST_TIME: 'addQueuePostTime',
     QUEUE_NAME_CREDDER_SCORE: 'credderScoreQueue',
-    QUEUE_NAME_WEEKLY_CREDDER_SCORE: 'weeklyCredderScoreQueue',
+    QUEUE_NAME_DAILY_CREDDER_SCORE: 'dailyCredderScoreQueue',
     QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW: 'refreshUserFollowerCountMaterializedView',
     QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW: 'refreshUserTopicMaterializedView',
     QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW: 'refreshUserLocationMaterializedView',
