@@ -7,7 +7,7 @@ const convertString = (str, from, to) => {
 const checkIfValidURL = (str) => {
     try {
         // const urlRegex = /^(https?:\/\/[a-zA-Z0-9_+%-]+(\.[a-zA-Z0-9+\_%-]+)*(:[0-9]{1,5})?(\/[a-zA-Z0-9+()?#~=&\._%-]*)*)?$/
-        const urlRegex = /(https?:\/\/[^ %]*)/;
+        const urlRegex = /(https?:\/\/[^ %\n]*)/;
         const urlValidation = str.match(urlRegex);
         if (urlValidation) return str.match(urlRegex)[1];
 

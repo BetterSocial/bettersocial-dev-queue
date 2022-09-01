@@ -24,6 +24,11 @@ describe('URL validation', () => {
     it('returns valid URL from url with trailing newline', () => {
         expect(checkIfValidURL('https://edition.cnn.com/travel/article/air-france-pilots-cockpit-fight/index.html%0Ahalo123')).toBe(matchedUrl)
     })
+
+    it('returns valid URL from url with trailing newline slash n', () => {
+        expect(checkIfValidURL('https://edition.cnn.com/travel/article/air-france-pilots-cockpit-fight/index.html\n\nhalo123')).toBe(matchedUrl)
+    })
+
     it('returns valid URL from url with leading text', () => {
         let urlString = 'halo%0A%0Ahalo123https://edition.cnn.com/travel/article/air-france-pilots-cockpit-fight/index.html%0Ahalo123'
         expect(checkIfValidURL(urlString)).toBe(matchedUrl)
