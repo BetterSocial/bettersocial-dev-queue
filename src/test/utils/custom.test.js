@@ -18,6 +18,9 @@ describe('URL validation', () => {
     it('returns false from non url', () => {
         expect(checkIfValidURL('Coba saja')).toBe(false)
     })
+    it('returns valid URL from url with trailing space', () => {
+        expect(checkIfValidURL('https://edition.cnn.com/travel/article/air-france-pilots-cockpit-fight/index.html%20halo123')).toBe(matchedUrl)
+    })
     it('returns valid URL from url with trailing newline', () => {
         expect(checkIfValidURL('https://edition.cnn.com/travel/article/air-france-pilots-cockpit-fight/index.html%0Ahalo123')).toBe(matchedUrl)
     })

@@ -156,6 +156,7 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
 const newsJob = async (job, done) => {
     try {
         console.info('running job news! with id ' + job.id);
+        console.info('running job news! with id ' + job.data.body);
         /*
           @description crawls data from url post getstream
         */
