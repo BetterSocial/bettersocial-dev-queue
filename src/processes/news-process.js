@@ -1,7 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { DomainPage, NewsLink } = require("../databases/models");
-const { dateCreted, updateDomainCredderScore, removeSubDomain } = require("../utils");
+const { dateCreted, updateDomainCredderScore, removeSubDomain, checkIfValidURL } = require("../utils");
 const { v4: uuidv4 } = require("uuid");
 const { credderScoreQueue } = require('../config');
 const ElasticNewsLink = require('../elasticsearch/repo/newsLink/ElasticNewsLink');
@@ -155,13 +155,14 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
 
 const newsJob = async (job, done) => {
     try {
+        let validUrl = checkIfValidURL(job.data.body)
         console.info('running job news! with id ' + job.id);
-        console.info('running job news! with id ' + job.data.body);
+        console.info('running job news! with domain ' + validUrl);
         /*
           @description crawls data from url post getstream
         */
-        console.info('domain: ', job.data.body);
-        const crawls = await axios.get(job.data.body, { headers: { 'User-Agent': 'bettersocial' } });
+        console.info('domain: ', checkIfValidURL(validUrl));
+        const crawls = await axios.get(validUrl, { headers: { 'User-Agent': 'bettersocial' } });
 
         /*
           @description validate domain if exist get data or empty create data domain to table domain
