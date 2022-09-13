@@ -5,7 +5,7 @@ const rssProcess = async (job, done) => {
     await rssService();
     done(null, "success running rss");
   } catch (error) {
-    console.log(error);
+    console.error(error);
     done(null, error);
   }
 };

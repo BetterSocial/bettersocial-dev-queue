@@ -62,7 +62,7 @@ class BetterSocialElasticSearch {
                     ...item
                 }
             }, function (error, response) {
-                console.log(response);
+                console.error(response);
                 resolve(response)
             });
         })

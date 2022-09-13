@@ -35,14 +35,14 @@ const updateDomainCredderScore = async (domainName) => {
         let datum = response.data.data[0]
 
         if (datum.valid && datum.indexed) {
-            console.log('Checking Domain because valid')
+            // console.log('Checking Domain because valid')
             let domain = await DomainPage.findOne({
                 where: { domain_name: domainName }
             })
 
             if (domain) {
                 if (!domain.credder_score) {
-                    console.log('Updating credder score 1')
+                    // console.log('Updating credder score 1')
                     await __updateCredderScore(domain, datum.outlet.scores.recommended.value)
                     return true
                 }
@@ -50,19 +50,19 @@ const updateDomainCredderScore = async (domainName) => {
                 let dateDiff = moment().diff(domain.credder_last_checked, 'days')
                 if (dateDiff >= QUEUE_CREDDER_INTERVAL_IN_DAYS || domain.credder_last_checked === null) {
                     // update credder score & update credder last checked
-                    console.log('Updating credder score 2')
+                    // console.log('Updating credder score 2')
                     await __updateCredderScore(domain, datum.outlet.scores.recommended.value)
                     return true
                 }
             } else {
-                console.log('Updating credder score 3')
+                // console.log('Updating credder score 3')
                 await __updateCredderScore(datum.outlet.name, datum.outlet.scores.recommended.value)
             }
 
             return true
         } else if (datum.valid && !datum.indexed) {
-            console.log('news link not indexed')
-            console.log('Updating credder score 4')
+            // console.log('news link not indexed')
+            // console.log('Updating credder score 4')
             let domain = await DomainPage.findOne({
                 where: { domain_name: domainName }
             });
@@ -71,8 +71,8 @@ const updateDomainCredderScore = async (domainName) => {
 
             await __updateCredderScore(domain, CREDDER_SCORE_NOT_INDEXED)
         } else {
-            console.log('news link not valid')
-            console.log('Updating credder score 5')
+            // console.log('news link not valid')
+            // console.log('Updating credder score 5')
             let domain = await DomainPage.findOne({
                 where: { domain_name: domainName }
             });
@@ -84,8 +84,8 @@ const updateDomainCredderScore = async (domainName) => {
 
         return true
     } catch(e) {
-        console.log('Error')
-        console.log(e)
+        console.error('Error')
+        console.error(e)
         return false
     }
 }

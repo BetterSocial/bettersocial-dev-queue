@@ -26,13 +26,13 @@ scoringDailyProcessQueue.on("error", (err) =>
 );
 
 const sendQueueForDailyProcess = async (event, data) => {
-  console.log(
-    "queueSenderForRedis.sendQueueForDailyProcess called with event[" +
-      event +
-      "] and data [" +
-      JSON.stringify(data) +
-      "]"
-  );
+  // console.log(
+  //   "queueSenderForRedis.sendQueueForDailyProcess called with event[" +
+  //     event +
+  //     "] and data [" +
+  //     JSON.stringify(data) +
+  //     "]"
+  // );
 
   let queueData = {
     event: event,
@@ -50,13 +50,13 @@ const sendQueueForDailyProcess = async (event, data) => {
 };
 
 const sendQueueForCronDailyProcess = async (event, data) => {
-  console.log(
-    "queueSenderForRedis.sendQueueForDailyProcess called with event[" +
-      event +
-      "] and data [" +
-      JSON.stringify(data) +
-      "]"
-  );
+  // console.log(
+  //   "queueSenderForRedis.sendQueueForDailyProcess called with event[" +
+  //     event +
+  //     "] and data [" +
+  //     JSON.stringify(data) +
+  //     "]"
+  // );
 
   let queueData = {
     event: event,

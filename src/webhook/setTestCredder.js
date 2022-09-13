@@ -10,8 +10,8 @@ const setTestCredder = async (req, res) => {
             result: result,
         })
     } catch (error) {
-        console.log("error");
-        console.log(error);
+        console.error("error");
+        console.error(error);
         return res.json({
             ststus: "error",
             message: error,

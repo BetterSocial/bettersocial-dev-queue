@@ -20,6 +20,5 @@ module.exports = async (req, res) => {
   };
   let dataJSON = JSON.stringify(data);
   fs.writeFileSync("hook.json", dataJSON);
-  console.log(data);
   res.send(data);
 };

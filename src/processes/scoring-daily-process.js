@@ -20,7 +20,7 @@ const {
  */
 const scoringDailyProcessJob = async (job, done) => {
 
-  console.log("scoringProcessJob: " + JSON.stringify(job.data));
+  // console.log("scoringProcessJob: " + JSON.stringify(job.data));
   try {
     //console.info('running job scoring with id: ' + job.id);
     const messageData = job.data;
@@ -43,7 +43,7 @@ const scoringDailyProcessJob = async (job, done) => {
     //console.info(result);
     done(null, result);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     done(error);
   }
 }

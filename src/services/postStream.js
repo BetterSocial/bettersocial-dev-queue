@@ -17,11 +17,11 @@ const postStream = async (feedName, uniqueName, activity) => {
   // Add an activity to the feed
   let returnActivity = await nameFeed.addActivity(activity);
   if(feedName === DOMAIN) {
-    console.log('Indexing getstream object to better social elastic search')
+    // console.log('Indexing getstream object to better social elastic search')
     try {
       new ElasticNewsLink().putToIndexFromGetstreamObject(returnActivity)
     } catch(e) {
-      console.log('gagal')
+      console.error('gagal')
     }
   }
   return returnActivity

@@ -634,7 +634,7 @@ const scoringProcessJob = async (job, done) => {
     //console.info(result);
     done(null, result);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     done(error);
   }
 }

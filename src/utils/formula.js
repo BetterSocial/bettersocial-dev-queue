@@ -223,7 +223,7 @@ const applyMultipliesToTotalScore = (wTopic, topicFollowed, wFollow, wDegree, wL
   @description formula for variable p2
 */
 const scoreBasedPostCharacteristics = (rec, wRec, att, wAtt, d, wD, p, wP, postLink) => {
-  console.log("rec:"+rec+", wRec:"+wRec+", att:"+att+", wAtt:"+wAtt+", d:"+d+", wD:"+wD+", p:"+p+", wP:"+wP+", postLink:"+postLink);
+  // console.log("rec:"+rec+", wRec:"+wRec+", att:"+att+", wAtt:"+wAtt+", d:"+d+", wD:"+wD+", p:"+p+", wP:"+wP+", postLink:"+postLink);
   let result = rec ** wRec * att ** wAtt * p ** wP;
   if (postLink) {
     result = result * d ** wD;

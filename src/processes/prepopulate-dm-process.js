@@ -18,7 +18,7 @@ const prepopulatedDm = async (job, done) => {
     const pre = await prepopulated(id, users);
     done(null, pre);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     done(null, error);
   }
 }

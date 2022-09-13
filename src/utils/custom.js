@@ -39,7 +39,7 @@ const checkIfValidURL = (str) => {
         //   return false
         // }
     } catch (error) {
-        console.log('error validation url', error);
+        console.error('error validation url', error);
         return false;
     }
 };

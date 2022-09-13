@@ -62,12 +62,12 @@ const followUsers = async (userId, userIds) => {
       });
 
       const res = await clientServer.followMany(follows);
-      console.log('follow many: ', res);
+      // console.log('follow many: ', res);
       return res;
     })
     return result;
   } catch (error) {
-    console.info(error);
+    console.error(error);
     throw error;
   }
 };

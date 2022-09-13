@@ -7,22 +7,16 @@ const createQueueNews = async (req, res) => {
   // const duration_feed = +req.body.duration_feed || null
   console.log('******************** webhook *******************');
   const bodyData = req.body[0]?.new[0]?.message;
-  console.log('body data:', bodyData);
   const id_feed = req.body[0]?.new[0]?.id || false;
-  console.log('id feed:', id_feed);
   const user_id = req.body[0]?.new[0]?.actor?.id || false;
-  console.log('user_id:', user_id);
   const topics = req.body[0]?.new[0]?.topics || [];
-  console.log('topic:', topics);
   const duration_feed = req.body[0]?.new[0]?.duration_feed || "";
-  console.log('duration feed:', duration_feed);
   const {
     checkIfValidURL,
     successResponse,
     errorResponse,
   } = require("../utils");
   if (bodyData) {
-    console.log('body data');
     try {
       const { v4: uuidv4 } = require("uuid");
       const { newsQueue } = require("../config");
@@ -54,7 +48,7 @@ const createQueueNews = async (req, res) => {
         // throw new Error("url is invalid");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return errorResponse(res, error.toString(), 500);
     }
   } else {

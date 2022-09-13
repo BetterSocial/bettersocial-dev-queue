@@ -8,15 +8,7 @@ const { credderScoreQueue } = require('../config')
 require('dotenv').config()
 
 const credderDailyScoreProcess = async (job, done) => {
-    // let { data } = job
-    // let success = await updateDomainCredderScore(data.domainName);
-    // if(success) return done(null, 'OK')
-
-    // return done(null, 'false')
-
-    console.log(`Running queue at ${moment().format("HH:mm:SS")}`)
     let checkDate = moment().subtract(QUEUE_CREDDER_INTERVAL_IN_DAYS, 'days').format('YYYY-MM-DD');
-    console.log(`checkdate ${checkDate}`)
 
     let domains = await DomainPage.findAll({
         where: {
@@ -40,10 +32,8 @@ const credderDailyScoreProcess = async (job, done) => {
     }
 
     if(domains.length === 0) console.log('======= No domain to check =========')
-    // console.log(domains)
     for (let index in domains) {
         let domain = domains[index]
-        console.log(`Adding queue for ${domain.domain_name}`)
         credderScoreQueue.add({
             domainName: domain.domain_name
         }, queueOptions)

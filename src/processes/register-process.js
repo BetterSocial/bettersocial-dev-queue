@@ -43,7 +43,7 @@ const addUserToLocationChannel = async (userId, channelIds) => {
         });
         console.info('addUser to channel: ', 'done');
     } catch (error) {
-        console.log('error addUserToChannel: ', error);
+        console.error('error addUserToChannel: ', error);
     }
 };
 
@@ -76,12 +76,12 @@ const addUserToTopicChannel = async (user_id, topics) => {
             await channel.addMembers(members);
 
         });
-        console.log('addUserToTopicChannel', 'done');
+        // console.log('addUserToTopicChannel', 'done');
     } catch (error) {
         await LogError.create({
             message: error.message
         })
-        console.log('addUserToTopicChannel: ', error);
+        console.error('addUserToTopicChannel: ', error);
     }
 };
 
@@ -98,12 +98,12 @@ const prepopulatedDm = async (id, ids) => {
         }
         let users = await userService.getUsersByIds(ids)
         const pre = await prepopulated(id, users);
-        console.log('prepopulatedDm', 'done');
+        // console.log('prepopulatedDm', 'done');
     } catch (error) {
         await LogError.create({
             message: error.message
         })
-        console.log('error prepopulatedDm: ', error);
+        console.error('error prepopulatedDm: ', error);
     }
 }
 
@@ -111,12 +111,12 @@ const prepopulatedDm = async (id, ids) => {
 const followLocation = async (userId, locations) => {
     try {
         let res = await followLocations(userId, locations);
-        console.log('followLocation', 'done');
+        // console.log('followLocation', 'done');
     } catch (error) {
         await LogError.create({
             message: error.message
         })
-        console.log('followLocation: ', error);
+        console.error('followLocation: ', error);
     }
 };
 
@@ -132,24 +132,24 @@ const followUser = async (userId, users) => {
         users.push(idAdmin);
         let result = await userService.getUsersByIds(users);
         const pre = await prepopulated(id, result);
-        console.log('followUser', 'done');
+        // console.log('followUser', 'done');
     } catch (error) {
         await LogError.create({
             message: error.message
         })
-        console.log('followUser: ', error);
+        console.error('followUser: ', error);
     }
 };
 
 const followTopic = async (userId, topics) => {
     try {
         let res = await followTopics(userId, topics);
-        console.log('followTopic', 'done');
+        // console.log('followTopic', 'done');
     } catch (error) {
         await LogError.create({
             message: error.message
         })
-        console.log('followTopic: ', error);
+        console.error('followTopic: ', error);
     }
 };
 
@@ -165,12 +165,12 @@ const registerProcess = async (job, done) => {
             topics,
             locations } = data;
 
-        console.info('token: ', token);
-        console.log('userId: ', userId);
-        console.log('locationsChannel: ', locationsChannel);
-        console.log('follows: ', follows);
-        console.log('topics: ', topics);
-        console.log('locations: ', locations);
+        // console.info('token: ', token);
+        // console.log('userId: ', userId);
+        // console.log('locationsChannel: ', locationsChannel);
+        // console.log('follows: ', follows);
+        // console.log('topics: ', topics);
+        // console.log('locations: ', locations);
 
         await prepopulatedDm(userId, follows);
         await addUserToLocationChannel(userId, locationsChannel);
@@ -182,7 +182,7 @@ const registerProcess = async (job, done) => {
         })
         done(null, 'ok');
     } catch (error) {
-        console.log(error);
+        console.error(error);
         await LogError.create({
             message: error.message
         })

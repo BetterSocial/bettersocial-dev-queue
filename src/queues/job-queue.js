@@ -68,10 +68,10 @@ const initQueue = () => {
   newsQueue.on("completed", handlerCompleted);
   newsQueue.on("stalled", handlerStalled);
   newsQueue.on("error", (err) => {
-    console.log("newsQueue error : ", err);
+    console.error("newsQueue error : ", err);
   });
   newsQueue.on("active", (res) => {
-    console.log(res);
+    // console.log(res);
   });
 
   console.log("Register Queue job is working");
@@ -86,7 +86,7 @@ const initQueue = () => {
   scoringProcessQueue.on("completed", handlerCompleted);
   scoringProcessQueue.on("stalled", handlerStalled);
   scoringProcessQueue.on("error", (err) => {
-    console.log("scoringProcessQueue error : ", err);
+    console.error("scoringProcessQueue error : ", err);
   });
 
   console.info("scoringDailyProcessQueue job is working!");
@@ -103,7 +103,7 @@ const initQueue = () => {
   deleteActivityProcessQueue.on("completed", handlerCompleted);
   deleteActivityProcessQueue.on("stalled", handlerStalled);
   deleteActivityProcessQueue.on("error", (err) => {
-    console.log("deleteActivityProcessQueue error : ", err);
+    console.error("deleteActivityProcessQueue error : ", err);
   });
   
   /**

@@ -8,7 +8,6 @@ const ElasticNewsLink = require('../elasticsearch/repo/newsLink/ElasticNewsLink'
 
 const validateDomain = async (resp) => {
     try {
-        console.log('host', resp.request.host);
         let removeWww = resp.request.host.replace("www.", "");
         removeWww = removeSubDomain(removeWww);
         const getDomain = await DomainPage.findOne({
@@ -27,7 +26,6 @@ const validateDomain = async (resp) => {
             domain_image = getDomain.dataValues.logo;
             created_domain = getDomain.dataValues.created_at;
         } else {
-            console.log(`${resp.request.protocol}//${resp.request.host}`);
             const crawls = await axios.get(`${resp.request.protocol}//${resp.request.host}`,
                 { headers: { 'User-Agent': 'bettersocial' } });
             const $ = cheerio.load(crawls.data);
@@ -59,14 +57,13 @@ const validateDomain = async (resp) => {
             }
         }
 
-        console.log(`adding credder score queue ${removeWww}`)
         credderScoreQueue.add({
             domainName: removeWww
         }, queueOptions)
 
         return { domain_id, name, info, domain_image, created_domain }
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return error
     }
 }
@@ -204,7 +201,7 @@ const newsJob = async (job, done) => {
         const result = await saveNewsLink(data, name, info, job.data, logo, created_domain);
         done(null, result);
     } catch (error) {
-        console.log('kesalahan', error);
+        console.error('kesalahan', error);
         done(null, error);
     }
 }

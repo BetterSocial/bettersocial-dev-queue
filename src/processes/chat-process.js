@@ -46,7 +46,7 @@ const addUserToChannel = async (job, done) => {
     });
     done(null, job.data);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     done(null, error);
   }
 };
@@ -87,7 +87,7 @@ const addUserToTopicChannel = (job, done) => {
     });
     done(null, job.data);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     done(null, error);
   }
 };

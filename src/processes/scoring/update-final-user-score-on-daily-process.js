@@ -47,20 +47,20 @@ const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime, post
   const startTime = momentNow.format(REGULAR_TIME_FORMAT);
   const startTimePost = momentNow.format(POST_TIME_FORMAT);
 
-  console.log("startTime: %", startTime);
-  console.log("startTimePost: %", startTimePost);
-  console.log("endTime: %", endTime);
-  console.log("endTimePost: %", endTimePost);
+  // console.log("startTime: %", startTime);
+  // console.log("startTimePost: %", startTimePost);
+  // console.log("endTime: %", endTime);
+  // console.log("endTimePost: %", endTimePost);
 
   const timestamp = endTime;
-  console.log("timestamp: %", timestamp);
+  // console.log("timestamp: %", timestamp);
 
   // check for not yet daily processed user-score data
   await checkNotYetDailyProcessedUserScore(userScoreCol, processTime);
 
   // update last upvotes, downvotes, blocks, and posts.
   // reset update the y_score and user_score
-  console.log("Updating last stat info, and reset y score");
+  // console.log("Updating last stat info, and reset y score");
   let cursor;
   cursor = await userScoreCol.aggregate( [
     // Stage 1: lookup to user_post_score by user_id
@@ -224,7 +224,7 @@ const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime, post
     console.dir(item, {depth: null});
   });
 
-  console.log("Updating y score and final user score");
+  // console.log("Updating y score and final user score");
   cursor = await userScoreCol.aggregate([
     { $unwind: "$following" },
     { $group: { _id: "$following", y_score: { $sum: "$u1_score" } } },
@@ -260,7 +260,7 @@ const updateFinalUserScoreOnDailyProcess = async(userScoreCol, processTime, post
 const triggerPostScoreDailyProcess = async(postScoreCol) => {
   console.debug("Starting triggerPostScoreDailyProcess");
 
-  console.log("Batch size: ", batchSize);
+  // console.log("Batch size: ", batchSize);
 
   const processTime = moment.utc().format(REGULAR_TIME_FORMAT);
 
