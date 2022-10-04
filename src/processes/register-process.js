@@ -60,7 +60,6 @@ const addUserToTopicChannel = async (user_id, topics) => {
             const members = [];
             members.push(userId);
 
-            // let name = capitalizing(item);
             let channelName = "#" + convertString(item, "-", "");
 
             const channel = serverClient.channel("topics", channelId, {
