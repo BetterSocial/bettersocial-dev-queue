@@ -56,12 +56,11 @@ const addUserToTopicChannel = async (user_id, topics) => {
         );
         topics.map(async (item) => {
             const token = serverClient.createToken(userId);
-            const channelId = PREFIX_TOPIC + item;
+            const channelId = item;
             const members = [];
             members.push(userId);
 
-            let name = capitalizing(item);
-            let channelName = "#" + convertString(name, "-", "");
+            let channelName = "#" + convertString(item, "-", "");
 
             const channel = serverClient.channel("topics", channelId, {
                 name: channelName,
@@ -192,4 +191,5 @@ const registerProcess = async (job, done) => {
 
 module.exports = {
     registerProcess,
+    addUserToTopicChannel,
 }
