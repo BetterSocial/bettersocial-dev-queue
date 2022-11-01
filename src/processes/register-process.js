@@ -36,10 +36,7 @@ const addUserToLocationChannel = async (userId, channelIds) => {
                 image: ICON_LOCATION_CHANNEL
             });
             await channel.create();
-            await channel.addMembers(members, {
-                text: "A new user has joined the group.",
-                user_id: userId,
-            });
+            await channel.addMembers(members);
         });
         console.info('addUser to channel: ', 'done');
     } catch (error) {
