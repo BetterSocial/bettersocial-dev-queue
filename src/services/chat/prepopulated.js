@@ -14,6 +14,7 @@ module.exports = async (id, users) => {
         console.log('id user register', id);
         let ownUser = await userService.getUserById(id);
         console.log('user register: ', ownUser);
+        users = users.filter((user) => user.user_id !== ownUser.user_id)
         let res = await users.map(async user => {
             let members = [user.user_id, id];
             // const filter = { type: 'messaging', members: { $eq: members } };
