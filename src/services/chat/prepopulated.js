@@ -75,11 +75,11 @@ module.exports = async (id, users) => {
             // });
 
             const textTargetUser = `${ownUser.username} started following you. Send them a message now`;
-            await chat.addMembers([user.user_id, id], {
-                text: user.user_id === id ? textOwnUser : textTargetUser,
+            await chat.addMembers([user.user_id], {
+                text: user.user_id === ownUser.user_id ? textOwnUser : textTargetUser,
                 user_id: user.user_id,
-                only_to_user_show: false,
-                disable_to_user: id,
+                // only_to_user_show: false,
+                // disable_to_user: id,
                 channel_role: "channel_moderator",
                 is_add: true
             });
