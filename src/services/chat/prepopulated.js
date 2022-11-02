@@ -75,8 +75,8 @@ module.exports = async (id, users) => {
 
             const textOwnUser = `You started following ${user.username}. Send them a message now.`;
             await chat.addMembers([user.user_id, id], {
-                text: id === user.user_id ? textOwnUser : textTargetUser,
-                user_id: user.user_id,
+                text: ownUser.user_id === user.user_id ? textOwnUser : textTargetUser,
+                user_id: ownUser.user_id === user.user_id ? id : user.user_id,
                 only_to_user_show: false,
                 disable_to_user: id,
                 channel_role: "channel_moderator",
