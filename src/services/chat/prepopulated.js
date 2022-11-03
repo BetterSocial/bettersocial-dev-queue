@@ -64,15 +64,7 @@ module.exports = async (id, users) => {
              * boleh tampil kecuali untuk user usup
              */
 
-            const textOwnUser = `You started following ${user.username}. Send them a message now.`;
-            await chat.addMembers([id], {
-                text: textOwnUser,
-                user_id: id,
-                // only_to_user_show: id,
-                // disable_to_user: false,
-                // channel_role: "channel_moderator",
-                // is_add: true,
-            });
+
 
             const textTargetUser = `${ownUser.username} started following you. Send them a message now`;
             await chat.addMembers([user.user_id], {
@@ -82,6 +74,15 @@ module.exports = async (id, users) => {
                 // disable_to_user: id,
                 // channel_role: "channel_moderator",
                 // is_add: true
+            });
+                        const textOwnUser = `You started following ${user.username}. Send them a message now.`;
+            await chat.addMembers([id], {
+                text: textOwnUser,
+                user_id: id,
+                // only_to_user_show: id,
+                // disable_to_user: false,
+                // channel_role: "channel_moderator",
+                // is_add: true,
             });
             return status;
         });
