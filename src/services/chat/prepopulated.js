@@ -14,7 +14,7 @@ module.exports = async (id, users) => {
         console.log('id user register', id);
         let ownUser = await userService.getUserById(id);
         console.log('user register: ', ownUser);
-        users.push(ownUser)
+        users.push({user_id: id})
         let res = await users.map(async user => {
             let members = [user.user_id, id];
             // const filter = { type: 'messaging', members: { $eq: members } };
@@ -75,8 +75,8 @@ module.exports = async (id, users) => {
             // });
 
             const textTargetUser = `${ownUser.username} started following you. Send them a message now`;
-            await chat.addMembers([user.user_id, id], {
-                text: user.user_id === id ? textOwnUser : textTargetUser,
+            await chat.addMembers([user.user_id], {
+                text: id === user.user_id ? textOwnUser : textTargetUser,
                 user_id: user.user_id,
                 // only_to_user_show: false,
                 // disable_to_user: id,
