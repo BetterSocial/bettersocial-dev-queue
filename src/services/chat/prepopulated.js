@@ -13,6 +13,7 @@ module.exports = async (id, users) => {
         let userService = new UserService();
         console.log('id user register', id);
         let ownUser = await userService.getUserById(id);
+        users.push(ownUser)
         console.log('user register: ', ownUser);
         let res = await users.map(async user => {
             let members = [user.user_id, id];
@@ -64,18 +65,18 @@ module.exports = async (id, users) => {
              */
 
             const textOwnUser = `${ownUser.username} started following you. Send them a message now`;
-            await chat.addMembers([id], {
-                text: textOwnUser,
-                user_id: id,
-                only_to_user_show: id,
-                disable_to_user: false,
-                channel_role: "channel_moderator",
-                is_add: true,
-            });
+            // await chat.addMembers([id], {
+            //     text: textOwnUser,
+            //     user_id: id,
+            //     only_to_user_show: id,
+            //     disable_to_user: false,
+            //     channel_role: "channel_moderator",
+            //     is_add: true,
+            // });
 
             const textTargetUser = `You started following ${user.username}. Send them a message now.`;
             await chat.addMembers([user.user_id], {
-                text: textTargetUser,
+                text: id === user.user_id ? textOwnUser : textTargetUser,
                 user_id: user.user_id,
                 only_to_user_show: false,
                 disable_to_user: id,
