@@ -62,7 +62,7 @@ module.exports = async (id, users) => {
              * Usup started following you. send them a message now
              * boleh tampil kecuali untuk user usup
              */
-                if()
+
             const textOwnUser = `${ownUser.username} started following you. Send them a message now`;
             await chat.addMembers([id], {
                 text: textOwnUser,
