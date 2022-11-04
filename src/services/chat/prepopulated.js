@@ -74,15 +74,17 @@ module.exports = async (id, users) => {
             //     channel_role: "channel_moderator",
             //     is_add: true,
             // });
-        
-               await chat.addMembers([user.user_id], {
-                text: ownUser.username === user.username ? textOwnUser : textTargetUser,
+            if(user.username !== ownUser.username) {
+                await chat.addMembers([user.user_id], {
+                text: textTargetUser,
                 user_id: id,
                 only_to_user_show: false,
                 disable_to_user: id,
                 channel_role: "channel_moderator",
                 is_add: true
             });
+            }
+           
 
             
            
