@@ -74,8 +74,8 @@ module.exports = async (id, users) => {
                 is_add: true,
             });
 
- 
-            await chat.addMembers([user.user_id], {
+            if(user.user_id !== id) {
+                 await chat.addMembers([user.user_id], {
                 text: textTargetUser,
                 user_id: user.user_id,
                 only_to_user_show: false,
@@ -83,6 +83,8 @@ module.exports = async (id, users) => {
                 channel_role: "channel_moderator",
                 is_add: true
             });
+            }
+           
             return status;
         });
 
