@@ -14,7 +14,7 @@ module.exports = async (id, users) => {
         console.log('id user register', id);
         let ownUser = await userService.getUserById(id);
         console.log('user register: ', ownUser);
-        users.push(ownUser)
+
         let res = await users.map(async user => {
             let members = [user.user_id, id];
             // const filter = { type: 'messaging', members: { $eq: members } };
@@ -74,7 +74,7 @@ module.exports = async (id, users) => {
             //     channel_role: "channel_moderator",
             //     is_add: true,
             // });
-                await chat.addMembers([user.user_id, id], {
+                                     await chat.addMembers([user.user_id, id], {
                 text: ownUser.username === user.username ?textOwnUser : textTargetUser,
                 user_id: id,
                 only_to_user_show: false,
@@ -83,7 +83,7 @@ module.exports = async (id, users) => {
                 is_add: true
             });
             if(user.username !== ownUser.username) {
-            
+       
             }
            
 
