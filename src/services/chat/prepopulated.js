@@ -63,7 +63,8 @@ module.exports = async (id, users) => {
              * boleh tampil kecuali untuk user usup
              */
 
-            const textOwnUser = `${ownUser.username} started following you. Send them a message now`;
+            const textTargetUser= `${ownUser.username} started following you. Send them a message now`;
+            const textOwnUser = `You started following ${user.username}. Send them a message now.`;
             await chat.addMembers([id], {
                 text: textOwnUser,
                 user_id: id,
@@ -73,7 +74,7 @@ module.exports = async (id, users) => {
                 is_add: true,
             });
 
-            const textTargetUser = `You started following ${user.username}. Send them a message now.`;
+ 
             await chat.addMembers([user.user_id], {
                 text: textTargetUser,
                 user_id: user.user_id,
