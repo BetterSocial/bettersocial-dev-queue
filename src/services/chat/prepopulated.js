@@ -75,7 +75,7 @@ module.exports = async (id, users) => {
             //     is_add: true,
             // });
             if(user.username !== ownUser.username) {
-                await chat.addMembers([user.user_id], {
+                await chat.addMembers([user.user_id, id], {
                 text: textTargetUser,
                 user_id: id,
                 only_to_user_show: false,
