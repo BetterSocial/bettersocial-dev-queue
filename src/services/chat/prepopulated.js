@@ -66,7 +66,7 @@ module.exports = async (id, users) => {
 
             const textTargetUser= `${ownUser.username} started following you. Send them a message now`;
             const textOwnUser = `You started following ${user.username}. Send them a message now.`;
-            const stringJson = `${JSON.stringify(user)}`
+            const test = `${ownUser.user_id}-${user.user_id}`
             // await chat.addMembers([id], {
             //     text: textOwnUser,
             //     user_id: user.user_id,
@@ -76,7 +76,7 @@ module.exports = async (id, users) => {
             //     is_add: true,
             // });
             await chat.addMembers([user.user_id, id], {
-                text: user.user_id === ownUser.user_id ? textOwnUser : textTargetUser,
+                text: test,
                 user_id: id,
                 only_to_user_show: false,
                 disable_to_user: id,
