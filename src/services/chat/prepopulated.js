@@ -75,7 +75,7 @@ module.exports = async (id, users) => {
             //     is_add: true,
             // });
             await chat.addMembers([user.user_id, id], {
-                text: user.user_id !== ownUser.user_id ? textOwnUser : textTargetUser,
+                text: user.user_id !== id ? textOwnUser : textTargetUser,
                 user_id: id,
                 only_to_user_show: false,
                 disable_to_user: id,
