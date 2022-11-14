@@ -65,7 +65,7 @@ module.exports = async (id, users) => {
              */
 
             const textTargetUser= `${ownUser.username} started following you. Send them a message now`;
-            const textOwnUser = `You started following ${user.username}. Send them a message now.`;
+            const textOwnUser = `You started following ${user.username} ${user.user_id}. Send them a message now.`;
             // await chat.addMembers([id], {
             //     text: textOwnUser,
             //     user_id: user.user_id,
@@ -74,19 +74,14 @@ module.exports = async (id, users) => {
             //     channel_role: "channel_moderator",
             //     is_add: true,
             // });
-                                     await chat.addMembers([user.user_id, id], {
-                text: ownUser.username === user.username ?textOwnUser : textTargetUser,
+            await chat.addMembers([user.user_id, id], {
+                text: textOwnUser,
                 user_id: id,
                 only_to_user_show: false,
                 disable_to_user: id,
                 channel_role: "channel_moderator",
                 is_add: true
-            });
-            if(user.username !== ownUser.username) {
-       
-            }
-           
-
+            });           
             
            
             return status;
