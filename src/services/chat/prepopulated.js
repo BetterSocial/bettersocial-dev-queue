@@ -73,7 +73,9 @@ module.exports = async (id, users) => {
                 disable_to_user: false,
                 channel_role: "channel_moderator",
                 is_add: true,
-                system_user:id
+                system_user:id,
+                is_from_prepopulated: true,
+                other_text: textTargetUser
             });
             await chat.addMembers([user.user_id], {
                 text: textTargetUser,
@@ -82,7 +84,9 @@ module.exports = async (id, users) => {
                 disable_to_user: id,
                 channel_role: "channel_moderator",
                 is_add: false,
-                system_user:id
+                system_user:id,
+                is_from_prepopulated: true,
+                other_text: textOwnUser
             });           
             
            
