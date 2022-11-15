@@ -73,6 +73,7 @@ module.exports = async (id, users) => {
                 disable_to_user: false,
                 channel_role: "channel_moderator",
                 is_add: true,
+                is_message_owner: true
             });
             await chat.addMembers([user.user_id], {
                 text: textTargetUser,
@@ -80,7 +81,8 @@ module.exports = async (id, users) => {
                 only_to_user_show: false,
                 disable_to_user: id,
                 channel_role: "channel_moderator",
-                is_add: true
+                is_add: false,
+                is_message_owner: true
             });           
             
            
