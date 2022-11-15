@@ -82,7 +82,7 @@ module.exports = async (id, users) => {
                 disable_to_user: id,
                 channel_role: "channel_moderator",
                 is_add: false,
-                is_message_owner: true
+                is_message_owner: false
             });           
             
            
