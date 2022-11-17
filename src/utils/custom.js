@@ -134,6 +134,10 @@ const removeSubDomain = (domain) => {
     }
 }
 
+const randomBetweenPositiveAndNegative = (range) => {
+    return Math.ceil(Math.random() * range - (range / 2))
+}
+
 
 module.exports = {
     convertString,
@@ -146,4 +150,5 @@ module.exports = {
     countWordsWithoutLink,
     countCharactersWithoutLink,
     removeSubDomain,
+    randomBetweenPositiveAndNegative
 };

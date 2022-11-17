@@ -28,5 +28,5 @@ module.exports = {
     QUEUE_RSS_SECOND: 'queueRssSecond',
 
     PREFIX_TOPIC: 'topic_',
-
+    DAY_IN_SECONDS: 24 * 60 * 60,
 };

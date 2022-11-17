@@ -1,9 +1,11 @@
 const { postStream } = require("../services");
-const { DOMAIN, convertString, postCountScore } = require('../utils')
+const { DOMAIN, convertString, postCountScore, randomBetweenPositiveAndNegative } = require('../utils');
+const constant = require("../utils/constant");
 const postToGetstream = async (activity) => {
   const { v4: uuidv4 } = require('uuid');
   try {
     let activityId = uuidv4()
+    const randomizer = randomBetweenPositiveAndNegative(constant.DAY_IN_SECONDS)
 
     activity.actor = []
     activity.object = []
@@ -14,6 +16,7 @@ const postToGetstream = async (activity) => {
     activity.verb = "post"
     activity.content_created_at = activity.content.created_at
     activity.to = ['domain:all'];
+    activity.crawled_date = moment().add(randomizer, 'second').valueOf()
 
     const result = await postStream(DOMAIN, convertString(activity.domain.name, '.', '-'), activity);
     console.info('success post to getstream');
