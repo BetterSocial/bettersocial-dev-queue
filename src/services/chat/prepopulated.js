@@ -14,6 +14,7 @@ module.exports = async (id, users) => {
         console.log('id user register', id);
         let ownUser = await userService.getUserById(id);
         console.log('user register: ', ownUser);
+
         let res = await users.map(async user => {
             let members = [user.user_id, id];
             // const filter = { type: 'messaging', members: { $eq: members } };
@@ -48,7 +49,7 @@ module.exports = async (id, users) => {
                 {
                     name: channelName.join(', '),
                     type_channel: 0,
-                    created_by_id: ownUser.user_id
+                    created_by_id: ownUser.user_id,
                 },
             )
 
@@ -63,7 +64,8 @@ module.exports = async (id, users) => {
              * boleh tampil kecuali untuk user usup
              */
 
-            const textOwnUser = `${ownUser.username} started following you. Send them a message now`;
+            const textTargetUser= `${ownUser.username} started following you. Send them a message now`;
+            const textOwnUser = `You started following ${user.username}. Send them a message now.`;
             await chat.addMembers([id], {
                 text: textOwnUser,
                 user_id: id,
@@ -71,17 +73,23 @@ module.exports = async (id, users) => {
                 disable_to_user: false,
                 channel_role: "channel_moderator",
                 is_add: true,
+                system_user:id,
+                is_from_prepopulated: true,
+                other_text: textTargetUser
             });
-
-            const textTargetUser = `You started following ${user.username}. Send them a message now.`;
             await chat.addMembers([user.user_id], {
                 text: textTargetUser,
                 user_id: user.user_id,
                 only_to_user_show: false,
                 disable_to_user: id,
                 channel_role: "channel_moderator",
-                is_add: true
-            });
+                is_add: false,
+                system_user:id,
+                is_from_prepopulated: true,
+                other_text: textOwnUser
+            });           
+            
+           
             return status;
         });
 
