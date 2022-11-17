@@ -1,6 +1,8 @@
 const { postStream } = require("../services");
 const { DOMAIN, convertString, postCountScore, randomBetweenPositiveAndNegative } = require('../utils');
 const constant = require("../utils/constant");
+const moment = require('moment')
+
 const postToGetstream = async (activity) => {
   const { v4: uuidv4 } = require('uuid');
   try {
