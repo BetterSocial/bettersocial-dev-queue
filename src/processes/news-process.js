@@ -68,7 +68,7 @@ const validateDomain = async (resp) => {
     }
 }
 
-const putMainFeed = async (job, name, logo, created, data) => {
+const putMainFeed = async (job, name, logo, created, data, newsLinkFeedId) => {
     const { putStream } = require('../services');
 
     try {
@@ -83,7 +83,8 @@ const putMainFeed = async (job, name, logo, created, data) => {
                 image: data.image,
                 url: data.news_url,
                 domain_page_id: data.domain_page_id,
-                news_link_id: data.news_link_id
+                news_link_id: data.news_link_id,
+                news_feed_id: newsLinkFeedId
             }
         }
         await putStream(job.id_feed, set);
@@ -115,7 +116,7 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
                 content: { ...data, ...dateCreted }
             }
 
-            await putMainFeed(job, name, logo, created_domain, data);
+            await putMainFeed(job, name, logo, created_domain, data, findNewsLink?.post_id);
             await new ElasticNewsLink().putToIndexFromGetstreamObject(findNewsLink)
             // await postToGetstream(activity, job.user_id);
             message = 'url news not unique'
@@ -132,7 +133,7 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
                 content: { ...data, ...dateCreted }
             }
 
-            await putMainFeed(job, name, logo, created_domain, data);
+            await putMainFeed(job, name, logo, created_domain, data, result?.id);
             let result = await postToGetstream(activity, job.user_id);
 
             let postId = result.returnActivityId
