@@ -133,8 +133,8 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
                 content: { ...data, ...dateCreted }
             }
 
-            await putMainFeed(job, name, logo, created_domain, data, result?.id);
             let result = await postToGetstream(activity, job.user_id);
+            await putMainFeed(job, name, logo, created_domain, data, result?.id);
 
             let postId = result.returnActivityId
             console.info(result);
