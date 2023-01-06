@@ -19,6 +19,8 @@ module.exports = {
     QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW: 'refreshUserCommonFollowerQueueMaterializedView',
     QUEUE_NAME_DELETE_EXPIRED_POST: 'deleteExpiredPost',
     QUEUE_NAME_TEST: 'testQueue',
+    QUEUE_ADD_USER_POST_COMMENT: 'addUserPostComment',
+    QUEUE_DELETE_USER_POST_COMMENT: 'deleteUserPostComment',
     QUEUE_CREDDER_INTERVAL_IN_DAYS: 3,
 
     CREDDER_SCORE_NOT_INDEXED: -1,

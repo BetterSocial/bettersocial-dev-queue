@@ -14,7 +14,8 @@ class BetterSocialQueue {
      */
     static generate(queueName, additionalQueueOptions = {}) {
         let redisUrl = process.env.NODE_ENV === 'production' ?
-            process.env.HEROKU_REDIS_BETTERSOCIAL_GENERAL_QUEUE_URL : process.env.HEROKU_REDIS_BETTERSOCIAL_GENERAL_QUEUE_URL
+            // process.env.HEROKU_REDIS_BETTERSOCIAL_GENERAL_QUEUE_URL : process.env.HEROKU_REDIS_BETTERSOCIAL_GENERAL_QUEUE_URL
+            process.env.REDIS_URL : process.env.REDIS_URL
 
         console.log('redisUrl')
         console.log(redisUrl)
