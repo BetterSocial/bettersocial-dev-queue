@@ -27,6 +27,11 @@ class BetterSocialQueue {
             redis: {
                 enableReadyCheck: false,
                 maxRetriesPerRequest: null,
+                tls: {
+                    rejectUnauthorized: false,
+                    requestCert: true
+                }
+
             },
             createClient: (type, redisOpts) => {
                 switch (type) {
@@ -56,14 +61,6 @@ class BetterSocialQueue {
          * @type {Bull.QueueOptions}
          */
         let options = {
-            redis: {
-                enableReadyCheck: false,
-                maxRetriesPerRequest: null,
-                tls: {
-                    rejectUnauthorized: false,
-                    requestCert: true,
-                }
-            },
             ...createClientOptions,
             ...additionalQueueOptions
         }
