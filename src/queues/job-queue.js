@@ -121,38 +121,38 @@ const initQueue = () => {
   BetterSocialQueue.setEventCallback(addUserPostCommentQueue, addUserPostCommentProcess)
   BetterSocialQueue.setEventCallback(deleteUserPostCommentQueue, deleteUserPostCommentProcess)
 
-  // BetterSocialQueue.setEventCallback(
-  //   refreshUserFollowerCountMaterializedViewQueue,
-  //   refreshUserFollowerCount
-  // );
-  // BetterSocialQueue.setCron(
-  //   refreshUserFollowerCountMaterializedViewQueue,
-  //   "0 * * * *"
-  // );
+  BetterSocialQueue.setEventCallback(
+    refreshUserFollowerCountMaterializedViewQueue,
+    refreshUserFollowerCount
+  );
+  BetterSocialQueue.setCron(
+    refreshUserFollowerCountMaterializedViewQueue,
+    "0 * * * *"
+  );
 
-  // BetterSocialQueue.setEventCallback(
-  //   refreshUserTopicMaterializedViewQueue,
-  //   refreshUserTopicFollower
-  // );
-  // BetterSocialQueue.setCron(refreshUserTopicMaterializedViewQueue, "1 * * * *");
+  BetterSocialQueue.setEventCallback(
+    refreshUserTopicMaterializedViewQueue,
+    refreshUserTopicFollower
+  );
+  BetterSocialQueue.setCron(refreshUserTopicMaterializedViewQueue, "1 * * * *");
 
-  // BetterSocialQueue.setEventCallback(
-  //   refreshUserLocationMaterializedViewQueue,
-  //   refreshUserLocationFollower
-  // );
-  // BetterSocialQueue.setCron(
-  //   refreshUserLocationMaterializedViewQueue,
-  //   "2 * * * *"
-  // );
+  BetterSocialQueue.setEventCallback(
+    refreshUserLocationMaterializedViewQueue,
+    refreshUserLocationFollower
+  );
+  BetterSocialQueue.setCron(
+    refreshUserLocationMaterializedViewQueue,
+    "2 * * * *"
+  );
 
-  // BetterSocialQueue.setEventCallback(
-  //   refreshUserCommonFollowerMaterializedViewQueue,
-  //   refreshUserCommonFollowerMaterializedViewProcess
-  // );
-  // BetterSocialQueue.setCron(
-  //   refreshUserCommonFollowerMaterializedViewQueue,
-  //   "3 * * * *"
-  // );
+  BetterSocialQueue.setEventCallback(
+    refreshUserCommonFollowerMaterializedViewQueue,
+    refreshUserCommonFollowerMaterializedViewProcess
+  );
+  BetterSocialQueue.setCron(
+    refreshUserCommonFollowerMaterializedViewQueue,
+    "3 * * * *"
+  );
 
   BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess)
   BetterSocialQueue.setCron(dailyRssUpdateQueue, "0 0,12,18 * * *")
