@@ -1,5 +1,5 @@
 const {
-    deleteActivityProcessQueue, deleteUserPostCommentQueue, registerV2Queue
+    deleteActivityProcessQueue, deleteUserPostCommentQueue, registerV2Queue, registerQueue
 } = require("../config");
 const setTestRegisterV2 = async (req, res) => {
     try {
