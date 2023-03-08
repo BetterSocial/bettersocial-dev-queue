@@ -19,7 +19,6 @@ const followUser = async (token, userId, feedGroup, status = 1) => {
 const followUsers = async (userId, userIds) => {
   try {
     const result = await sequelize.transaction(async (t) => {
-      // const client = stream.connect(process.env.API_KEY, token, process.env.APP_ID);
       const clientServer = stream.connect(process.env.API_KEY, process.env.SECRET);
       const userSevice = new UserService();
       let userAdmin = await userSevice.getUserAdmin(process.env.USERNAME_ADMIN);
@@ -76,19 +75,11 @@ const makeTargetsFollowMyAnonymousUser = async (myAnonUserId, targets) => {
   console.log('anonymous called ' + myAnonUserId)
   try {
     const result = await sequelize.transaction(async (t) => {
-      // const client = stream.connect(process.env.API_KEY, token, process.env.APP_ID);
       const clientServer = stream.connect(process.env.API_KEY, process.env.SECRET);
       const userSevice = new UserService();
       let userAdmin = await userSevice.getUserAdmin(process.env.USERNAME_ADMIN);
       let id = userAdmin.user_id;
       // User Follow User
-      let followUser = {
-        //   generate UUID
-        follow_action_id: uuidv4(),
-        user_id_follower: myAnonUserId,
-        user_id_followed: id,
-      };
-
       targets.push(id);
       const follows = [];
       targets.map((target) => {
@@ -99,7 +90,6 @@ const makeTargetsFollowMyAnonymousUser = async (myAnonUserId, targets) => {
       });
 
       const res = await clientServer.followMany(follows);
-      // console.log('follow many: ', res);
       return res;
     })
     return result;
