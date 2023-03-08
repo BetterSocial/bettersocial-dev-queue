@@ -1,7 +1,8 @@
 const { parse, tldExists } = require('tldjs');
+const _ = require('lodash')
 
 const convertString = (str, from, to) => {
-    return str.split(from).join(to);
+    return str?.split(from)?.join(to);
 };
 
 const checkIfValidURL = (str) => {
@@ -44,7 +45,47 @@ const checkIfValidURL = (str) => {
     }
 };
 
+function getFirstStringFromSplit(str, splitChar = ',') {
+    if(!str) return ""; 
+    const [first] = str?.split(splitChar);
+    return first;
+}
 
+const convertingUserFormatForLocation = (locations) => {
+    let loc = [];
+    locations.map((item) => {
+        /**
+         * 1. cek location level is same with neigborhood, city, state or country
+         * 2. - if location level same with neigborhood ambil semua value location dari neigborood -> city
+         *    - if location level same with city then ambil semua data value location mulai dari city
+         *    - if location level same with state maka ambil semua data value location state dan country
+         *    - if location level same with country maka hanya ambil country saja
+         * 3. convert semua location name menjadi lowercase
+         * 4. bila ada space maka ganti space dengan -
+         * 5. 
+         */
+
+        let neighborhood = convertString(item?.neighborhood?.toLowerCase(), " ", "-");
+        let city = convertString(getFirstStringFromSplit(item?.city?.toLowerCase(), ','), " ", "-");
+        let state = convertString(item?.state?.toLowerCase(), " ", "-");
+        let country = convertString(item?.country?.toLowerCase(), " ", "-");
+
+        if (item?.location_level?.toLowerCase() == 'neighborhood') {
+            loc.push(neighborhood);
+            loc.push(city);
+        } else if (item?.location_level?.toLowerCase() == 'city') {
+            loc.push(city);
+        } else if (item?.location_level?.toLowerCase() == 'state') {
+            loc.push(state);
+            loc.push(country);
+
+        } else {
+            loc.push(country);
+        }
+    });
+    let temp = _.union(loc);
+    return temp;
+}
 
 const dateCreted = {
     created_at: new Date().toISOString(),
@@ -141,6 +182,7 @@ const randomBetweenPositiveAndNegative = (range) => {
 
 module.exports = {
     convertString,
+    convertingUserFormatForLocation,
     dateCreted,
     getToken,
     checkIfValidURL,

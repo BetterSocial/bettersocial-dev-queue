@@ -18,6 +18,7 @@ module.exports = {
     QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW: 'refreshUserLocationMaterializedView',
     QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW: 'refreshUserCommonFollowerQueueMaterializedView',
     QUEUE_NAME_DELETE_EXPIRED_POST: 'deleteExpiredPost',
+    QUEUE_NAME_REGISTER_V2: 'registerV2',
     QUEUE_NAME_TEST: 'testQueue',
     QUEUE_ADD_USER_POST_COMMENT: 'addUserPostComment',
     QUEUE_DELETE_USER_POST_COMMENT: 'deleteUserPostComment',

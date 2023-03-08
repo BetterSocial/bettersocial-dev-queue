@@ -1,5 +1,5 @@
 const StreamChat = require("stream-chat").StreamChat;
-const { convertString, capitalizing } = require("../utils/custom");
+const { convertString, capitalizing, convertingUserFormatForLocation } = require("../utils/custom");
 const {
     CHANNEL_TYPE_TOPIC,
     CHANNEL_TYPE_GROUP_LOCATION,
@@ -11,6 +11,22 @@ const prepopulated = require("../services/chat/prepopulated");
 const UserService = require("../services/postgres/UserService");
 const { followTopics, followUsers, followLocations, makeTargetsFollowMyAnonymousUser } = require("../services");
 const { LogError } = require('../databases/models');
+const UserLocationFunction = require("../databases/functions/userLocation");
+const UserTopicFunction = require("../databases/functions/userTopic");
+const UserFollowUserFunction = require("../databases/functions/userFollowUser");
+
+const {
+    sequelize,
+    Locations,
+    Topics,
+    UserFollowUser,
+    UserFollowUserHistory,
+    UserLocationHistory,
+    UserLocation,
+    UserTopic,
+    UserTopicHistory } = require("../databases/models");
+const LocationFunction = require("../databases/functions/location");
+const TopicFunction = require("../databases/functions/topics");
 
 const addUserToLocationChannel = async (userId, channelIds) => {
     try {
@@ -127,7 +143,7 @@ const followUser = async (userId, users) => {
         })
         users.push(idAdmin);
         let result = await userService.getUsersByIds(users);
-        const pre = await prepopulated(id, result);
+        const pre = await prepopulated(userId, result);
         // console.log('followUser', 'done');
     } catch (error) {
         await LogError.create({
@@ -166,27 +182,68 @@ const registerProcess = async (job, done) => {
     try {
         console.info("running job register process ! with id " + job.id);
         let data = job.data;
-        let { token,
-            userId,
-            locationsChannel,
+        let { userId,
             follows,
             topics,
             anonUserId,
             locations } = data;
 
-        // console.info('token: ', token);
-        // console.log('userId: ', userId);
-        // console.log('locationsChannel: ', locationsChannel);
-        // console.log('follows: ', follows);
-        // console.log('topics: ', topics);
-        // console.log('locations: ', locations);
+        const result = await sequelize.transaction(async (t) => {
+            const locationIds = locations.map((item) => item?.location_id);
+            await UserLocationFunction.registerUserLocation(
+                UserLocation,
+                UserLocationHistory,
+                userId,
+                locationIds,
+                t
+            );
+
+            const topicToRegistered = await TopicFunction.findAllByTopicNames(
+                Topics, 
+                topics, 
+                t, 
+                true
+            );
+
+
+            const topicNames = topicToRegistered.map((item) => item?.topic_id);
+            await UserTopicFunction.registerUserTopic(
+                UserTopic,
+                UserTopicHistory,
+                userId,
+                topicNames,
+                t
+            )
+
+            await UserFollowUserFunction.registerAddFollowUser(
+                UserFollowUser,
+                UserFollowUserHistory,
+                userId,
+                follows,
+                'onboarding',
+                t
+            )
+
+            const locationResult = await LocationFunction.findAllLocationByLocationIds(
+                Locations,
+                locationIds,
+                t,
+                true
+            )
+            
+            return {
+                locations: convertingUserFormatForLocation(locationResult)
+            }
+        });
+
+
 
         await followUser(userId, follows);
         await followAnonymousUser(anonUserId, follows);
         await prepopulatedDm(userId, follows);
-        await addUserToLocationChannel(userId, locationsChannel);
+        await addUserToLocationChannel(userId, result?.locations);
         await addUserToTopicChannel(userId, topics);
-        await followLocation(userId, locationsChannel);
+        await followLocation(userId, result?.locations);
         await followTopic(userId, topics);
         await LogError.create({
             message: `done register process userId: ${userId}`
