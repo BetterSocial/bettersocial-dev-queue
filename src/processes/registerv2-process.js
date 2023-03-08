@@ -35,7 +35,7 @@ const addUserToLocationChannel = async (userId, channelIds) => {
             process.env.SECRET
         );
         channelIds.map(async (item) => {
-            const token = serverClient.createToken(userId);
+            serverClient.createToken(userId);
             const channelId = item;
             const members = [];
             members.push(userId);
@@ -68,7 +68,7 @@ const addUserToTopicChannel = async (user_id, topics) => {
             process.env.SECRET
         );
         topics.map(async (item) => {
-            const token = serverClient.createToken(userId);
+            serverClient.createToken(userId);
             const channelId = item;
             const members = [];
             members.push(userId);
@@ -88,7 +88,6 @@ const addUserToTopicChannel = async (user_id, topics) => {
             await channel.addMembers(members);
 
         });
-        // console.log('addUserToTopicChannel', 'done');
     } catch (error) {
         await LogError.create({
             message: error.message
@@ -109,8 +108,7 @@ const prepopulatedDm = async (id, ids) => {
             ids.push(idAdmin);
         }
         let users = await userService.getUsersByIds(ids)
-        const pre = await prepopulated(id, users);
-        // console.log('prepopulatedDm', 'done');
+        await prepopulated(id, users);
     } catch (error) {
         await LogError.create({
             message: error.message
@@ -122,8 +120,7 @@ const prepopulatedDm = async (id, ids) => {
 
 const followLocation = async (userId, locations) => {
     try {
-        let res = await followLocations(userId, locations);
-        // console.log('followLocation', 'done');
+        await followLocations(userId, locations);
     } catch (error) {
         await LogError.create({
             message: error.message
@@ -134,7 +131,7 @@ const followLocation = async (userId, locations) => {
 
 const followUser = async (userId, users) => {
     try {
-        let res = await followUsers(userId, users);
+        await followUsers(userId, users);
         let userService = new UserService();
         let userAdmin = await userService.getUserAdmin(process.env.USERNAME_ADMIN);
         let idAdmin = userAdmin.user_id;
@@ -143,8 +140,7 @@ const followUser = async (userId, users) => {
         })
         users.push(idAdmin);
         let result = await userService.getUsersByIds(users);
-        const pre = await prepopulated(userId, result);
-        // console.log('followUser', 'done');
+        await prepopulated(userId, result);
     } catch (error) {
         await LogError.create({
             message: error.message
@@ -155,8 +151,7 @@ const followUser = async (userId, users) => {
 
 const followAnonymousUser = async (myAnonUserId, targets) => {
     try {
-        let res = await makeTargetsFollowMyAnonymousUser(myAnonUserId, targets);
-        // console.log('followUser', 'done');
+        await makeTargetsFollowMyAnonymousUser(myAnonUserId, targets);
     } catch (error) {
         await LogError.create({
             message: error.message
@@ -167,8 +162,7 @@ const followAnonymousUser = async (myAnonUserId, targets) => {
 
 const followTopic = async (userId, topics) => {
     try {
-        let res = await followTopics(userId, topics);
-        // console.log('followTopic', 'done');
+        await followTopics(userId, topics);
     } catch (error) {
         await LogError.create({
             message: error.message

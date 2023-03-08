@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require("uuid")
  * @param {Model} model 
  * @param {RegisterBodyData.Users} users 
  */
-module.exports = async (userFollowUserModel, userFollowUserHistoryModel, userId, followedUsers = [], followSource, transaction = null) => {
+module.exports = async (userFollowUserModel, userFollowUserHistoryModel, userId, followedUsers = [], followSource = "", transaction = null) => {
     if(followedUsers.length === 0) return;
     // User Follow User
     let follows_array_return = followedUsers.map((val) => {

@@ -127,8 +127,7 @@ const followUser = async (userId, users) => {
         })
         users.push(idAdmin);
         let result = await userService.getUsersByIds(users);
-        const pre = await prepopulated(id, result);
-        // console.log('followUser', 'done');
+        await prepopulated(id, result);
     } catch (error) {
         await LogError.create({
             message: error.message
@@ -139,7 +138,7 @@ const followUser = async (userId, users) => {
 
 const followAnonymousUser = async (myAnonUserId, targets) => {
     try {
-        let res = await makeTargetsFollowMyAnonymousUser(myAnonUserId, targets);
+        await makeTargetsFollowMyAnonymousUser(myAnonUserId, targets);
         // console.log('followUser', 'done');
     } catch (error) {
         await LogError.create({
