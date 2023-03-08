@@ -26,6 +26,7 @@
     "express": "^4.17.1",
     "getstream": "^7.2.9",
     "helmet": "^4.6.0",
+    "lodash": "^4.17.21",
     "method-override": "^3.0.0",
     "moment": "^2.29.1",
     "mongodb": "^4.3.1",

@@ -19,7 +19,6 @@ const followUser = async (token, userId, feedGroup, status = 1) => {
 const followUsers = async (userId, userIds) => {
   try {
     const result = await sequelize.transaction(async (t) => {
-      // const client = stream.connect(process.env.API_KEY, token, process.env.APP_ID);
       const clientServer = stream.connect(process.env.API_KEY, process.env.SECRET);
       const userSevice = new UserService();
       let userAdmin = await userSevice.getUserAdmin(process.env.USERNAME_ADMIN);
@@ -72,7 +71,36 @@ const followUsers = async (userId, userIds) => {
   }
 };
 
+const makeTargetsFollowMyAnonymousUser = async (myAnonUserId, targets) => {
+  console.log('anonymous called ' + myAnonUserId)
+  try {
+    const result = await sequelize.transaction(async (t) => {
+      const clientServer = stream.connect(process.env.API_KEY, process.env.SECRET);
+      const userSevice = new UserService();
+      let userAdmin = await userSevice.getUserAdmin(process.env.USERNAME_ADMIN);
+      let id = userAdmin.user_id;
+      // User Follow User
+      targets.push(id);
+      const follows = [];
+      targets.map((target) => {
+        follows.push({
+          source: "main_feed:" + target.toLowerCase(),
+          target: "user_anon:" + myAnonUserId,
+        });
+      });
+
+      const res = await clientServer.followMany(follows);
+      return res;
+    })
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 module.exports = {
   followUser,
   followUsers,
+  makeTargetsFollowMyAnonymousUser
 };

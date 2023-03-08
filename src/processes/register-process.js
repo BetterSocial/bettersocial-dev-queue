@@ -1,5 +1,5 @@
 const StreamChat = require("stream-chat").StreamChat;
-const { convertString, capitalizing } = require("../utils/custom");
+const { convertString, capitalizing, convertingUserFormatForLocation } = require("../utils/custom");
 const {
     CHANNEL_TYPE_TOPIC,
     CHANNEL_TYPE_GROUP_LOCATION,
@@ -9,169 +9,37 @@ const {
 } = require("../utils/constant");
 const prepopulated = require("../services/chat/prepopulated");
 const UserService = require("../services/postgres/UserService");
-const { followTopics, followUsers, followLocations } = require("../services");
-const { LogError } = require('../databases/models');
-
-const addUserToLocationChannel = async (userId, channelIds) => {
-    try {
-        const serverClient = StreamChat.getInstance(
-            process.env.API_KEY,
-            process.env.SECRET
-        );
-        channelIds.map(async (item) => {
-            const token = serverClient.createToken(userId);
-            const channelId = item;
-            const members = [];
-            members.push(userId);
-
-            let name = convertString(channelId, "-", " ");
-            let channelName = capitalizing(name);
-
-            const channel = serverClient.channel("messaging", channelId, {
-                name: channelName,
-                created_by_id: "system",
-                channel_type: CHANNEL_TYPE_GROUP_LOCATION,
-                channelImage: ICON_LOCATION_CHANNEL,
-                channel_image: ICON_LOCATION_CHANNEL,
-                image: ICON_LOCATION_CHANNEL
-            });
-            await channel.create();
-            await channel.addMembers(members);
-        });
-        console.info('addUser to channel: ', 'done');
-    } catch (error) {
-        console.error('error addUserToChannel: ', error);
-    }
-};
-
-const addUserToTopicChannel = async (user_id, topics) => {
-    try {
-        let userId = user_id.toString();
-        const serverClient = StreamChat.getInstance(
-            process.env.API_KEY,
-            process.env.SECRET
-        );
-        topics.map(async (item) => {
-            const token = serverClient.createToken(userId);
-            const channelId = item;
-            const members = [];
-            members.push(userId);
-
-            let channelName = "#" + convertString(item, "-", "");
-
-            const channel = serverClient.channel("topics", channelId, {
-                name: channelName,
-                created_by_id: "system",
-                channel_type: CHANNEL_TYPE_TOPIC,
-                channelImage: ICON_TOPIC_CHANNEL,
-                channel_image: ICON_TOPIC_CHANNEL,
-                image: ICON_TOPIC_CHANNEL
-            });
-            await channel.create();
-
-            await channel.addMembers(members);
-
-        });
-        // console.log('addUserToTopicChannel', 'done');
-    } catch (error) {
-        await LogError.create({
-            message: error.message
-        })
-        console.error('addUserToTopicChannel: ', error);
-    }
-};
-
-const prepopulatedDm = async (id, ids) => {
-    try {
-        let userService = new UserService();
-        let userAdmin = await userService.getUserAdmin(process.env.USERNAME_ADMIN);
-        if (userAdmin) {
-            let idAdmin = userAdmin.user_id;
-            ids = ids.filter((element, i, ids) => {
-                return (element !== idAdmin);
-            })
-            ids.push(idAdmin);
-        }
-        let users = await userService.getUsersByIds(ids)
-        const pre = await prepopulated(id, users);
-        // console.log('prepopulatedDm', 'done');
-    } catch (error) {
-        await LogError.create({
-            message: error.message
-        })
-        console.error('error prepopulatedDm: ', error);
-    }
-}
-
-
-const followLocation = async (userId, locations) => {
-    try {
-        let res = await followLocations(userId, locations);
-        // console.log('followLocation', 'done');
-    } catch (error) {
-        await LogError.create({
-            message: error.message
-        })
-        console.error('followLocation: ', error);
-    }
-};
-
-const followUser = async (userId, users) => {
-    try {
-        let res = await followUsers(userId, users);
-        let userService = new UserService();
-        let userAdmin = await userService.getUserAdmin(process.env.USERNAME_ADMIN);
-        let idAdmin = userAdmin.user_id;
-        users = users.filter((element, i, users) => {
-            return (element !== idAdmin);
-        })
-        users.push(idAdmin);
-        let result = await userService.getUsersByIds(users);
-        const pre = await prepopulated(id, result);
-        // console.log('followUser', 'done');
-    } catch (error) {
-        await LogError.create({
-            message: error.message
-        })
-        console.error('followUser: ', error);
-    }
-};
-
-const followTopic = async (userId, topics) => {
-    try {
-        let res = await followTopics(userId, topics);
-        // console.log('followTopic', 'done');
-    } catch (error) {
-        await LogError.create({
-            message: error.message
-        })
-        console.error('followTopic: ', error);
-    }
-};
-
+const { followTopics, followUsers, followLocations, makeTargetsFollowMyAnonymousUser } = require("../services");
+const { LogError, Locations } = require('../databases/models');
+const { followUser, followAnonymousUser, prepopulatedDm, addUserToLocationChannel, addUserToTopicChannel, followLocation, followTopic } = require("./helper");
+const LocationFunction = require("../databases/functions/location");
 
 const registerProcess = async (job, done) => {
     try {
         console.info("running job register process ! with id " + job.id);
         let data = job.data;
-        let { token,
-            userId,
-            locationsChannel,
+        let { userId,
             follows,
             topics,
+            anonUserId,
             locations } = data;
 
-        // console.info('token: ', token);
-        // console.log('userId: ', userId);
-        // console.log('locationsChannel: ', locationsChannel);
-        // console.log('follows: ', follows);
-        // console.log('topics: ', topics);
-        // console.log('locations: ', locations);
+        const locationIds = locations.map((item) => item?.location_id);
+        const locationResult = await LocationFunction.findAllLocationByLocationIds(
+            Locations,
+            locationIds,
+            null,
+            true
+        )
 
+        const location = convertingUserFormatForLocation(locationResult);
+
+        await followUser(userId, follows);
+        await followAnonymousUser(anonUserId, follows);
         await prepopulatedDm(userId, follows);
-        await addUserToLocationChannel(userId, locationsChannel);
+        await addUserToLocationChannel(userId, location);
         await addUserToTopicChannel(userId, topics);
-        await followLocation(userId, locationsChannel);
+        await followLocation(userId, location);
         await followTopic(userId, topics);
         await LogError.create({
             message: `done register process userId: ${userId}`

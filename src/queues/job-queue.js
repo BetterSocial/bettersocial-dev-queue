@@ -39,7 +39,8 @@ const {
   deleteExpiredPost,
   addUserPostComment,
   addUserPostCommentQueue,
-  deleteUserPostCommentQueue
+  deleteUserPostCommentQueue,
+  registerV2Queue
 } = require("../config");
 
 const {
@@ -48,6 +49,7 @@ const {
 } = require("../processes/chat-process");
 const { prepopulatedDm } = require("../processes/prepopulate-dm-process");
 const { registerProcess } = require("../processes/register-process");
+const { registerProcess: registerV2Process } = require("../processes/registerv2-process");
 const { testProcess } = require("../processes/test-process");
 const { updateDomainCredderScore } = require("../utils");
 const { credderScoreProcess } = require("../processes/credder-score-process");
@@ -84,6 +86,12 @@ const initQueue = () => {
   registerQueue.on("failed", handlerFailure);
   registerQueue.on("completed", handlerCompleted);
   registerQueue.on("stalled", handlerStalled);
+
+  console.log("Register Queue V2 job is working");
+  registerV2Queue.process(registerV2Process);
+  registerV2Queue.on("failed", handlerFailure);
+  registerV2Queue.on("completed", handlerCompleted);
+  registerV2Queue.on("stalled", handlerStalled);
 
   console.info("scoringProcessQueue job is working!");
   // scoringProcessQueue.process(scoringProcessJob);
