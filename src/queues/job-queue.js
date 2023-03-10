@@ -94,13 +94,13 @@ const initQueue = () => {
   registerV2Queue.on("stalled", handlerStalled);
 
   console.info("scoringProcessQueue job is working!");
-  // scoringProcessQueue.process(scoringProcessJob);
-  // scoringProcessQueue.on("failed", handlerFailure);
-  // scoringProcessQueue.on("completed", handlerCompleted);
-  // scoringProcessQueue.on("stalled", handlerStalled);
-  // scoringProcessQueue.on("error", (err) => {
-  //   console.error("scoringProcessQueue error : ", err);
-  // });
+  scoringProcessQueue.process(scoringProcessJob);
+  scoringProcessQueue.on("failed", handlerFailure);
+  scoringProcessQueue.on("completed", handlerCompleted);
+  scoringProcessQueue.on("stalled", handlerStalled);
+  scoringProcessQueue.on("error", (err) => {
+    console.error("scoringProcessQueue error : ", err);
+  });
 
   console.info("scoringDailyProcessQueue job is working!");
   // scoringDailyProcessQueue.process(scoringDailyProcessJob);
