@@ -30,53 +30,41 @@ const registerProcess = async (job, done) => {
             anonUserId,
             locations } = data;
 
-        const result = await sequelize.transaction(async (t) => {
-            const locationIds = locations.map((item) => item?.location_id);
-            await UserLocationFunction.registerUserLocation(
-                UserLocation,
-                UserLocationHistory,
-                userId,
-                locationIds,
-                t
-            );
 
-            const topicToRegistered = await TopicFunction.findAllByTopicNames(
-                Topics, 
-                topics, 
-                t, 
-                true
-            );
+        const locationIds = locations.map((item) => item?.location_id);
+        await UserLocationFunction.registerUserLocation(
+            UserLocation,
+            UserLocationHistory,
+            userId,
+            locationIds
+        );
 
+        const topicNames = topicToRegistered.map((item) => item?.topic_id);
+        await UserTopicFunction.registerUserTopic(
+            UserTopic,
+            UserTopicHistory,
+            userId,
+            topicNames
+        )
 
-            const topicNames = topicToRegistered.map((item) => item?.topic_id);
-            await UserTopicFunction.registerUserTopic(
-                UserTopic,
-                UserTopicHistory,
-                userId,
-                topicNames,
-                t
-            )
+        await UserFollowUserFunction.registerAddFollowUser(
+            UserFollowUser,
+            UserFollowUserHistory,
+            userId,
+            follows,
+            'onboarding'
+        )
 
-            await UserFollowUserFunction.registerAddFollowUser(
-                UserFollowUser,
-                UserFollowUserHistory,
-                userId,
-                follows,
-                'onboarding',
-                t
-            )
+        const locationResult = await LocationFunction.findAllLocationByLocationIds(
+            Locations,
+            locationIds,
+            null,
+            true
+        )
 
-            const locationResult = await LocationFunction.findAllLocationByLocationIds(
-                Locations,
-                locationIds,
-                t,
-                true
-            )
-            
-            return {
-                locations: convertingUserFormatForLocation(locationResult)
-            }
-        });
+        const result = {
+            locations: convertingUserFormatForLocation(locationResult)
+        }
 
         await ProcessHelper.followUser(userId, follows);
         await ProcessHelper.followAnonymousUser(anonUserId, follows);
