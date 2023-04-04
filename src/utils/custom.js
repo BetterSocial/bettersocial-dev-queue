@@ -1,7 +1,7 @@
 const { parse, tldExists } = require('tldjs');
 const _ = require('lodash')
 
-const convertString = (str, from, to) => {
+const convertString = (str = "", from, to) => {
     return str?.split(from)?.join(to);
 };
 
@@ -53,6 +53,8 @@ function getFirstStringFromSplit(str, splitChar = ',') {
 
 const convertingUserFormatForLocation = (locations) => {
     let loc = [];
+    console.log('locations')
+    console.log(locations)
     locations.map((item) => {
         /**
          * 1. cek location level is same with neigborhood, city, state or country

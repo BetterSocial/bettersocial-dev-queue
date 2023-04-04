@@ -11,9 +11,7 @@ module.exports = async (id, users) => {
     );
     try {
         let userService = new UserService();
-        console.log('id user register', id);
         let ownUser = await userService.getUserById(id);
-        console.log('user register: ', ownUser);
 
         let res = await users.map(async user => {
             let members = [user.user_id, id];
