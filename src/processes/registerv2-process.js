@@ -39,12 +39,13 @@ const registerProcess = async (job, done) => {
             locationIds
         );
 
-        const topicNames = topics.map((item) => item?.topic_id);
+        const topicIds = topics.map((item) => item?.topic_id);
+        const topicNames = topics.map((item) => item?.name);
         await UserTopicFunction.registerUserTopic(
             UserTopic,
             UserTopicHistory,
             userId,
-            topicNames
+            topicIds
         )
 
         await UserFollowUserFunction.registerAddFollowUser(
