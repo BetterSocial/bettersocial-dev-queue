@@ -39,7 +39,7 @@ const registerProcess = async (job, done) => {
             locationIds
         );
 
-        const topicNames = topicToRegistered.map((item) => item?.topic_id);
+        const topicNames = topics.map((item) => item?.topic_id);
         await UserTopicFunction.registerUserTopic(
             UserTopic,
             UserTopicHistory,
