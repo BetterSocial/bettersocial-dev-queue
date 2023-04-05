@@ -77,9 +77,7 @@ const initQueue = () => {
   newsQueue.on("error", (err) => {
     console.error("newsQueue error : ", err);
   });
-  newsQueue.on("active", (res) => {
-    // console.log(res);
-  });
+  newsQueue.on("active", (res) => {});
 
   console.log("Register Queue job is working");
   registerQueue.process(registerProcess);
@@ -103,13 +101,13 @@ const initQueue = () => {
   });
 
   console.info("scoringDailyProcessQueue job is working!");
-  // scoringDailyProcessQueue.process(scoringDailyProcessJob);
-  // scoringDailyProcessQueue.on("failed", handlerFailure);
-  // scoringDailyProcessQueue.on("completed", handlerCompleted);
-  // scoringDailyProcessQueue.on("stalled", handlerStalled);
-  // scoringDailyProcessQueue.on("error", (err) => {
-  //   console.log("scoringDailyProcessQueue error : ", err);
-  // });
+  scoringDailyProcessQueue.process(scoringDailyProcessJob);
+  scoringDailyProcessQueue.on("failed", handlerFailure);
+  scoringDailyProcessQueue.on("completed", handlerCompleted);
+  scoringDailyProcessQueue.on("stalled", handlerStalled);
+  scoringDailyProcessQueue.on("error", (err) => {
+    console.log("scoringDailyProcessQueue error : ", err);
+  });
   console.info("deleteActivityProcessQueue job is working!");
   deleteActivityProcessQueue.process(deleteActivityProcessJob);
   deleteActivityProcessQueue.on("failed", handlerFailure);
@@ -123,8 +121,8 @@ const initQueue = () => {
    * (START) General Queue
    */
   BetterSocialQueue.setEventCallback(credderScoreQueue, credderScoreProcess)
-  // BetterSocialQueue.setEventCallback(dailyCredderUpdateQueue, credderDailyScoreProcess);
-  // BetterSocialQueue.setCron(dailyCredderUpdateQueue, "0 12 * * *");
+  BetterSocialQueue.setEventCallback(dailyCredderUpdateQueue, credderDailyScoreProcess);
+  BetterSocialQueue.setCron(dailyCredderUpdateQueue, "0 12 * * *");
 
   BetterSocialQueue.setEventCallback(addUserPostCommentQueue, addUserPostCommentProcess)
   BetterSocialQueue.setEventCallback(deleteUserPostCommentQueue, deleteUserPostCommentProcess)
