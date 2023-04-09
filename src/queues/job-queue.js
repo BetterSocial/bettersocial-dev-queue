@@ -40,7 +40,8 @@ const {
   addUserPostComment,
   addUserPostCommentQueue,
   deleteUserPostCommentQueue,
-  registerV2Queue
+  registerV2Queue,
+  refreshMaterializedViewQueue
 } = require("../config");
 
 const {
@@ -64,6 +65,7 @@ const { deleteExpiredPostProcess } = require("../processes/delete-expired-post-p
 const { credderDailyScoreProcess } = require("../processes/credder-daily-score-process");
 const { addUserPostCommentProcess } = require("../processes/add-user-post-comment");
 const { deleteUserPostCommentProcessQueue, deleteUserPostCommentProcess } = require("../processes/delete-user-post-comment-process");
+const { refreshAllMaterializedViewProcess } = require("../processes/refresh-all-materialized-view-process");
 
 /*
   @description initial all job queue
@@ -78,12 +80,6 @@ const initQueue = () => {
     console.error("newsQueue error : ", err);
   });
   newsQueue.on("active", (res) => {});
-
-  console.log("Register Queue job is working");
-  registerQueue.process(registerProcess);
-  registerQueue.on("failed", handlerFailure);
-  registerQueue.on("completed", handlerCompleted);
-  registerQueue.on("stalled", handlerStalled);
 
   console.log("Register Queue V2 job is working");
   registerV2Queue.process(registerV2Process);
@@ -128,36 +124,12 @@ const initQueue = () => {
   BetterSocialQueue.setEventCallback(deleteUserPostCommentQueue, deleteUserPostCommentProcess)
 
   BetterSocialQueue.setEventCallback(
-    refreshUserFollowerCountMaterializedViewQueue,
-    refreshUserFollowerCount
+    refreshMaterializedViewQueue,
+    refreshAllMaterializedViewProcess
   );
   BetterSocialQueue.setCron(
-    refreshUserFollowerCountMaterializedViewQueue,
+    refreshMaterializedViewQueue,
     "0 * * * *"
-  );
-
-  BetterSocialQueue.setEventCallback(
-    refreshUserTopicMaterializedViewQueue,
-    refreshUserTopicFollower
-  );
-  BetterSocialQueue.setCron(refreshUserTopicMaterializedViewQueue, "1 * * * *");
-
-  BetterSocialQueue.setEventCallback(
-    refreshUserLocationMaterializedViewQueue,
-    refreshUserLocationFollower
-  );
-  BetterSocialQueue.setCron(
-    refreshUserLocationMaterializedViewQueue,
-    "2 * * * *"
-  );
-
-  BetterSocialQueue.setEventCallback(
-    refreshUserCommonFollowerMaterializedViewQueue,
-    refreshUserCommonFollowerMaterializedViewProcess
-  );
-  BetterSocialQueue.setCron(
-    refreshUserCommonFollowerMaterializedViewQueue,
-    "3 * * * *"
   );
 
   BetterSocialQueue.setEventCallback(dailyRssUpdateQueue, rssProcess)

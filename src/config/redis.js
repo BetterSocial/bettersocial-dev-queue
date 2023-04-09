@@ -3,7 +3,7 @@ const BetterSocialQueue = require("../redis/BetterSocialQueue")
 const { QUEUE_NAME_CREDDER_SCORE, QUEUE_RSS,
   QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW, QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW,
   QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW, QUEUE_RSS_SECOND, QUEUE_NAME_ADD_QUEUE_POST_TIME, QUEUE_NAME_TEST,
-  QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW, QUEUE_NAME_DELETE_EXPIRED_POST, QUEUE_NAME_DAILY_CREDDER_SCORE, QUEUE_ADD_USER_POST_COMMENT, QUEUE_DELETE_USER_POST_COMMENT, QUEUE_NAME_REGISTER_V2 } = require("../utils");
+  QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW, QUEUE_NAME_DELETE_EXPIRED_POST, QUEUE_NAME_DAILY_CREDDER_SCORE, QUEUE_ADD_USER_POST_COMMENT, QUEUE_DELETE_USER_POST_COMMENT, QUEUE_NAME_REGISTER_V2, QUEUE_NAME_REFRESH_ALL_MATERIALIZED_VIEW } = require("../utils");
 
 const connectRedis = process.env.REDIS_TLS_URL ? process.env.REDIS_TLS_URL : process.env.REDIS_URL;
 
@@ -23,7 +23,6 @@ const queueOptions = {
  * (START) List of queues that uses scoring redis
  */
 const newsQueue = new Bull("newsQueue", connectRedis, queueOptions);
-const registerQueue = new Bull("registerQueue", connectRedis, queueOptions);
 const registerV2Queue = new Bull(QUEUE_NAME_REGISTER_V2, connectRedis, queueOptions);
 const scoringProcessQueue = new Bull("scoringProcessQueue", connectRedis, queueOptions);
 const scoringDailyProcessQueue = new Bull("scoringDailyProcessQueue", connectRedis, queueOptions);
@@ -49,10 +48,7 @@ const dailyRssUpdateQueueSecond = BetterSocialQueue.generate(QUEUE_RSS_SECOND)
 const deleteExpiredPost = BetterSocialQueue.generate(QUEUE_NAME_DELETE_EXPIRED_POST)
 const deleteUserPostCommentQueue = BetterSocialQueue.generate(QUEUE_DELETE_USER_POST_COMMENT)
 const postTimeQueue = BetterSocialQueue.generate(QUEUE_NAME_ADD_QUEUE_POST_TIME);
-const refreshUserCommonFollowerMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW)
-const refreshUserFollowerCountMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_FOLLOWER_COUNT_MATERIALIZED_VIEW)
-const refreshUserLocationMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW)
-const refreshUserTopicMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_USER_TOPIC_MATERIALIZED_VIEW)
+const refreshMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_ALL_MATERIALIZED_VIEW)
 const testQueue = BetterSocialQueue.generate(QUEUE_NAME_TEST);
 /**
  * (END) of list of queues that uses general redis
@@ -69,11 +65,7 @@ module.exports = {
   deleteUserPostCommentQueue,
   newsQueue,
   postTimeQueue,
-  refreshUserCommonFollowerMaterializedViewQueue,
-  refreshUserFollowerCountMaterializedViewQueue,
-  refreshUserLocationMaterializedViewQueue,
-  refreshUserTopicMaterializedViewQueue,
-  registerQueue,
+  refreshMaterializedViewQueue,
   registerV2Queue,
   scoringDailyProcessQueue,
   scoringProcessQueue,
