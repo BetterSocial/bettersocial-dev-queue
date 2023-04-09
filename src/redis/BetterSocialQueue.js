@@ -17,19 +17,14 @@ class BetterSocialQueue {
         // let redisUrl = process.env.REDIS_TLS_URL
 
         // Comment below for heroku redis
-        let redisUrl = process.env.REDIS_URL
+        let redisUrl = process.env.REDIS_TLS_URL ? process.env.REDIS_TLS_URL : process.env.REDIS_URL;
 
-        console.log('redisUrl')
-        console.log(redisUrl)
-
-        // let createClientOptions = {}
         let createClientOptions = {
             redis: {
                 enableReadyCheck: false,
                 maxRetriesPerRequest: null,
                 tls: {
                     rejectUnauthorized: false,
-                    requestCert: true
                 }
 
             },

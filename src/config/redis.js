@@ -5,11 +5,15 @@ const { QUEUE_NAME_CREDDER_SCORE, QUEUE_RSS,
   QUEUE_NAME_REFRESH_USER_LOCATION_MATERIALIZED_VIEW, QUEUE_RSS_SECOND, QUEUE_NAME_ADD_QUEUE_POST_TIME, QUEUE_NAME_TEST,
   QUEUE_NAME_REFRESH_USER_COMMON_FOLLOWER_QUEUE_MATERIALIZED_VIEW, QUEUE_NAME_DELETE_EXPIRED_POST, QUEUE_NAME_DAILY_CREDDER_SCORE, QUEUE_ADD_USER_POST_COMMENT, QUEUE_DELETE_USER_POST_COMMENT, QUEUE_NAME_REGISTER_V2 } = require("../utils");
 
-const connectRedis = process.env.REDIS_URL;
+const connectRedis = process.env.REDIS_TLS_URL ? process.env.REDIS_TLS_URL : process.env.REDIS_URL;
 
 // for production
 const queueOptions = {
-  redis: { tls: { rejectUnauthorized: false, requestCert: true, } }
+  redis: {
+    tls: {
+      rejectUnauthorized: false,
+    }
+  }
 };
 
 // for development
