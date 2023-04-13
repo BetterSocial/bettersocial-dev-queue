@@ -6,9 +6,7 @@ const UserTopicFunction = require("../databases/functions/userTopic");
 const UserFollowUserFunction = require("../databases/functions/userFollowUser");
 
 const {
-    sequelize,
     Locations,
-    Topics,
     UserFollowUser,
     UserFollowUserHistory,
     UserLocationHistory,
@@ -16,8 +14,7 @@ const {
     UserTopic,
     UserTopicHistory } = require("../databases/models");
 const LocationFunction = require("../databases/functions/location");
-const TopicFunction = require("../databases/functions/topics");
-const { followUser, followAnonymousUser, prepopulatedDm, addUserToLocationChannel, addUserToTopicChannel, followLocation, followTopic } = require("./helper");
+const { addUserToTopicChannel } = require("./helper");
 const ProcessHelper = require("./helper");
 
 const registerProcess = async (job, done) => {
@@ -70,7 +67,6 @@ const registerProcess = async (job, done) => {
         await ProcessHelper.followUser(userId, follows);
         await ProcessHelper.followAnonymousUser(anonUserId, follows);
         await ProcessHelper.prepopulatedDm(userId, follows);
-        await ProcessHelper.addUserToLocationChannel(userId, result?.locations || []);
         await ProcessHelper.addUserToTopicChannel(userId, topicNames);
         await ProcessHelper.followLocation(userId, result?.locations);
         await ProcessHelper.followTopic(userId, topics);
