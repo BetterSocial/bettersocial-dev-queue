@@ -29,6 +29,8 @@ module.exports = async (id, users) => {
             channelName.push(user.username);
             channelName.push(ownUser.username);
             let generatedChannelId = generateRandomId();
+            console.log('generatedChannelId')
+            console.log(generatedChannelId)
             let memberWithRoles = [];
 
             memberWithRoles.push({

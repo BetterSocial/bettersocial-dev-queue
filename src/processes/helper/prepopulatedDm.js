@@ -14,6 +14,8 @@ const prepopulatedDm = async (id, ids) => {
             ids.push(idAdmin);
         }
         let users = await userService.getUsersByIds(ids);
+        console.log('users in prepopulatedDm:')
+        console.log(users)
         await prepopulated(id, users);
     } catch (error) {
         await LogError.create({
