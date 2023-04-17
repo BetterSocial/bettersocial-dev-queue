@@ -64,12 +64,13 @@ const registerProcess = async (job, done) => {
             locations: convertingUserFormatForLocation(locationResult)
         }
 
+        await ProcessHelper.followDefaultLocation(userId)
+        await ProcessHelper.prepopulatedDm(userId, follows);
         await ProcessHelper.followUser(userId, follows);
         await ProcessHelper.followAnonymousUser(anonUserId, follows);
-        await ProcessHelper.prepopulatedDm(userId, follows);
-        await ProcessHelper.addUserToTopicChannel(userId, topicNames);
-        await ProcessHelper.followLocation(userId, result?.locations);
         await ProcessHelper.followTopic(userId, topics);
+        await ProcessHelper.followLocation(userId, result?.locations);
+        await ProcessHelper.addUserToTopicChannel(userId, topicNames);
         await LogError.create({
             message: `done register process userId: ${userId}`
         })
