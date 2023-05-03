@@ -31,14 +31,13 @@ const followUsers = async (userId, userIds) => {
         user_id_followed: id,
       };
 
-      let statusFollowUser = await UserFollowUser.create(
+      await UserFollowUser.create(
         followUser,
         {
           transaction: t,
           returning: true,
         }
       );
-      console.info(statusFollowUser);
 
       let user_follow_user_return = {
         user_id_follower: userId,
@@ -46,10 +45,9 @@ const followUsers = async (userId, userIds) => {
         action: "in",
         source: 'onboarding',
       };
-      let statusSerFollowHistory = await UserFollowUserHistory.create(user_follow_user_return, {
+      await UserFollowUserHistory.create(user_follow_user_return, {
         transaction: t,
       });
-      console.info(statusSerFollowHistory);
 
       userIds.push(id);
       const follows = [];
@@ -61,7 +59,6 @@ const followUsers = async (userId, userIds) => {
       });
 
       const res = await clientServer.followMany(follows);
-      // console.log('follow many: ', res);
       return res;
     })
     return result;
@@ -72,7 +69,6 @@ const followUsers = async (userId, userIds) => {
 };
 
 const makeTargetsFollowMyAnonymousUser = async (myAnonUserId, targets) => {
-  console.log('anonymous called ' + myAnonUserId)
   try {
     const result = await sequelize.transaction(async (t) => {
       const clientServer = stream.connect(process.env.API_KEY, process.env.SECRET);
