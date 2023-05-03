@@ -53,8 +53,6 @@ function getFirstStringFromSplit(str, splitChar = ',') {
 
 const convertingUserFormatForLocation = (locations) => {
     let loc = [];
-    console.log('locations')
-    console.log(locations)
     locations.map((item) => {
         /**
          * 1. cek location level is same with neigborhood, city, state or country
