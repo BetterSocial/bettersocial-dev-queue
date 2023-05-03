@@ -3,11 +3,7 @@ const { createPostTime } = require("../processes/post-time-process");
 const { scoringProcessJob } = require("../processes/scoring-process");
 const { scoringDailyProcessJob } = require("../processes/scoring-daily-process");
 const { deleteActivityProcessJob } = require("../processes/delete-activity-process");
-const {
-  followLocation,
-  followTopic,
-  followUser,
-} = require("../processes/follow-location-process");
+
 const {
   handlerFailure,
   handlerCompleted,
@@ -15,52 +11,27 @@ const {
 } = require("./handler");
 
 const {
-  addUserToChannelQueue,
-  addUserToTopicChannelQueue,
-  followTopicQueue,
-  followUserQueue,
-  locationQueue,
   newsQueue,
   postTimeQueue,
-  prepopulatedDmQueue,
-  registerQueue,
   scoringDailyProcessQueue,
   scoringProcessQueue,
   testQueue,
   credderScoreQueue,
   dailyCredderUpdateQueue,
   dailyRssUpdateQueue,
-  refreshUserFollowerCountMaterializedViewQueue,
-  refreshUserTopicMaterializedViewQueue,
-  refreshUserLocationMaterializedViewQueue,
-  dailyRssUpdateQueueSecond,
-  refreshUserCommonFollowerMaterializedViewQueue,
   deleteActivityProcessQueue,
   deleteExpiredPost,
-  addUserPostComment,
   addUserPostCommentQueue,
   deleteUserPostCommentQueue,
   registerV2Queue,
   refreshMaterializedViewQueue
 } = require("../config");
 
-const {
-  addUserToChannel,
-  addUserToTopicChannel,
-} = require("../processes/chat-process");
-const { prepopulatedDm } = require("../processes/prepopulate-dm-process");
-const { registerProcess } = require("../processes/register-process");
 const { registerProcess: registerV2Process } = require("../processes/registerv2-process");
-const { testProcess } = require("../processes/test-process");
-const { updateDomainCredderScore } = require("../utils");
 const { credderScoreProcess } = require("../processes/credder-score-process");
 
 const { rssProcess } = require("../processes/rss-process");
-const { refreshUserFollowerCount } = require("../processes/refresh-user-follower-count-process");
-const { refreshUserTopicFollower, } = require("../processes/refresh-user-topic-process");
-const { refreshUserLocationFollower, } = require("../processes/refresh-user-location-process");
 const BetterSocialQueue = require("../redis/BetterSocialQueue");
-const { refreshUserCommonFollowerMaterializedViewProcess } = require("../processes/refresh-user-common-follower-count-process");
 const { deleteExpiredPostProcess } = require("../processes/delete-expired-post-process");
 const { credderDailyScoreProcess } = require("../processes/credder-daily-score-process");
 const { addUserPostCommentProcess } = require("../processes/add-user-post-comment");
