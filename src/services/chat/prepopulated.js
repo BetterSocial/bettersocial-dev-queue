@@ -9,39 +9,19 @@ module.exports = async (id, users) => {
         process.env.API_KEY,
         process.env.SECRET
     );
+
+    console.log('prepopulated child function is called')
     try {
         let userService = new UserService();
         let ownUser = await userService.getUserById(id);
 
         let res = await users.map(async user => {
-            let members = [user.user_id, id];
-            // const filter = { type: 'messaging', members: { $eq: members } };
-            // const sort = [{ last_message_at: -1 }];
-            // const findChannels = await serverClient.queryChannels(filter, sort, {
-            //   watch: true,
-            //   state: true,
-            // });
-            // if (findChannels.length > 0) {
-            //   console.log('channel sudah ada');
-            //   return;
-            // }
             const channelName = [];
             channelName.push(user.username);
             channelName.push(ownUser.username);
             let generatedChannelId = generateRandomId();
             console.log('generatedChannelId')
             console.log(generatedChannelId)
-            let memberWithRoles = [];
-
-            memberWithRoles.push({
-                user_id: id,
-                channel_role: "channel_moderator",
-            })
-
-            memberWithRoles.push({
-                user_id: user.user_id,
-                channel_role: "channel_moderator",
-            })
 
             let chat = serverClient.channel(
                 'messaging',
@@ -64,7 +44,7 @@ module.exports = async (id, users) => {
              * boleh tampil kecuali untuk user usup
              */
 
-            const textTargetUser= `${ownUser.username} started following you. Send them a message now`;
+            const textTargetUser = `${ownUser.username} started following you. Send them a message now`;
             const textOwnUser = `You started following ${user.username}. Send them a message now.`;
             await chat.addMembers([id], {
                 text: textOwnUser,
@@ -73,7 +53,7 @@ module.exports = async (id, users) => {
                 disable_to_user: false,
                 channel_role: "channel_moderator",
                 is_add: true,
-                system_user:id,
+                system_user: id,
                 is_from_prepopulated: true,
                 other_text: textTargetUser
             });
@@ -84,12 +64,12 @@ module.exports = async (id, users) => {
                 disable_to_user: id,
                 channel_role: "channel_moderator",
                 is_add: false,
-                system_user:id,
+                system_user: id,
                 is_from_prepopulated: true,
                 other_text: textOwnUser
-            });           
-            
-           
+            });
+
+
             return status;
         });
 
