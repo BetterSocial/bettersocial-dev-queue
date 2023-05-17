@@ -35,6 +35,8 @@ const getDb = async () => {
     console.debug("try to create mongodb connection");
     await client.connect();
     db = client.db(config.database);
+    console.log('db connected')
+    console.log(db)
 
     return db;
   }
