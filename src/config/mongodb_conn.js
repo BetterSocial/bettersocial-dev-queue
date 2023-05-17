@@ -34,9 +34,14 @@ const getDb = async () => {
   } else {
     console.debug("try to create mongodb connection");
     await client.connect();
-    db = client.db(config.database);
-    console.log('db connected')
-    console.log(db)
+    try {
+      db = client.db(config.database);
+      console.log('db connected')
+      console.log(db)
+    } catch(e) {
+      console.log('db connection error ', e)
+    }
+    
 
     return db;
   }
