@@ -1,6 +1,8 @@
 const Bull = require("bull");
 const { v4: uuidv4 } = require("uuid");
-const connectRedis = process.env.REDIS_TLS_URL ? process.env.REDIS_TLS_URL : process.env.REDIS_URL;
+const connectRedis = process.env.REDIS_TLS_URL
+  ? process.env.REDIS_TLS_URL
+  : process.env.REDIS_URL;
 
 // init the scoring process queue object, to be used on sending message to the queue
 // For production
@@ -11,9 +13,9 @@ const redisOptions = {
       rejectUnauthorized: false,
     },
     maxRetriesPerRequest: 100,
-    connectTimeout: 30000
-  }
-}
+    connectTimeout: 30000,
+  },
+};
 
 // For local
 // const redisOptions = {};
@@ -70,7 +72,10 @@ const sendQueueForCronDailyProcess = async (event, data) => {
     removeOnComplete: true,
   };
 
-  return await scoringDailyProcessQueue.add(queueData, options);
+  return await scoringDailyProcessQueue.add(queueData, {
+    ...options,
+    backoff: { type: "exponential", delay: 5 * 1000 },
+  });
 };
 
 module.exports = {
