@@ -20,7 +20,7 @@ const addLink = async ({ domain_name, link }) => {
 
 const getAllRssLinks = async () => {
   const query = {
-    text: "select * from rss_links order by random() limit 3 ",
+    text: "select * from rss_links order by random()",
     values: [],
   };
 
