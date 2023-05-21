@@ -3,7 +3,7 @@ const { getDb } = require("../config/mongodb_conn");
 const {
   DB_COLLECTION_USER_SCORE,
   DB_COLLECTION_POST_SCORE,
-  DB_COLLECTION_USER_POST_SCORE
+  DB_COLLECTION_USER_POST_SCORE,
 } = require("./scoring-constant");
 const {
   calcScoreOnCreateAccount,
@@ -72,8 +72,9 @@ const initDataUserScore = (userId, timestamp) => {
     },
     following: [], // list of user ids this user follows
     blocking: [],
-    last_p3_scores: { // list of last p3 score along with the post information.
-      _count : 0,
+    last_p3_scores: {
+      // list of last p3 score along with the post information.
+      _count: 0,
       // format of <key>:<value>
       // <post id> : { "time":"...", "p3_score": ... }
     },
@@ -125,7 +126,7 @@ const initDataPostScore = (feedId, timestamp) => {
 
 const initDataUserPostScore = (userId, feedId, timestamp) => {
   return {
-    _id: userId+":"+feedId,
+    _id: userId + ":" + feedId,
     user_id: userId,
     feed_id: feedId,
     author_id: "",
@@ -176,7 +177,7 @@ const onCreateAccount = async (data) => {
   let db = await getDb();
   let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
 
-  let userDoc = await userScoreList.findOne({"_id": data.user_id});
+  let userDoc = await userScoreList.findOne({ _id: data.user_id });
   console.debug("findOne userDoc result: " + JSON.stringify(userDoc));
   if (!userDoc) {
     console.debug("init user score doc");
@@ -208,14 +209,14 @@ const onCreatePost = async (data) => {
   let db = await getDb();
   let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
 
-  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  const userScoreDoc = await userScoreList.findOne({ _id: data.user_id });
   console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
   if (!userScoreDoc) {
     throw new Error("User data is not found, with id: " + data.user_id);
   }
 
   let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
-  let postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  let postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
   console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
   if (!postScoreDoc) {
     console.debug("init post score doc");
@@ -223,8 +224,15 @@ const onCreatePost = async (data) => {
   }
 
   // put last post by user
-  return await calcScoreOnCreatePost(data, postScoreDoc, postScoreList, userScoreDoc, userScoreList, db);
-}
+  return await calcScoreOnCreatePost(
+    data,
+    postScoreDoc,
+    postScoreList,
+    userScoreDoc,
+    userScoreList,
+    db
+  );
+};
 
 /*
  * Job processor on upvote post event. Received data:
@@ -239,32 +247,55 @@ const onUpvotePost = async (data) => {
   let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
   let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
 
-  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  const userScoreDoc = await userScoreList.findOne({ _id: data.user_id });
   console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
   if (!userScoreDoc) {
     throw new Error("User data is not found, with id: " + data.user_id);
   }
 
-  const postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  const postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
   console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
   if (!postScoreDoc) {
     throw new Error("Post data is not found, with id: " + data.feed_id);
   }
 
-  const authorUserScoreDoc = await userScoreList.findOne({"_id": postScoreDoc.author_id});
-  console.debug("findOne author's userScoreDoc result: " + JSON.stringify(authorUserScoreDoc));
+  const authorUserScoreDoc = await userScoreList.findOne({
+    _id: postScoreDoc.author_id,
+  });
+  console.debug(
+    "findOne author's userScoreDoc result: " +
+      JSON.stringify(authorUserScoreDoc)
+  );
   if (!authorUserScoreDoc) {
-    throw new Error("Author user data is not found, with id: " + postScoreDoc.author_id);
+    throw new Error(
+      "Author user data is not found, with id: " + postScoreDoc.author_id
+    );
   }
 
-  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
-  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  let userPostScoreDoc = await userPostScoreList.findOne({
+    _id: data.user_id + ":" + data.feed_id,
+  });
+  console.debug(
+    "findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc)
+  );
   if (!userPostScoreDoc) {
     console.debug("init user post score doc");
-    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+    userPostScoreDoc = initDataUserPostScore(
+      data.user_id,
+      data.feed_id,
+      data.activity_time
+    );
   }
 
-  return await calcScoreOnUpvotePost(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList, authorUserScoreDoc);
+  return await calcScoreOnUpvotePost(data, {
+    userScoreDoc,
+    userScoreList,
+    postScoreDoc,
+    postScoreList,
+    userPostScoreDoc,
+    userPostScoreList,
+    authorUserScoreDoc,
+  });
 };
 
 /*
@@ -280,32 +311,55 @@ const onCancelUpvotePost = async (data) => {
   let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
   let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
 
-  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  const userScoreDoc = await userScoreList.findOne({ _id: data.user_id });
   console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
   if (!userScoreDoc) {
     throw new Error("User data is not found, with id: " + data.user_id);
   }
 
-  const postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  const postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
   console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
   if (!postScoreDoc) {
     throw new Error("Post data is not found, with id: " + data.feed_id);
   }
 
-  const authorUserScoreDoc = await userScoreList.findOne({"_id": postScoreDoc.author_id});
-  console.debug("findOne author's userScoreDoc result: " + JSON.stringify(authorUserScoreDoc));
+  const authorUserScoreDoc = await userScoreList.findOne({
+    _id: postScoreDoc.author_id,
+  });
+  console.debug(
+    "findOne author's userScoreDoc result: " +
+      JSON.stringify(authorUserScoreDoc)
+  );
   if (!authorUserScoreDoc) {
-    throw new Error("Author user data is not found, with id: " + postScoreDoc.author_id);
+    throw new Error(
+      "Author user data is not found, with id: " + postScoreDoc.author_id
+    );
   }
 
-  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
-  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  let userPostScoreDoc = await userPostScoreList.findOne({
+    _id: data.user_id + ":" + data.feed_id,
+  });
+  console.debug(
+    "findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc)
+  );
   if (!userPostScoreDoc) {
     console.debug("init user post score doc");
-    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+    userPostScoreDoc = initDataUserPostScore(
+      data.user_id,
+      data.feed_id,
+      data.activity_time
+    );
   }
 
-  return await calcScoreOnCancelUpvotePost(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList, authorUserScoreDoc);
+  return await calcScoreOnCancelUpvotePost(data, {
+    userScoreDoc,
+    userScoreList,
+    postScoreDoc,
+    postScoreList,
+    userPostScoreDoc,
+    userPostScoreList,
+    authorUserScoreDoc,
+  });
 };
 
 /*
@@ -321,32 +375,55 @@ const onDownvotePost = async (data) => {
   let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
   let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
 
-  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  const userScoreDoc = await userScoreList.findOne({ _id: data.user_id });
   console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
   if (!userScoreDoc) {
     throw new Error("User data is not found, with id: " + data.user_id);
   }
 
-  const postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  const postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
   console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
   if (!postScoreDoc) {
     throw new Error("Post data is not found, with id: " + data.feed_id);
   }
 
-  const authorUserScoreDoc = await userScoreList.findOne({"_id": postScoreDoc.author_id});
-  console.debug("findOne author's userScoreDoc result: " + JSON.stringify(authorUserScoreDoc));
+  const authorUserScoreDoc = await userScoreList.findOne({
+    _id: postScoreDoc.author_id,
+  });
+  console.debug(
+    "findOne author's userScoreDoc result: " +
+      JSON.stringify(authorUserScoreDoc)
+  );
   if (!authorUserScoreDoc) {
-    throw new Error("Author user data is not found, with id: " + postScoreDoc.author_id);
+    throw new Error(
+      "Author user data is not found, with id: " + postScoreDoc.author_id
+    );
   }
 
-  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
-  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  let userPostScoreDoc = await userPostScoreList.findOne({
+    _id: data.user_id + ":" + data.feed_id,
+  });
+  console.debug(
+    "findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc)
+  );
   if (!userPostScoreDoc) {
     console.debug("init user post score doc");
-    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+    userPostScoreDoc = initDataUserPostScore(
+      data.user_id,
+      data.feed_id,
+      data.activity_time
+    );
   }
 
-  return await calcScoreOnDownvotePost(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList, authorUserScoreDoc);
+  return await calcScoreOnDownvotePost(data, {
+    userScoreDoc,
+    userScoreList,
+    postScoreDoc,
+    postScoreList,
+    userPostScoreDoc,
+    userPostScoreList,
+    authorUserScoreDoc,
+  });
 };
 
 /*
@@ -362,32 +439,55 @@ const onCancelDownvotePost = async (data) => {
   let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
   let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
 
-  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  const userScoreDoc = await userScoreList.findOne({ _id: data.user_id });
   console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
   if (!userScoreDoc) {
     throw new Error("User data is not found, with id: " + data.user_id);
   }
 
-  const postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  const postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
   console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
   if (!postScoreDoc) {
     throw new Error("Post data is not found, with id: " + data.feed_id);
   }
 
-  const authorUserScoreDoc = await userScoreList.findOne({"_id": postScoreDoc.author_id});
-  console.debug("findOne author's userScoreDoc result: " + JSON.stringify(authorUserScoreDoc));
+  const authorUserScoreDoc = await userScoreList.findOne({
+    _id: postScoreDoc.author_id,
+  });
+  console.debug(
+    "findOne author's userScoreDoc result: " +
+      JSON.stringify(authorUserScoreDoc)
+  );
   if (!authorUserScoreDoc) {
-    throw new Error("Author user data is not found, with id: " + postScoreDoc.author_id);
+    throw new Error(
+      "Author user data is not found, with id: " + postScoreDoc.author_id
+    );
   }
 
-  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
-  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  let userPostScoreDoc = await userPostScoreList.findOne({
+    _id: data.user_id + ":" + data.feed_id,
+  });
+  console.debug(
+    "findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc)
+  );
   if (!userPostScoreDoc) {
     console.debug("init user post score doc");
-    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+    userPostScoreDoc = initDataUserPostScore(
+      data.user_id,
+      data.feed_id,
+      data.activity_time
+    );
   }
 
-  return await calcScoreOnCancelDownvotePost(data, userScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList, authorUserScoreDoc);
+  return await calcScoreOnCancelDownvotePost(data, {
+    userScoreDoc,
+    userScoreList,
+    postScoreDoc,
+    postScoreList,
+    userPostScoreDoc,
+    userPostScoreList,
+    authorUserScoreDoc,
+  });
 };
 
 /*
@@ -404,7 +504,7 @@ const onBlockUserPost = async (data) => {
   let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
   let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
 
-  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  const userScoreDoc = await userScoreList.findOne({ _id: data.user_id });
   console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
   if (!userScoreDoc) {
     throw new Error("User data is not found, with id: " + data.user_id);
@@ -414,35 +514,67 @@ const onBlockUserPost = async (data) => {
   let authorUserScoreDoc;
   let userPostScoreDoc;
   if (data.feed_id) {
-    postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
-    console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
+    postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
+    console.debug(
+      "findOne postScoreDoc result: " + JSON.stringify(postScoreDoc)
+    );
     if (!postScoreDoc) {
       throw new Error("Post data is not found, with id: " + data.feed_id);
     }
 
-    userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
-    console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+    userPostScoreDoc = await userPostScoreList.findOne({
+      _id: data.user_id + ":" + data.feed_id,
+    });
+    console.debug(
+      "findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc)
+    );
     if (!userPostScoreDoc) {
       console.debug("init user post score doc");
-      userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+      userPostScoreDoc = initDataUserPostScore(
+        data.user_id,
+        data.feed_id,
+        data.activity_time
+      );
       userPostScoreDoc.author_id = postScoreDoc.author_id;
     }
 
     // Get author user doc, if the blocked user id is given, but still we get the doc by using author id of the post, just to make sure it won't mistaken.
-    authorUserScoreDoc = await userScoreList.findOne({"_id": postScoreDoc.author_id});
-    console.debug("findOne userScoreDoc of author: " + JSON.stringify(authorUserScoreDoc));
+    authorUserScoreDoc = await userScoreList.findOne({
+      _id: postScoreDoc.author_id,
+    });
+    console.debug(
+      "findOne userScoreDoc of author: " + JSON.stringify(authorUserScoreDoc)
+    );
     if (!authorUserScoreDoc) {
-      throw new Error("Author User data is not found, with id: " + postScoreDoc.author_id);
+      throw new Error(
+        "Author User data is not found, with id: " + postScoreDoc.author_id
+      );
     }
   } else {
-    authorUserScoreDoc = await userScoreList.findOne({"_id": data.blocked_user_id});
-    console.debug("findOne userScoreDoc of blocked user: " + JSON.stringify(authorUserScoreDoc));
+    authorUserScoreDoc = await userScoreList.findOne({
+      _id: data.blocked_user_id,
+    });
+    console.debug(
+      "findOne userScoreDoc of blocked user: " +
+        JSON.stringify(authorUserScoreDoc)
+    );
     if (!authorUserScoreDoc) {
-      throw new Error("Blocked User data is not found, with id: " + data.blocked_user_id);
+      throw new Error(
+        "Blocked User data is not found, with id: " + data.blocked_user_id
+      );
     }
   }
 
-  return await calcScoreOnBlockUserPost(data, userScoreDoc, authorUserScoreDoc, userScoreList, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList);
+  return await calcScoreOnBlockUserPost(
+    data,
+    userScoreDoc,
+    authorUserScoreDoc,
+    userScoreList,
+    postScoreDoc,
+    postScoreList,
+    userPostScoreDoc,
+    userPostScoreList
+  );
 };
 
 /*
@@ -460,27 +592,49 @@ const onCommentPost = async (data) => {
   let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
   let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
 
-
-  const postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  const postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
   console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
   if (!postScoreDoc) {
     throw new Error("Post data is not found, with id: " + data.feed_id);
   }
 
-  const authorUserScoreDoc = await userScoreList.findOne({"_id": postScoreDoc.author_id});
-  console.debug("findOne author's userScoreDoc result: " + JSON.stringify(authorUserScoreDoc));
+  const authorUserScoreDoc = await userScoreList.findOne({
+    _id: postScoreDoc.author_id,
+  });
+  console.debug(
+    "findOne author's userScoreDoc result: " +
+      JSON.stringify(authorUserScoreDoc)
+  );
   if (!authorUserScoreDoc) {
-    throw new Error("Author user data is not found, with id: " + postScoreDoc.author_id);
+    throw new Error(
+      "Author user data is not found, with id: " + postScoreDoc.author_id
+    );
   }
 
-  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
-  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  let userPostScoreDoc = await userPostScoreList.findOne({
+    _id: data.user_id + ":" + data.feed_id,
+  });
+  console.debug(
+    "findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc)
+  );
   if (!userPostScoreDoc) {
     console.debug("init user post score doc");
-    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+    userPostScoreDoc = initDataUserPostScore(
+      data.user_id,
+      data.feed_id,
+      data.activity_time
+    );
   }
 
-  return await calcScoreOnCommentPost(data, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList, authorUserScoreDoc, userScoreList);
+  return await calcScoreOnCommentPost(
+    data,
+    postScoreDoc,
+    postScoreList,
+    userPostScoreDoc,
+    userPostScoreList,
+    authorUserScoreDoc,
+    userScoreList
+  );
 };
 
 /*
@@ -498,26 +652,49 @@ const onViewPost = async (data) => {
   let postScoreList = await db.collection(DB_COLLECTION_POST_SCORE);
   let userPostScoreList = await db.collection(DB_COLLECTION_USER_POST_SCORE);
 
-  const postScoreDoc = await postScoreList.findOne({"_id": data.feed_id});
+  const postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
   console.debug("findOne postScoreDoc result: " + JSON.stringify(postScoreDoc));
   if (!postScoreDoc) {
     throw new Error("Post data is not found, with id: " + data.feed_id);
   }
 
-  const authorUserScoreDoc = await userScoreList.findOne({"_id": postScoreDoc.author_id});
-  console.debug("findOne author's userScoreDoc result: " + JSON.stringify(authorUserScoreDoc));
+  const authorUserScoreDoc = await userScoreList.findOne({
+    _id: postScoreDoc.author_id,
+  });
+  console.debug(
+    "findOne author's userScoreDoc result: " +
+      JSON.stringify(authorUserScoreDoc)
+  );
   if (!authorUserScoreDoc) {
-    throw new Error("Author user data is not found, with id: " + postScoreDoc.author_id);
+    throw new Error(
+      "Author user data is not found, with id: " + postScoreDoc.author_id
+    );
   }
 
-  let userPostScoreDoc = await userPostScoreList.findOne({"_id": data.user_id+":"+data.feed_id});
-  console.debug("findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc));
+  let userPostScoreDoc = await userPostScoreList.findOne({
+    _id: data.user_id + ":" + data.feed_id,
+  });
+  console.debug(
+    "findOne userPostScoreDoc result: " + JSON.stringify(userPostScoreDoc)
+  );
   if (!userPostScoreDoc) {
     console.debug("init user post score doc");
-    userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
+    userPostScoreDoc = initDataUserPostScore(
+      data.user_id,
+      data.feed_id,
+      data.activity_time
+    );
   }
 
-  return await calcScoreOnViewPost(data, postScoreDoc, postScoreList, userPostScoreDoc, userPostScoreList, authorUserScoreDoc, userScoreList);
+  return await calcScoreOnViewPost(
+    data,
+    postScoreDoc,
+    postScoreList,
+    userPostScoreDoc,
+    userPostScoreList,
+    authorUserScoreDoc,
+    userScoreList
+  );
 };
 
 /*
@@ -531,19 +708,30 @@ const onFollowUser = async (data) => {
   let db = await getDb();
   let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
 
-  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  const userScoreDoc = await userScoreList.findOne({ _id: data.user_id });
   console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
   if (!userScoreDoc) {
     throw new Error("User data is not found, with id: " + data.user_id);
   }
 
-  const followedUserScoreDoc = await userScoreList.findOne({"_id": data.followed_user_id});
-  console.debug("findOne userScoreDoc result: " + JSON.stringify(followedUserScoreDoc));
+  const followedUserScoreDoc = await userScoreList.findOne({
+    _id: data.followed_user_id,
+  });
+  console.debug(
+    "findOne userScoreDoc result: " + JSON.stringify(followedUserScoreDoc)
+  );
   if (!followedUserScoreDoc) {
-    throw new Error("User data is not found, with id: " + data.followed_user_id);
+    throw new Error(
+      "User data is not found, with id: " + data.followed_user_id
+    );
   }
 
-  return await calcScoreOnFollowUser(data, userScoreDoc, followedUserScoreDoc, userScoreList);
+  return await calcScoreOnFollowUser(
+    data,
+    userScoreDoc,
+    followedUserScoreDoc,
+    userScoreList
+  );
 };
 
 /*
@@ -557,19 +745,30 @@ const onUnfollowUser = async (data) => {
   let db = await getDb();
   let userScoreList = await db.collection(DB_COLLECTION_USER_SCORE);
 
-  const userScoreDoc = await userScoreList.findOne({"_id": data.user_id});
+  const userScoreDoc = await userScoreList.findOne({ _id: data.user_id });
   console.debug("findOne userScoreDoc result: " + JSON.stringify(userScoreDoc));
   if (!userScoreDoc) {
     throw new Error("User data is not found, with id: " + data.user_id);
   }
 
-  const followedUserScoreDoc = await userScoreList.findOne({"_id": data.unfollowed_user_id});
-  console.debug("findOne userScoreDoc result: " + JSON.stringify(followedUserScoreDoc));
+  const followedUserScoreDoc = await userScoreList.findOne({
+    _id: data.unfollowed_user_id,
+  });
+  console.debug(
+    "findOne userScoreDoc result: " + JSON.stringify(followedUserScoreDoc)
+  );
   if (!followedUserScoreDoc) {
-    throw new Error("User data is not found, with id: " + data.unfollowed_user_id);
+    throw new Error(
+      "User data is not found, with id: " + data.unfollowed_user_id
+    );
   }
 
-  return await calcScoreOnUnfollowUser(data, userScoreDoc, followedUserScoreDoc, userScoreList);
+  return await calcScoreOnUnfollowUser(
+    data,
+    userScoreDoc,
+    followedUserScoreDoc,
+    userScoreList
+  );
 };
 
 /*
@@ -594,7 +793,7 @@ const scoringProcessJob = async (job, done) => {
   try {
     //console.info('running job scoring with id: ' + job.id);
     const messageData = job.data;
-    switch(messageData.event) {
+    switch (messageData.event) {
       case EVENT_CREATE_ACCOUNT:
         result = await onCreateAccount(messageData.data);
         break;
@@ -637,8 +836,8 @@ const scoringProcessJob = async (job, done) => {
     console.error(error);
     done(error);
   }
-}
+};
 
 module.exports = {
-  scoringProcessJob
+  scoringProcessJob,
 };
