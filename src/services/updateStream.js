@@ -12,10 +12,11 @@ const putStream = async (id, set) => {
   );
 
   return await callFn(
-    client.activityPartialUpdate({
-      id,
-      set,
-    }),
+    () =>
+      client.activityPartialUpdate({
+        id,
+        set,
+      }),
     5 * 1000,
     2,
     60 * 1000

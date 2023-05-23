@@ -11,7 +11,7 @@ const fetchAndRetryIfNecessary = async (
     const res = await callFn();
     return res;
   } catch (error) {
-    if (error.code === 429) {
+    if (error?.response?.status === 429) {
       let time =
         maxTimeSleep === 0 ? retryAfter : Math.min(maxTimeSleep, retryAfter);
       if (jitter) {
@@ -19,7 +19,7 @@ const fetchAndRetryIfNecessary = async (
           (crypto.getRandomValues(new Uint32Array(1))[0] / 4294967295) * time
         );
       }
-      await sleep(time);
+      await this.sleep(time);
       return fetchAndRetryIfNecessary(
         callFn,
         retryAfter * sleepMultiple,
