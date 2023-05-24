@@ -1,12 +1,12 @@
-const { removeSubDomain } = require("../../utils");
+const { getDomainByDomainName } = require("../postgres/DomainPageService");
 const insertDomain = require("./insertDomain");
 const removeWWWFromUrl = require("./removeWWWFromUrl");
 
-const validateDomain = async (linkDomain, listDomains) => {
+const validateDomain = async (linkDomain) => {
   let url = await generateUrl(linkDomain);
   let domainName = removeWWWFromUrl(url);
 
-  let domain = await getDomain(domainName, listDomains);
+  let domain = await getDomainByDomainName(domainName);
   let domainId = null;
   let name = null;
   let infoDes = null;
@@ -34,19 +34,6 @@ const validateDomain = async (linkDomain, listDomains) => {
 const generateUrl = async (linkDomain) => {
   let link = new URL(linkDomain);
   return link;
-};
-
-const getDomain = (domainName, listDomains) => {
-  if (listDomains.length === 0) {
-    return false;
-  }
-  let arrDomain = listDomains.filter((domain, index, arr) => {
-    return domain.domain_name == domainName;
-  });
-  if (arrDomain.length == 0) {
-    return false;
-  }
-  return arrDomain[0];
 };
 
 module.exports = validateDomain;

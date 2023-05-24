@@ -1,9 +1,10 @@
 const { default: axios } = require("axios");
 const cheerio = require("cheerio");
 const { postToGetstream } = require("../../processes/domain-process");
-const { dateCreted } = require("../../utils");
-const { addNewsLink } = require("../postgres/NewsLinkService");
-const validateNewsLink = require("./validateNewsLink");
+const {
+  addNewsLink,
+  isExsistNewsLink,
+} = require("../postgres/NewsLinkService");
 const https = require("https");
 
 const insertNewsLink = async (
@@ -12,7 +13,6 @@ const insertNewsLink = async (
   name,
   info,
   logo,
-  newsLinks,
   created_article
 ) => {
   try {
@@ -32,7 +32,7 @@ const insertNewsLink = async (
     const url_compact = $('meta[property="og:url"]').attr("content") || "";
     const keyword = $('meta[name="keywords"]').attr("content") || "";
     const author = $('meta[name="author"]').attr("content") || "";
-    const statusLink = validateNewsLink(news_url, newsLinks);
+    const statusLink = isExsistNewsLink(news_url);
 
     if (!statusLink) {
       let newsLinkId = await addNewsLink({

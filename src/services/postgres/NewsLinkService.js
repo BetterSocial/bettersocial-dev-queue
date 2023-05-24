@@ -62,21 +62,12 @@ const getAllNewsLinks = async () => {
 };
 
 const isExsistNewsLink = async (link) => {
-  console.log(link);
   const query = {
-    text: "SELECT * FROM news_link WHERE  news_url = $1",
+    text: "SELECT news_link_id FROM news_link WHERE  news_url = $1 limit 1",
     values: [link],
   };
 
-  try {
-    const result = await client.query(query);
-    if (!result.rows.length) {
-      return false;
-    }
-    return true;
-  } catch (error) {
-    return true;
-  }
+  return await client.query(query);
 };
 
 const validationLink = async () => {
