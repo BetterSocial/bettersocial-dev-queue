@@ -7,30 +7,19 @@ const parserRss = require("./parserRss");
 const validateDomain = require("./validateDomain");
 
 const rssService = async () => {
-  let rsslinks = await getAllRssLinks();
-  const listDomains = await getAllDomains();
-  const newsLinks = await getAllNewsLinks();
-  for (let index = 0; index < rsslinks.length; index++) {
+  const rsslinks = await getAllRssLinks();
+  rsslinks.forEach(async (rss) => {
     try {
-      const rss = rsslinks[index];
       let feed = await parserRss(rss.link);
       let { domainId, domainName, infoDes, logo } = await validateDomain(
-        feed.link,
-        listDomains
+        feed?.link
       );
-      await insertContentRss(
-        feed.items,
-        domainId,
-        domainName,
-        infoDes,
-        logo,
-        newsLinks
-      );
+      await insertContentRss(feed.items, domainId, domainName, infoDes, logo);
     } catch (error) {
       console.log("error rss");
       console.log("error in di: ", error);
     }
-  }
+  });
 
   await addRssHistory({
     domain_name: "test domain",
