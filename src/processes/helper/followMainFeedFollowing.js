@@ -1,7 +1,7 @@
 const { followMainFeedFollowing } = require("../../services");
 const { LogError } = require("../../databases/models");
 
-const followMainFeedFollowing = async (userId, userIds) => {
+const follow = async (userId, userIds) => {
   try {
     await followMainFeedFollowing(userId, userIds);
   } catch (error) {
@@ -12,4 +12,4 @@ const followMainFeedFollowing = async (userId, userIds) => {
   }
 };
 
-module.exports = followMainFeedFollowing;
+module.exports = follow;
