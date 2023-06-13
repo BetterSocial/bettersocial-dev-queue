@@ -1,6 +1,13 @@
 const insertNewsLink = require("./insertNewsLink");
 
-const insertContentRss = async (items, domainId, domainName, infoDes, logo) => {
+const insertContentRss = async (
+  items,
+  domainId,
+  domainName,
+  infoDes,
+  logo,
+  priority
+) => {
   items.forEach(async (item) => {
     try {
       await insertNewsLink(
@@ -9,7 +16,8 @@ const insertContentRss = async (items, domainId, domainName, infoDes, logo) => {
         domainName,
         infoDes,
         logo,
-        item.isoDate
+        item.isoDate,
+        priority
       );
     } catch (error) {
       console.log(error);
