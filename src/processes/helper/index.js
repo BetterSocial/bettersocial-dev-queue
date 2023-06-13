@@ -7,6 +7,7 @@ const ProcessHelper = {
     followUser: require('./followUser'),
     followTopic: require('./followTopic'),
     prepopulatedDm: require('./prepopulatedDm'),
+    followMainFeedTopic: require('./followMainFeedTopic')
 }
 
 module.exports = ProcessHelper
