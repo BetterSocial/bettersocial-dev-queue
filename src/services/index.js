@@ -6,4 +6,5 @@ module.exports = {
   ...require("./followUser"),
   ...require("./followTopic"),
   ...require("./deleteStream"),
+  ...require("./followMainFeedFollowing")
 };
