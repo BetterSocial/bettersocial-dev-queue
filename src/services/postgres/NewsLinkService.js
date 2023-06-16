@@ -13,13 +13,14 @@ const addNewsLink = async ({
   author,
   url_compact,
   created_article,
+  priority,
 }) => {
   console.log("current millis", created_article);
   const news_link_id = uuidv4();
   const createdAt = new Date().toISOString();
   let postId = null;
   const query = {
-    text: "INSERT INTO news_link VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING news_link_id",
+    text: "INSERT INTO news_link VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING news_link_id",
     values: [
       news_link_id,
       news_url,
@@ -36,6 +37,7 @@ const addNewsLink = async ({
       url_compact,
       postId,
       created_article,
+      priority,
     ],
   };
 

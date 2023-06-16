@@ -14,7 +14,14 @@ const rssService = async () => {
       let { domainId, domainName, infoDes, logo } = await validateDomain(
         feed?.link
       );
-      await insertContentRss(feed.items, domainId, domainName, infoDes, logo);
+      await insertContentRss(
+        feed.items,
+        domainId,
+        domainName,
+        infoDes,
+        logo,
+        rss.priority
+      );
     } catch (error) {
       console.log("error rss");
       console.log("error in di: ", error);

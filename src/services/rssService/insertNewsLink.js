@@ -13,7 +13,8 @@ const insertNewsLink = async (
   name,
   info,
   logo,
-  created_article
+  created_article,
+  priority
 ) => {
   try {
     let dateFromArticle = new Date(created_article);
@@ -47,6 +48,7 @@ const insertNewsLink = async (
         author,
         url_compact,
         created_article: current,
+        priority,
       });
       let data = {
         news_link_id: newsLinkId,
