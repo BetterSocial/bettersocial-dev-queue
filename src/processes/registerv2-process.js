@@ -71,6 +71,7 @@ const registerProcess = async (job, done) => {
         await ProcessHelper.followTopic(userId, topics);
         await ProcessHelper.followLocation(userId, result?.locations);
         await ProcessHelper.addUserToTopicChannel(userId, topicNames);
+        await ProcessHelper.followMainFeedTopic(userId, topicNames)
         await ProcessHelper.followMainFeedFollowing(userId, follows);
         await LogError.create({
             message: `done register process userId: ${userId}`

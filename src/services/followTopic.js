@@ -19,7 +19,20 @@ const followTopics = async (userId, userIds) => {
     return await clientServer.followMany(follows);
 };
 
+const followMainFeedTopic = async(userId, topicNames) => {
+    const clientServer = stream.connect(process.env.API_KEY, process.env.SECRET);
+    const follows = topicNames.map((name) => {
+        return {
+            source: "main_feed_topic:" + userId,
+            target: "topic:" + name,
+        }
+    });
+
+    return await clientServer.followMany(follows);
+}
+
 module.exports = {
     followTopic,
     followTopics,
+    followMainFeedTopic
 };
