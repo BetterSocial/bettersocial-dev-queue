@@ -61,7 +61,7 @@ const insertNewsLink = async (
         keyword,
         author,
         url_compact,
-        url: news_url,
+        url: news_url
       };
 
       const activity = {
@@ -71,6 +71,7 @@ const insertNewsLink = async (
           info,
           image: logo,
           domain_page_id: domainPageid,
+          priority
         },
 
         content: {
