@@ -17,7 +17,8 @@ const addNewsLink = async ({
 }) => {
   console.log("current millis", created_article);
   const news_link_id = uuidv4();
-  const createdAt = new Date().toISOString();
+  const createdAt = new Date(created_article).toISOString();
+  const updatedAt = new Date().toISOString();
   let postId = null;
   const query = {
     text: "INSERT INTO news_link VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING news_link_id",
@@ -33,7 +34,7 @@ const addNewsLink = async ({
       keyword,
       author,
       createdAt,
-      createdAt,
+      updatedAt,
       url_compact,
       postId,
       created_article,
