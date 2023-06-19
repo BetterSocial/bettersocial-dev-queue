@@ -27,7 +27,8 @@ const {
   deleteUserPostCommentQueue,
   registerV2Queue,
   refreshMaterializedViewQueue,
-  followMainFeedF2
+  followMainFeedF2,
+  unFollowMainFeedF2
 } = require("../config");
 
 const { registerProcess: registerV2Process } = require("../processes/registerv2-process");
@@ -88,6 +89,7 @@ const initQueue = () => {
   });
 
   followMainFeedF2.process(processFollowMainFeedF2.processFollow);
+  unFollowMainFeedF2.process(processFollowMainFeedF2.processUnfollow);
 
   /**
    * (START) General Queue

@@ -1,7 +1,7 @@
 const { UserFollowUser } = require("../databases/models");
-const { followMainFeedF2 } = require("../processes/helper");
+const { followMainFeedF2, unFollowMainFeedF2 } = require("../processes/helper");
 const processFollow = async (job, done) => {
-  UserFollowUser.find;
+  console.log("Process follow f2");
   const { data } = job;
   const userId = data.data.userId;
   const targetUserId = data.data.targetUserId;
@@ -44,6 +44,50 @@ const processFollow = async (job, done) => {
   done();
 };
 
+const processUnfollow = async (job, done) => {
+  console.log("Process unfollow f2");
+  const { data } = job;
+  const userId = data.data.userId;
+  const targetUserId = data.data.targetUserId;
+  // find userIds followed by each userId and targetedUserId
+  // un follow not followed user(s) by userId to getStream
+
+  const findFollowersByUserId = UserFollowUser.findAll({
+    where: {
+      user_id_follower: userId,
+    },
+    limit: 1000,
+  });
+
+  const findFollowersByTargetUserId = UserFollowUser.findAll({
+    where: {
+      user_id_follower: targetUserId,
+    },
+    limit: 1000,
+  });
+
+  const [followersByUserId, followersByTargetUserId] = await Promise.all([
+    findFollowersByUserId,
+    findFollowersByTargetUserId,
+  ]);
+
+  const followersIdByUserId = followersByUserId.map(
+    (el) => el.user_id_followed
+  );
+  const followersIdByTargetUserId = followersByTargetUserId.map(
+    (el) => el.user_id_followed
+  );
+
+  const idsToUnfollow = userIdsToProcessByMainFeedF2(
+    followersIdByUserId,
+    followersIdByTargetUserId
+  );
+
+  await unFollowMainFeedF2(userId, idsToUnfollow);
+
+  done();
+}
+
 const userIdsToProcessByMainFeedF2 = (
   followersIdByUserId,
   followersIdByTargetUserId
@@ -60,4 +104,5 @@ const userIdsToProcessByMainFeedF2 = (
 
 module.exports = {
   processFollow,
+  processUnfollow
 };
