@@ -4,7 +4,6 @@ const { createQueueNews } = require("../webhook/setNews");
 const { setTestAddUserPostComment } = require("../webhook/setTestAddUserPostComment");
 const { setTestDeleteUserPostComment } = require("../webhook/setTestDeleteUserPostComment");
 const { setTestRegisterV2 } = require("../webhook/setTestRegisterV2");
-// const { testRss } = require("../webhook/testRss");
 const router = express.Router();
 
 router.post("/message-posted", createQueueNews);
