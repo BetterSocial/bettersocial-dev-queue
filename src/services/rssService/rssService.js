@@ -11,17 +11,19 @@ const rssService = async () => {
   rsslinks.forEach(async (rss) => {
     try {
       let feed = await parserRss(rss.link);
-      let { domainId, domainName, infoDes, logo } = await validateDomain(
-        feed?.link
-      );
-      await insertContentRss(
-        feed.items,
-        domainId,
-        domainName,
-        infoDes,
-        logo,
-        rss.priority
-      );
+      if(feed?.link?.trim()) {
+        let { domainId, domainName, infoDes, logo } = await validateDomain(
+          feed?.link
+        );
+        await insertContentRss(
+          feed.items,
+          domainId,
+          domainName,
+          infoDes,
+          logo,
+          rss.priority
+        );
+      }
     } catch (error) {
       console.log("error rss");
       console.log("error in di: ", error);

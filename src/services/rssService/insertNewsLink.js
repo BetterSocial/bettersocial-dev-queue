@@ -33,9 +33,9 @@ const insertNewsLink = async (
     const url_compact = $('meta[property="og:url"]').attr("content") || "";
     const keyword = $('meta[name="keywords"]').attr("content") || "";
     const author = $('meta[name="author"]').attr("content") || "";
-    const statusLink = isExsistNewsLink(news_url);
-
-    if (!statusLink) {
+    const statusLink = await isExsistNewsLink(news_url);
+    const isLinkAvailable = statusLink?.rows?.length > 0;
+    if (!isLinkAvailable) {
       let newsLinkId = await addNewsLink({
         news_url,
         domain_page_id: domainPageid,
@@ -84,10 +84,11 @@ const insertNewsLink = async (
       // console.log("link status: ", "link blm ada");
       await postToGetstream(activity);
     } else {
-      // console.info("link status: ", "link sudah ada");
+      console.info("link status: ", "link sudah ada");
     }
   } catch (error) {
-    console.error(error);
+    console.error('error in insert news link');
+    console.error(error?.message);
   }
 };
 
