@@ -33,4 +33,7 @@ module.exports = {
 
     PREFIX_TOPIC: 'topic_',
     DAY_IN_SECONDS: 24 * 60 * 60,
+
+    EVENT_FOLLOW_F2_USER: "follow-f2-users",
+    EVENT_UNFOLLOW_F2_USER: "unfollow-f2-users",
 };
