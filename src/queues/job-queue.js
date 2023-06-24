@@ -3,6 +3,8 @@ const { createPostTime } = require("../processes/post-time-process");
 const { scoringProcessJob } = require("../processes/scoring-process");
 const { scoringDailyProcessJob } = require("../processes/scoring-daily-process");
 const { deleteActivityProcessJob } = require("../processes/delete-activity-process");
+const processFollowMainFeedF2 = require("../processes/follow-main-feed-f2-process");
+
 
 const {
   handlerFailure,
@@ -24,7 +26,9 @@ const {
   addUserPostCommentQueue,
   deleteUserPostCommentQueue,
   registerV2Queue,
-  refreshMaterializedViewQueue
+  refreshMaterializedViewQueue,
+  followMainFeedF2,
+  unFollowMainFeedF2
 } = require("../config");
 
 const { registerProcess: registerV2Process } = require("../processes/registerv2-process");
@@ -83,6 +87,9 @@ const initQueue = () => {
   deleteActivityProcessQueue.on("error", (err) => {
     console.error("deleteActivityProcessQueue error : ", err);
   });
+
+  followMainFeedF2.process(processFollowMainFeedF2.processFollow);
+  unFollowMainFeedF2.process(processFollowMainFeedF2.processUnfollow);
 
   /**
    * (START) General Queue
