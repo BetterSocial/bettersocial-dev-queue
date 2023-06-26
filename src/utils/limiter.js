@@ -14,6 +14,7 @@ const fetchAndRetryIfNecessary = async (
     if (error?.response?.status === 429) {
       let time =
         maxTimeSleep === 0 ? retryAfter : Math.min(maxTimeSleep, retryAfter);
+      console.log(`Error hit limit, will try after ${time}ms`);
       if (jitter) {
         time = Math.floor(
           (crypto.getRandomValues(new Uint32Array(1))[0] / 4294967295) * time
