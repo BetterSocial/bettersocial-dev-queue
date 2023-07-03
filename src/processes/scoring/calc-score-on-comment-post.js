@@ -116,7 +116,7 @@ const calcScoreOnCommentPost = async (
           { upsert: true } // options
         ),
 
-        await updateScoreToStream(postScoreDoc),
+        updateScoreToStream(postScoreDoc),
       ]);
 
       console.debug("Update on comment post event: " + JSON.stringify(result));
