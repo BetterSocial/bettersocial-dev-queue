@@ -7,7 +7,7 @@ const processFollow = async (job, done) => {
   const targetUserId = data.data.targetUserId;
   // find userIds followed by each userId and targetedUserId
   // follow not followed user(s) by userId to getStream
-  const idsToFollow = _findUserIdsToProcess(userId, targetUserId);
+  const idsToFollow = await _findUserIdsToProcess(userId, targetUserId);
   await followMainFeedF2(userId, idsToFollow);
   // create job to update broad feed
   // TODO
@@ -21,7 +21,7 @@ const processUnfollow = async (job, done) => {
   const targetUserId = data.data.targetUserId;
   // find userIds followed by each userId and targetedUserId
   // un follow not followed user(s) by userId to getStream
-  const idsToUnfollow = _findUserIdsToProcess(userId, targetUserId);
+  const idsToUnfollow = await _findUserIdsToProcess(userId, targetUserId);
   await unFollowMainFeedF2(userId, idsToUnfollow);
   // create job to update broad feed
   // TODO
@@ -37,7 +37,7 @@ const userIdsToProcessByMainFeedF2 = (
     const findIdx = followersIdByUserId.findIndex((fid) => id === fid);
     const findIdfromBlockedUser = blockedUsersIdByUserId.findIndex((fid) => id === fid);
     // user followed this user
-    return findIdx > -1 || findIdfromBlockedUser > -1 ? false : true;
+    return findIdx < 0 && findIdfromBlockedUser < 0 ? true: false;
   });
 };
 
