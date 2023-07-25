@@ -10,7 +10,7 @@ const followMainFeedF2 = async (userId, userIds) => {
   const payload = userIds.map((ui) => {
     return {
       source: `main_feed_f2:${userId}`,
-      target: `user_excl:${ui}`,
+      target: `user:${ui}`,
     };
   });
   return await cs.followMany(payload);
@@ -26,7 +26,7 @@ const unFollowMainFeedF2 = async (userId, userIds) => {
   const payload = userIds.map((ui) => {
     return {
       source: `main_feed_f2:${userId}`,
-      target: `user_excl:${ui}`,
+      target: `user:${ui}`,
     };
   });
   return await cs.unfollowMany(payload);
