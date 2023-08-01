@@ -1,8 +1,8 @@
 const stream = require("getstream");
 const { unFollowFeedProcessQueue } = require("../config");
 
-const followMainFeedF2 = async (userId, userIds) => {
-  console.log("F2 => ", userIds)
+const followMainFeedBroad = async (userId, userIds) => {
+  console.log("Broad Feed => ", userIds)
   if (!userIds || userIds.length == 0) {
     return;
   }
@@ -11,24 +11,24 @@ const followMainFeedF2 = async (userId, userIds) => {
 
   const payload = userIds.map((ui) => {
     return {
-      source: `main_feed_f2:${userId}`,
+      source: `main_feed_broad:${userId}`,
       target: `user:${ui}`,
     };
   });
   return await cs.followMany(payload);
 };
 
-const unFollowMainFeedF2 = async (userId, userIds) => {
+const unFollowMainFeedBroad = async (userId, userIds) => {
   if (!userIds || userIds.length == 0) {
     return;
   }
 
   const cs = stream.connect(process.env.API_KEY, process.env.SECRET);
-  const sourceFeed = cs.feed("main_feed_f2", userId);
+  const sourceFeed = cs.feed("main_feed_broad", userId);
   userIds.map(async (ui) => {
     // sent job to queue to avoid rate limit
     unFollowFeedProcessQueue.add({
-      feedName: "main_feed_f2",
+      feedName: "main_feed_broad",
       userId: userId,
       targetFeed: "user",
       unfollowUserId: ui,
@@ -39,6 +39,6 @@ const unFollowMainFeedF2 = async (userId, userIds) => {
 
 
 module.exports = {
-  followMainFeedF2,
-  unFollowMainFeedF2
+  followMainFeedBroad,
+  unFollowMainFeedBroad
 };

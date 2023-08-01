@@ -1,5 +1,7 @@
 const { UserFollowUser, UserBlockedUser } = require("../databases/models");
 const { followMainFeedF2, unFollowMainFeedF2 } = require("../processes/helper");
+const { updateMainFeedBroadProcessQueue } = require("../config");
+
 const processFollow = async (job, done) => {
   console.log("Process follow f2");
   const { data } = job;
@@ -10,7 +12,7 @@ const processFollow = async (job, done) => {
   const idsToFollow = await _findUserIdsToProcess(userId, targetUserId);
   await followMainFeedF2(userId, idsToFollow);
   // create job to update broad feed
-  // TODO
+  // updateMainFeedBroadProcessQueue.add({userId})
   done();
 };
 
@@ -24,7 +26,7 @@ const processUnfollow = async (job, done) => {
   const idsToUnfollow = await _findUserIdsToProcess(userId, targetUserId);
   await unFollowMainFeedF2(userId, idsToUnfollow);
   // create job to update broad feed
-  // TODO
+  // updateMainFeedBroadProcessQueue.add({userId})
   done();
 };
 
