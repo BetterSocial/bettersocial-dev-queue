@@ -2,7 +2,6 @@ const stream = require('getstream');
 
 const unFollowFeedProcessJob = async (job, done) => {
 
-    // console.log("unFollowFeedProcess: " + JSON.stringify(job.data));
     try {
         // Remove activity from get stream
         let data = job.data;

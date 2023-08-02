@@ -24,7 +24,6 @@ const unFollowMainFeedBroad = async (userId, userIds) => {
   }
 
   const cs = stream.connect(process.env.API_KEY, process.env.SECRET);
-  const sourceFeed = cs.feed("main_feed_broad", userId);
   userIds.map(async (ui) => {
     // sent job to queue to avoid rate limit
     unFollowFeedProcessQueue.add({
