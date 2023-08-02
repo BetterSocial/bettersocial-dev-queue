@@ -3,6 +3,8 @@ const { createPostTime } = require("../processes/post-time-process");
 const { scoringProcessJob } = require("../processes/scoring-process");
 const { scoringDailyProcessJob } = require("../processes/scoring-daily-process");
 const { deleteActivityProcessJob } = require("../processes/delete-activity-process");
+const { unFollowFeedProcessJob } = require("../processes/unfollow-main-feed");
+const { updateMainFeedBroadProcessJob } = require("../processes/update-main-feed-broad");
 const processFollowMainFeedF2 = require("../processes/follow-main-feed-f2-process");
 
 
@@ -28,7 +30,9 @@ const {
   registerV2Queue,
   refreshMaterializedViewQueue,
   followMainFeedF2,
-  unFollowMainFeedF2
+  unFollowMainFeedF2,
+  unFollowFeedProcessQueue,
+  updateMainFeedBroadProcessQueue
 } = require("../config");
 
 const { registerProcess: registerV2Process } = require("../processes/registerv2-process");
@@ -79,6 +83,7 @@ const initQueue = () => {
   scoringDailyProcessQueue.on("error", (err) => {
     console.log("scoringDailyProcessQueue error : ", err);
   });
+
   console.info("deleteActivityProcessQueue job is working!");
   deleteActivityProcessQueue.process(deleteActivityProcessJob);
   deleteActivityProcessQueue.on("failed", handlerFailure);
@@ -87,6 +92,25 @@ const initQueue = () => {
   deleteActivityProcessQueue.on("error", (err) => {
     console.error("deleteActivityProcessQueue error : ", err);
   });
+
+  console.info("unFollowFeedProcessQueue job is working!");
+  unFollowFeedProcessQueue.process(unFollowFeedProcessJob);
+  unFollowFeedProcessQueue.on("failed", handlerFailure);
+  unFollowFeedProcessQueue.on("completed", handlerCompleted);
+  unFollowFeedProcessQueue.on("stalled", handlerStalled);
+  unFollowFeedProcessQueue.on("error", (err) => {
+    console.error("unFollowFeedProcessQueue error : ", err);
+  });
+
+  console.info("updateMainFeedBroadProcessQueue job is working!");
+  updateMainFeedBroadProcessQueue.process(updateMainFeedBroadProcessJob);
+  updateMainFeedBroadProcessQueue.on("failed", handlerFailure);
+  updateMainFeedBroadProcessQueue.on("completed", handlerCompleted);
+  updateMainFeedBroadProcessQueue.on("stalled", handlerStalled);
+  updateMainFeedBroadProcessQueue.on("error", (err) => {
+    console.error("updateMainFeedBroadProcessQueue error : ", err);
+  });
+
 
   followMainFeedF2.process(processFollowMainFeedF2.processFollow);
   unFollowMainFeedF2.process(processFollowMainFeedF2.processUnfollow);
