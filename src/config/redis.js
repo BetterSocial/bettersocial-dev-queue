@@ -32,6 +32,13 @@ const deleteActivityProcessQueue = new Bull("deleteActivityProcessQueue", connec
     duration: 60 * 1000 // 60 second
   }
 });
+const unFollowFeedProcessQueue = new Bull("unFollowFeedProcessQueue", connectRedis, queueOptions, {
+  limiter: {
+    max: 250,
+    duration: 60 * 1000 // 60 second
+  }
+});
+const updateMainFeedBroadProcessQueue = new Bull("updateMainFeedBroadProcessQueue", connectRedis, queueOptions);
 /**
  * (END) of list of queues that uses scoring redis
  */
@@ -73,5 +80,7 @@ module.exports = {
   scoringProcessQueue,
   testQueue,
   followMainFeedF2,
-  unFollowMainFeedF2
+  unFollowMainFeedF2,
+  unFollowFeedProcessQueue,
+  updateMainFeedBroadProcessQueue
 };
