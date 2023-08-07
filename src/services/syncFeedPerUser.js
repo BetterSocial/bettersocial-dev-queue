@@ -5,6 +5,15 @@ const syncFeedPerUser = async (req, res) => {
   try {
     // sample id = 397e2fee-6af1-4551-9aae-29a7826cd173
     let { userId } = req.params
+    await syncFeedProcess(userId)
+
+    return successResponse(res, "sync data sucesfully", []);
+  } catch (error) {
+    return errorResponse(res, error.toString(), 500);
+  }
+}
+
+const syncFeedProcess = async (userId) => {
     console.log(userId)
     // Get following user to follow
     console.log("START sync main_feed_following")
@@ -26,11 +35,6 @@ const syncFeedPerUser = async (req, res) => {
     // const broads = await findUnrelatedUserIds(userId)
     // await followManyUserFeed(userId,broads,'main_feed_broad')
     // console.log("END sync main_feed_broad")
-
-    return successResponse(res, "sync data sucesfully", []);
-  } catch (error) {
-    return errorResponse(res, error.toString(), 500);
-  }
 }
 
 const followManyUserFeed = async (userId, userIdsToFollow, originFeed) => {
