@@ -31,10 +31,10 @@ const syncFeedProcess = async (userId) => {
     await followManyUserFeed(userId,topics,'main_feed_topic','topic')
     console.log("END sync main_feed_topic")
     // Get broad user to follow
-    // console.log("START sync main_feed_broad")
-    // const broads = await findUnrelatedUserIds(userId)
-    // await followManyUserFeed(userId,broads,'main_feed_broad')
-    // console.log("END sync main_feed_broad")
+    console.log("START sync main_feed_broad")
+    const broads = await findUnrelatedUserIds(userId)
+    await followManyUserFeed(userId,broads,'main_feed_broad','user')
+    console.log("END sync main_feed_broad")
 }
 
 const followManyUserFeed = async (userId, userIdsToFollow, originFeed, targetFeed) => {
