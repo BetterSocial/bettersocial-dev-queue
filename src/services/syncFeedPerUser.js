@@ -18,17 +18,17 @@ const syncFeedProcess = async (userId) => {
     // Get following user to follow
     console.log("START sync main_feed_following")
     const followingUser = await findFollowingUserIds(userId)
-    await followManyUserFeed(userId,followingUser,'main_feed_following')
+    await followManyUserFeed(userId,followingUser,'main_feed_following','user')
     console.log("END sync main_feed_following")
     // Get f2 user to follow
     console.log("START sync main_feed_f2")
     const f2User = await findF2UserIds(userId)
-    await followManyUserFeed(userId,f2User,'main_feed_f2')
+    await followManyUserFeed(userId,f2User,'main_feed_f2','user')
     console.log("END sync main_feed_f2")
     // Get topics to follow
     console.log("START sync main_feed_topic")
     const topics = await findFollowingTopicByUser(userId)
-    await followManyUserFeed(userId,topics,'main_feed_topic')
+    await followManyUserFeed(userId,topics,'main_feed_topic','topic')
     console.log("END sync main_feed_topic")
     // Get broad user to follow
     // console.log("START sync main_feed_broad")
@@ -37,7 +37,7 @@ const syncFeedProcess = async (userId) => {
     // console.log("END sync main_feed_broad")
 }
 
-const followManyUserFeed = async (userId, userIdsToFollow, originFeed) => {
+const followManyUserFeed = async (userId, userIdsToFollow, originFeed, targetFeed) => {
   if (!userIdsToFollow || userIdsToFollow.length == 0) {
     return;
   }
@@ -46,7 +46,7 @@ const followManyUserFeed = async (userId, userIdsToFollow, originFeed) => {
   const payload = userIdsToFollow.map((ui) => {
     return {
       source: `${originFeed}:${userId}`,
-      target: `user:${ui}`,
+      target: `${targetFeed}:${ui}`,
     };
   });
 
