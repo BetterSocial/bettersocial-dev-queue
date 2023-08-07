@@ -18,7 +18,7 @@ const syncFeedProcess = async (userId) => {
     // Get following user to follow
     console.log("START sync main_feed_following")
     const followingUser = await findFollowingUserIds(userId)
-    await followManyUserFeed(userId,followingUser,'main_feed_following','user')
+    await followManyUserFeed(userId,followingUser,'main_feed_following','user_excl')
     console.log("END sync main_feed_following")
     // Get f2 user to follow
     console.log("START sync main_feed_f2")
