@@ -10,6 +10,8 @@ const findFollowingUserIds = async (userId) => {
     attributes: ['user_id_followed'],
     raw : true
   }).then( users => users.map(user => user.user_id_followed));
+  // follow self exclusive feed
+  followedByUserId.push(userId)
 
   return followedByUserId;
 }
