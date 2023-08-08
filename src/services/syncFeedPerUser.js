@@ -5,7 +5,7 @@ const syncFeedPerUser = async (req, res) => {
   try {
     // sample id = 397e2fee-6af1-4551-9aae-29a7826cd173
     let { userId } = req.params
-    await syncFeedProcess(userId)
+    await syncFeedPerUserProcess(userId)
 
     return successResponse(res, "sync data sucesfully", []);
   } catch (error) {
@@ -13,7 +13,7 @@ const syncFeedPerUser = async (req, res) => {
   }
 }
 
-const syncFeedProcess = async (userId) => {
+const syncFeedPerUserProcess = async (userId) => {
     console.log(userId)
     // Get following user to follow
     console.log("START sync main_feed_following")
@@ -54,5 +54,6 @@ const followManyUserFeed = async (userId, userIdsToFollow, originFeed, targetFee
 }
 
 module.exports = {
-  syncFeedPerUser
+  syncFeedPerUser,
+  syncFeedPerUserProcess
 }
