@@ -5,6 +5,7 @@ const { scoringDailyProcessJob } = require("../processes/scoring-daily-process")
 const { deleteActivityProcessJob } = require("../processes/delete-activity-process");
 const { unFollowFeedProcessJob } = require("../processes/unfollow-main-feed");
 const { updateMainFeedBroadProcessJob } = require("../processes/update-main-feed-broad");
+const { syncUserFeedProcessJob } = require("../processes/sync-user-feed");
 const processFollowMainFeedF2 = require("../processes/follow-main-feed-f2-process");
 
 
@@ -32,7 +33,8 @@ const {
   followMainFeedF2,
   unFollowMainFeedF2,
   unFollowFeedProcessQueue,
-  updateMainFeedBroadProcessQueue
+  updateMainFeedBroadProcessQueue,
+  syncUserFeedQueue
 } = require("../config");
 
 const { registerProcess: registerV2Process } = require("../processes/registerv2-process");
@@ -111,6 +113,14 @@ const initQueue = () => {
     console.error("updateMainFeedBroadProcessQueue error : ", err);
   });
 
+  console.info("syncUserFeedQueue job is working!");
+  syncUserFeedQueue.process(syncUserFeedProcessJob);
+  syncUserFeedQueue.on("failed", handlerFailure);
+  syncUserFeedQueue.on("completed", handlerCompleted);
+  syncUserFeedQueue.on("stalled", handlerStalled);
+  syncUserFeedQueue.on("error", (err) => {
+    console.error("syncUserFeedQueue error : ", err);
+  });
 
   followMainFeedF2.process(processFollowMainFeedF2.processFollow);
   unFollowMainFeedF2.process(processFollowMainFeedF2.processUnfollow);

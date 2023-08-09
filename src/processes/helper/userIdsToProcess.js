@@ -1,19 +1,5 @@
-const { UserFollowUser, UserBlockedUser, User } = require("../../databases/models");
+const { UserFollowUser, UserBlockedUser, User, UserTopic, Topics } = require("../../databases/models");
 const { Op } = require("sequelize");
-
-const userIdsToProcessByMainFeedF2 = (
-  followersIdByUserId,
-  followersIdByTargetUserId,
-  blockedUsersIdByUserId
-) => {
-  return followersIdByTargetUserId.filter((id) => {
-    const findIdx = followersIdByUserId.findIndex((fid) => id === fid);
-    const findIdfromBlockedUser = blockedUsersIdByUserId.findIndex((fid) => id === fid);
-    // user followed his user
-    return findIdx < 0 && findIdfromBlockedUser < 0 ? true: false;
-  });
-};
-
 
 const findFollowingUserIds = async (userId) => {
   const followedByUserId = await UserFollowUser.findAll({
@@ -24,6 +10,8 @@ const findFollowingUserIds = async (userId) => {
     attributes: ['user_id_followed'],
     raw : true
   }).then( users => users.map(user => user.user_id_followed));
+  // follow self exclusive feed
+  followedByUserId.push(userId)
 
   return followedByUserId;
 }
@@ -84,11 +72,36 @@ const findUnrelatedUserIds = async (userId) => {
   return unrelatedUserIds
 }
 
+const findFollowingTopicByUser = async (userId) => {
+  // TODO
+  // Simplify this logic using model associate
+  const followingTopicByUser = await UserTopic.findAll({
+    where: {
+      user_id: userId,
+    },
+    limit: 1000,
+    attributes: ['topic_id'],
+    raw : true
+  }).then( topics => topics.map(topic => topic.topic_id ));
+
+  const topicList = await Topics.findAll({
+    where: {
+      topic_id: { [Op.in]: followingTopicByUser },
+    },
+    limit: 1000,
+    attributes: ['name'],
+    raw : true
+  }).then( topics => topics.map(topic => topic.name ));
+
+  return topicList;
+}
+
 
 module.exports = {
   findFollowingUserIds,
   findF2UserIds,
   findBlockedUserIds,
   findRelatedUserIds,
-  findUnrelatedUserIds
+  findUnrelatedUserIds,
+  findFollowingTopicByUser
 };

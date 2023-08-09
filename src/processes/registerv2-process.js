@@ -17,6 +17,8 @@ const LocationFunction = require("../databases/functions/location");
 const { addUserToTopicChannel } = require("./helper");
 const ProcessHelper = require("./helper");
 
+const { syncFeedPerUserProcess } = require("../services/syncFeedPerUser");
+
 const registerProcess = async (job, done) => {
     try {
         console.info("running job register process ! with id " + job.id);
@@ -73,6 +75,7 @@ const registerProcess = async (job, done) => {
         await ProcessHelper.addUserToTopicChannel(userId, topicNames);
         await ProcessHelper.followMainFeedTopic(userId, topicNames)
         await ProcessHelper.followMainFeedFollowing(userId, follows);
+        await syncFeedPerUserProcess(userId);
         await LogError.create({
             message: `done register process userId: ${userId}`
         })

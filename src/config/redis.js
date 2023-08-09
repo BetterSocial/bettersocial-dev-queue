@@ -39,6 +39,7 @@ const unFollowFeedProcessQueue = new Bull("unFollowFeedProcessQueue", connectRed
   }
 });
 const updateMainFeedBroadProcessQueue = new Bull("updateMainFeedBroadProcessQueue", connectRedis, queueOptions);
+const syncUserFeedQueue = new Bull("syncUserFeedQueue", connectRedis, queueOptions);
 /**
  * (END) of list of queues that uses scoring redis
  */
@@ -82,5 +83,6 @@ module.exports = {
   followMainFeedF2,
   unFollowMainFeedF2,
   unFollowFeedProcessQueue,
-  updateMainFeedBroadProcessQueue
+  updateMainFeedBroadProcessQueue,
+  syncUserFeedQueue
 };
