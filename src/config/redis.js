@@ -23,6 +23,7 @@ const {bullConfig, redisCredentials} = require('../redis/MainConfig');
  * (START) List of queues that uses scoring redis
  */
 const newsQueue = new Bull(QUEUE_NEWS, redisCredentials, bullConfig);
+console.log('newsQueue', newsQueue);
 const registerV2Queue = new Bull(QUEUE_NAME_REGISTER_V2, redisCredentials, bullConfig);
 const scoringProcessQueue = new Bull(QUEUE_SCORING_PROCESS, redisCredentials, bullConfig);
 const scoringDailyProcessQueue = new Bull(
