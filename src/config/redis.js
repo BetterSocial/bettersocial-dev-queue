@@ -19,26 +19,11 @@ const {
 } = require('../utils');
 const BetterSocialCronQueue = require('../redis/BetterSocialCronQueue');
 
-const redisUrl = process.env.REDIS_TLS_URL;
-const IS_LOCAL_REDIS = false;
-
-const redisConfig = IS_LOCAL_REDIS
-  ? {}
-  : {
-      tls: {
-        rejectUnauthorized: false
-      }
-    };
+const redisUrl = process.env.REDIS_ENTERPRISE_URL;
+const redisConfig = {};
 
 const redisClient = new Redis(String(redisUrl), redisConfig);
-
-const bullConfig = IS_LOCAL_REDIS
-  ? {}
-  : {
-      tls: {
-        rejectUnauthorized: false
-      }
-    };
+const bullConfig = {};
 
 /**
  * (START) List of queues that uses scoring redis
