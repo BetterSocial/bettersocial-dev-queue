@@ -17,22 +17,27 @@ const {
   QUEUE_SYNC_USER_FEED
 } = require('../utils');
 const BetterSocialCronQueue = require('../redis/BetterSocialCronQueue');
-const {bullConfig, redisUrl} = require('../redis/MainConfig');
+const {bullConfig, redisUrl, redisClient} = require('../redis/MainConfig');
 
 /**
  * (START) List of queues that uses scoring redis
  */
-const newsQueue = new Bull(QUEUE_NEWS, redisUrl, bullConfig);
-const registerV2Queue = new Bull(QUEUE_NAME_REGISTER_V2, redisUrl, bullConfig);
-const scoringProcessQueue = new Bull(QUEUE_SCORING_PROCESS, redisUrl, bullConfig);
-const scoringDailyProcessQueue = new Bull(QUEUE_SCORING_DAILY_PROCESS, redisUrl, bullConfig);
-const deleteActivityProcessQueue = new Bull(QUEUE_DELETE_ACTIVITY_PROCESS, redisUrl, bullConfig, {
-  limiter: {
-    max: 150,
-    duration: 60 * 1000 // 60 second
+const newsQueue = new Bull(QUEUE_NEWS, redisClient, bullConfig);
+const registerV2Queue = new Bull(QUEUE_NAME_REGISTER_V2, redisClient, bullConfig);
+const scoringProcessQueue = new Bull(QUEUE_SCORING_PROCESS, redisClient, bullConfig);
+const scoringDailyProcessQueue = new Bull(QUEUE_SCORING_DAILY_PROCESS, redisClient, bullConfig);
+const deleteActivityProcessQueue = new Bull(
+  QUEUE_DELETE_ACTIVITY_PROCESS,
+  redisClient,
+  bullConfig,
+  {
+    limiter: {
+      max: 150,
+      duration: 60 * 1000 // 60 second
+    }
   }
-});
-const unFollowFeedProcessQueue = new Bull(QUEUE_UNFOLLOW_FEED_PROCESS, redisUrl, bullConfig, {
+);
+const unFollowFeedProcessQueue = new Bull(QUEUE_UNFOLLOW_FEED_PROCESS, redisClient, bullConfig, {
   limiter: {
     max: 250,
     duration: 60 * 1000 // 60 second
@@ -40,10 +45,10 @@ const unFollowFeedProcessQueue = new Bull(QUEUE_UNFOLLOW_FEED_PROCESS, redisUrl,
 });
 const updateMainFeedBroadProcessQueue = new Bull(
   QUEUE_UPDATE_MAIN_FEED_BROAD_PROCESS,
-  redisUrl,
+  redisClient,
   bullConfig
 );
-const syncUserFeedQueue = new Bull(QUEUE_SYNC_USER_FEED, redisUrl, bullConfig);
+const syncUserFeedQueue = new Bull(QUEUE_SYNC_USER_FEED, redisClient, bullConfig);
 /**
  * (END) of list of queues that uses scoring redis
  */
