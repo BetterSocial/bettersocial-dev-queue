@@ -1,7 +1,6 @@
 const Redis = require('ioredis');
 
 const redisUrl = process.env.REDIS_ENTERPRISE_URL;
-console.log('redisUrl', redisUrl);
 const redisCredentials = {
   host: process.env.REDIS_ENTERPRISE_HOST,
   username: process.env.REDIS_ENTERPRISE_USERNAME,
@@ -13,6 +12,8 @@ const redisConfig = {};
 
 const redisClient = new Redis(redisCredentials, redisConfig);
 const bullConfig = {};
+console.log('redisUrl', redisUrl);
+console.log('redisCredentials', redisCredentials);
 
 module.exports = {
   bullConfig,
