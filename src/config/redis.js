@@ -55,9 +55,7 @@ const dailyRssUpdateQueue = BetterSocialQueue.generate(QUEUE_RSS)
 const dailyRssUpdateQueueSecond = BetterSocialQueue.generate(QUEUE_RSS_SECOND)
 const deleteExpiredPost = BetterSocialQueue.generate(QUEUE_NAME_DELETE_EXPIRED_POST)
 const deleteUserPostCommentQueue = BetterSocialQueue.generate(QUEUE_DELETE_USER_POST_COMMENT)
-const postTimeQueue = BetterSocialQueue.generate(QUEUE_NAME_ADD_QUEUE_POST_TIME);
 const refreshMaterializedViewQueue = BetterSocialQueue.generate(QUEUE_NAME_REFRESH_ALL_MATERIALIZED_VIEW)
-const testQueue = BetterSocialQueue.generate(QUEUE_NAME_TEST);
 const followMainFeedF2 = BetterSocialQueue.generate(EVENT_FOLLOW_F2_USER);
 const unFollowMainFeedF2 = BetterSocialQueue.generate(EVENT_UNFOLLOW_F2_USER);
 /**
@@ -74,12 +72,10 @@ module.exports = {
   deleteExpiredPost,
   deleteUserPostCommentQueue,
   newsQueue,
-  postTimeQueue,
   refreshMaterializedViewQueue,
   registerV2Queue,
   scoringDailyProcessQueue,
   scoringProcessQueue,
-  testQueue,
   followMainFeedF2,
   unFollowMainFeedF2,
   unFollowFeedProcessQueue,
