@@ -1,6 +1,6 @@
 const Bull = require('bull');
 const {v4: uuidv4} = require('uuid');
-const {redisCredentials} = require('../config');
+const {redisCredentials} = require('../redis/MainConfig');
 
 const connectRedis = redisCredentials;
 

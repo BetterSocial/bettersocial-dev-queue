@@ -1,5 +1,4 @@
 const Bull = require('bull');
-const Redis = require('ioredis');
 const BetterSocialQueue = require('../redis/BetterSocialQueue');
 const {
   EVENT_FOLLOW_F2_USER,
@@ -18,20 +17,7 @@ const {
   QUEUE_SYNC_USER_FEED
 } = require('../utils');
 const BetterSocialCronQueue = require('../redis/BetterSocialCronQueue');
-
-const redisUrl = process.env.REDIS_ENTERPRISE_URL;
-console.log('redisUrl', redisUrl);
-const redisCredentials = {
-  host: process.env.REDIS_ENTERPRISE_HOST,
-  username: process.env.REDIS_ENTERPRISE_USERNAME,
-  password: process.env.REDIS_ENTERPRISE_PASSWORD,
-  port: process.env.REDIS_ENTERPRISE_PORT
-};
-
-const redisConfig = {};
-
-const redisClient = new Redis(redisCredentials, redisConfig);
-const bullConfig = {};
+const {bullConfig, redisUrl} = require('../redis/MainConfig');
 
 /**
  * (START) List of queues that uses scoring redis
@@ -78,10 +64,6 @@ const generalDailyQueue = BetterSocialCronQueue.generate(QUEUE_GENERAL_DAILY);
  */
 
 module.exports = {
-  bullConfig,
-  redisClient,
-  redisUrl,
-  redisCredentials,
   addUserPostCommentQueue,
   credderScoreQueue,
   deleteActivityProcessQueue,
