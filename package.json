@@ -7,7 +7,8 @@
     "test": "jest --coverage --detectOpenHandles",
     "dev": "nodemon --config nodemon.json src/server.js",
     "start": "node ./src/server.js",
-    "queue": "node ./src/queues/job-queue.js"
+    "queue": "node ./src/queues/job-queue.js",
+    "prepare": "husky install"
   },
   "author": "amril",
   "license": "ISC",
@@ -42,6 +43,26 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "jest": "^27.0.4"
+    "@commitlint/cli": "^16.2.3",
+    "@commitlint/config-conventional": "^16.2.1",
+    "eslint": "^8.43.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "generate-changelog": "^1.8.0",
+    "husky": "^7.0.4",
+    "jest": "^27.0.3",
+    "lint-staged": "^13.2.3",
+    "nodemon": "^2.0.7",
+    "prettier": "2.8.8"
+  },
+  "lint-staged": {
+    "./**/*.{js,ts,jsx,tsx}": [
+      "yarn eslint --cache --fix"
+    ],
+    "*.json": [
+      "prettier --write"
+    ]
   }
 }
