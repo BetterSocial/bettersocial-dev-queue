@@ -1,8 +1,8 @@
 const Bull = require('bull');
 const {v4: uuidv4} = require('uuid');
-const {redisUrl} = require('../config');
+const {redisCredentials} = require('../config');
 
-const connectRedis = redisUrl;
+const connectRedis = redisCredentials;
 
 // init the scoring process queue object, to be used on sending message to the queue
 // For production
