@@ -1,15 +1,16 @@
 const Bull = require("bull")
 const Redis = require('ioredis');
-const { handlerFailure, handlerCompleted, handlerStalled } = require("../queues/handler")
+const { handlerFailure, handlerCompleted, handlerStalled } = require("../queues/handler");
+const { redisClient, bullConfig, redisUrl } = require("../config/redis");
 
-let client
-let subscriber
+let client = redisClient
+let subscriber = redisClient
 
 class BetterSocialQueue {
     /**
-     * 
-     * @param {String} queueName 
-     * @param {Object} additionalQueueOptions 
+     *
+     * @param {String} queueName
+     * @param {Object} additionalQueueOptions
      * @returns {Bull.Queue}
      */
     static generate(queueName, additionalQueueOptions = {}) {
@@ -17,31 +18,26 @@ class BetterSocialQueue {
         // let redisUrl = process.env.REDIS_TLS_URL
 
         // Comment below for heroku redis
-        let redisUrl = process.env.REDIS_TLS_URL ? process.env.REDIS_TLS_URL : process.env.REDIS_URL;
-
         let createClientOptions = {
             redis: {
                 enableReadyCheck: false,
                 maxRetriesPerRequest: null,
-                tls: {
-                    rejectUnauthorized: false,
-                }
-
+                ...bullConfig
             },
             createClient: (type, redisOpts) => {
                 switch (type) {
                     case 'client':
                         if (!client) {
-                            client = new Redis(redisUrl, redisOpts);
+                            client = redisClient
                         }
                         return client;
                     case 'subscriber':
                         if (!subscriber) {
-                            subscriber = new Redis(redisUrl, redisOpts);
+                            subscriber = redisClient
                         }
                         return subscriber;
                     case 'bclient':
-                        return new Redis(redisUrl, redisOpts);
+                        return redisClient;
                     default:
                         throw new Error('Unexpected connection type: ', type);
                 }
@@ -67,7 +63,7 @@ class BetterSocialQueue {
      * @param {Bull.Queue} queue
      * @param {import("bull").ProcessCallbackFunction} onProcess
      * @param {import("bull").ErrorEventCallback} [onError]
-     * @returns {Bull.Queue} 
+     * @returns {Bull.Queue}
      */
     static setEventCallback(queue, onProcess, onError) {
         if (!queue) throw new Error(`'queue' param cannot be null`)
@@ -85,8 +81,8 @@ class BetterSocialQueue {
 
     /**
      * @param {Bull.Queue} queue
-     * @param {String} cron 
-     * @returns {Bull.Queue} 
+     * @param {String} cron
+     * @returns {Bull.Queue}
      */
     static setCron(queue, cron) {
         queue.add({}, {
