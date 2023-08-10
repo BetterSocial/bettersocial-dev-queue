@@ -7,15 +7,7 @@ const connectRedis = redisCredentials;
 // init the scoring process queue object, to be used on sending message to the queue
 // For production
 
-const redisOptions = {
-  // redis: {
-  // tls: {
-  //   rejectUnauthorized: false
-  // },
-  // maxRetriesPerRequest: 100,
-  // connectTimeout: 30000
-  // }
-};
+const redisOptions = {};
 
 // For local
 // const redisOptions = {};
@@ -24,14 +16,6 @@ const scoringDailyProcessQueue = new Bull('scoringDailyProcessQueue', connectRed
 scoringDailyProcessQueue.on('error', (err) => console.log('scoringDailyProcessQueue', err));
 
 const sendQueueForDailyProcess = async (event, data) => {
-  // console.log(
-  //   "queueSenderForRedis.sendQueueForDailyProcess called with event[" +
-  //     event +
-  //     "] and data [" +
-  //     JSON.stringify(data) +
-  //     "]"
-  // );
-
   const queueData = {
     event,
     data
@@ -46,14 +30,6 @@ const sendQueueForDailyProcess = async (event, data) => {
 };
 
 const sendQueueForCronDailyProcess = async (event, data) => {
-  // console.log(
-  //   "queueSenderForRedis.sendQueueForDailyProcess called with event[" +
-  //     event +
-  //     "] and data [" +
-  //     JSON.stringify(data) +
-  //     "]"
-  // );
-
   const queueData = {
     event,
     data

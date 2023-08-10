@@ -15,7 +15,6 @@ const redisConfig = {};
 const redisClient = new Redis(redisUrl, redisConfig);
 const bullConfig = {};
 console.log('redisUrl', redisUrl);
-console.log('redisCredentials', redisCredentials);
 
 module.exports = {
   bullConfig,
