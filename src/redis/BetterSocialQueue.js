@@ -2,7 +2,7 @@ const Bull = require('bull');
 const Redis = require('ioredis');
 
 const {handlerFailure, handlerCompleted, handlerStalled} = require('../queues/handler');
-const {redisClient, bullConfig, redisUrl} = require('./MainConfig');
+const {redisClient, bullConfig, redisUrl, redisCredentials} = require('./MainConfig');
 
 let client = redisClient;
 let subscriber = redisClient;
@@ -57,7 +57,7 @@ class BetterSocialQueue {
       ...additionalQueueOptions
     };
 
-    return new Bull(queueName, redisUrl, options);
+    return new Bull(queueName, redisCredentials, options);
   }
 
   /**
