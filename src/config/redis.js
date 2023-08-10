@@ -20,6 +20,7 @@ const {
 const BetterSocialCronQueue = require('../redis/BetterSocialCronQueue');
 
 const redisUrl = process.env.REDIS_ENTERPRISE_URL;
+console.log('redisUrl', redisUrl);
 const redisConfig = {};
 
 const redisClient = new Redis(String(redisUrl), redisConfig);

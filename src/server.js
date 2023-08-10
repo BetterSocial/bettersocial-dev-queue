@@ -3,7 +3,7 @@ require('dotenv').config();
 
 app.listen(process.env.PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(process.env.REDIS_URL);
+  console.log(process.env.REDIS_ENTERPRISE_URL);
   console.info(`bettersocial-dev-queue running in ${process.env.PORT}`);
 });
 
