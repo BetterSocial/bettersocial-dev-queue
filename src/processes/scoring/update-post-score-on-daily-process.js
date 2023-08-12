@@ -1,11 +1,8 @@
-const moment = require("moment");
-const { calcPostScore } = require("./calc-post-score");
-const { updateScoreToStream } = require("./update-score-to-stream");
-const { deleteStream } = require("../../services");
-const { REGULAR_TIME_FORMAT } = require("../scoring-constant");
-
-const scoringProcessQueue = require("../../queues/queueSenderForRedis"); // uncomment this line if using redis as message queue server
-//const scoringProcessQueue = require("../../queues/queueSenderForKafka"); // uncomment this line if using kafka as message queue server
+const moment = require('moment');
+const {calcPostScore} = require('./calc-post-score');
+const {updateScoreToStream} = require('./update-score-to-stream');
+const {deleteStream} = require('../../services/deleteStream');
+const {REGULAR_TIME_FORMAT} = require('../scoring-constant');
 
 const updatePostScoreOnDailyProcess = async (
   job,
@@ -15,10 +12,10 @@ const updatePostScoreOnDailyProcess = async (
   lastBatch,
   userScoreListByPostId
 ) => {
-  console.debug("Starting updatePostScoreOnDailyProcess");
+  console.debug('Starting updatePostScoreOnDailyProcess');
 
   // get complete doc from the db, by given user ids
-  const cursors = await postScoreCol.find({ _id: { $in: postIds } });
+  const cursors = await postScoreCol.find({_id: {$in: postIds}});
 
   // calculate percentage per document. It's going to be used for updating job's progress
   const progressPerDoc = Math.floor(100 / postIds.length);
@@ -33,10 +30,10 @@ const updatePostScoreOnDailyProcess = async (
 
     // set done final process flag, by looking at the expired time
     if (
-      postDoc.expired_at != "" &&
+      postDoc.expired_at != '' &&
       moment().utc().diff(moment(postDoc.expired_at, REGULAR_TIME_FORMAT)) > 0
     ) {
-      console.log("setting done final process");
+      console.log('setting done final process');
       postDoc.has_done_final_process = true;
       expiredDocs.push(postDoc);
     }
@@ -47,10 +44,10 @@ const updatePostScoreOnDailyProcess = async (
 
     updatedDocs.push({
       updateOne: {
-        filter: { _id: postDoc._id }, // query data to be updated
-        update: { $set: postDoc }, // updates
-        upsert: false,
-      },
+        filter: {_id: postDoc._id}, // query data to be updated
+        update: {$set: postDoc}, // updates
+        upsert: false
+      }
     });
 
     // Update getstream
@@ -65,14 +62,14 @@ const updatePostScoreOnDailyProcess = async (
 
   // Remove the expired posts
   for (const expPostDoc of expiredDocs) {
-    deleteStream("user_excl", expPostDoc.author_id, expPostDoc._id);
+    deleteStream('user_excl', expPostDoc.author_id, expPostDoc._id);
   }
 
-  console.debug("Done updatePostScoreOnDailyProcess, with result: ", result);
+  console.debug('Done updatePostScoreOnDailyProcess, with result: ', result);
 
   return result;
 };
 
 module.exports = {
-  updatePostScoreOnDailyProcess,
+  updatePostScoreOnDailyProcess
 };
