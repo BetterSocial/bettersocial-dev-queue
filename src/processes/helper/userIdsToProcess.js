@@ -18,11 +18,13 @@ const findFollowingUserIds = async (userId) => {
 
 const findF2UserIds = async (userId) => {
   const followedUserIds = await findFollowingUserIds(userId);
+  const blockedUserIds = await findBlockedUserIds(userId);
+  const excludeUserIds = followedUserIds.concat(blockedUserIds);
   const f2UserIds = await UserFollowUser.findAll({
     where: {
       [Op.and]: [
         { user_id_follower: { [Op.in]:followedUserIds} },
-        { user_id_followed: { [Op.notIn]: followedUserIds } }
+        { user_id_followed: { [Op.notIn]: excludeUserIds } }
       ]
     },
     limit: 1000,
