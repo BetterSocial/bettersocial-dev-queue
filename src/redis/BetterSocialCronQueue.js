@@ -7,14 +7,22 @@ const {rssProcess} = require('../processes/rss-process');
 const {
   refreshAllMaterializedViewProcess
 } = require('../processes/refresh-all-materialized-view-process');
+const {scoringDailyProcessJob} = require('../processes/scoring-daily-process');
+const {EVENT_DAILY_PROCESS_TRIGGER} = require('../processes/scoring-constant');
 
 /**
- * @typedef {"dailyCredderUpdate" | "dailyDeleteExpiredPost" | "dailyRssUpdate" | "hourlyRefreshMaterializedView"} CronFlag
+ * @typedef {"dailyCredderUpdate" | "dailyDeleteExpiredPost" | "dailyRssUpdate" | "dailyScoring" | "hourlyRefreshMaterializedView"} CronFlag
  */
 
 /**
  * @typedef {Object} BetterSocialCronQueueObject
  * @property {CronFlag} flag
+ */
+
+/**
+ * @typedef {Object} BetterSocialCronQueueInjection
+ * @property {Bull.Queue} credderScoreQueue
+ * @property {Bull.Queue} deleteActivityProcessQueue
  */
 
 class BetterSocialCronQueue extends BetterSocialQueue {
@@ -23,6 +31,7 @@ class BetterSocialCronQueue extends BetterSocialQueue {
    * @param {Bull.Queue} queue
    * @param {string} cron
    * @param {CronFlag} flag
+   * @param {Bull.Queue} queueInjection
    */
   static addCron(queue, cron, flag) {
     queue.add(
@@ -44,20 +53,27 @@ class BetterSocialCronQueue extends BetterSocialQueue {
   /**
    *
    * @param {Bull.Job<BetterSocialCronQueueObject>} job
+   * @param {Bull.DoneCallback} done
+   * @param {BetterSocialCronQueueInjection} queueInjection
    */
-  static process(job, done) {
+  static process(job, done, queueInjection) {
     const {flag} = job.data;
     console.log(`============= DOING CRON JOB (${flag})  =============`);
     if (flag === 'dailyCredderUpdate') {
-      return credderDailyScoreProcess(job, done);
+      return credderDailyScoreProcess(job, done, queueInjection?.credderScoreQueue);
     }
 
     if (flag === 'dailyDeleteExpiredPost') {
-      return deleteExpiredPostProcess(job, done);
+      return deleteExpiredPostProcess(job, done, queueInjection?.deleteActivityProcessQueue);
     }
 
     if (flag === 'dailyRssUpdate') {
       return rssProcess(job, done);
+    }
+
+    if (flag === 'dailyScoring') {
+      job.data.event = EVENT_DAILY_PROCESS_TRIGGER;
+      return scoringDailyProcessJob(job, done);
     }
 
     if (flag === 'hourlyRefreshMaterializedView') {

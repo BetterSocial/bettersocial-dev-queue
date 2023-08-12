@@ -119,11 +119,17 @@ const initQueue = () => {
   BetterSocialQueue.setEventCallback(addUserPostCommentQueue, addUserPostCommentProcess);
   BetterSocialQueue.setEventCallback(deleteUserPostCommentQueue, deleteUserPostCommentProcess);
 
-  BetterSocialCronQueue.setCronCallback(generalDailyQueue, BetterSocialCronQueue.process);
+  BetterSocialCronQueue.setCronCallback(generalDailyQueue, (job, done) =>
+    BetterSocialCronQueue.process(job, done, {
+      credderScoreQueue,
+      deleteActivityProcessQueue
+    })
+  );
   BetterSocialCronQueue.addCron(generalDailyQueue, '0 0,12,18 * * *', 'dailyRssUpdate');
-  BetterSocialCronQueue.addCron(generalDailyQueue, '0 12 * * *', 'dailyCredderUpdate');
+  BetterSocialCronQueue.addCron(generalDailyQueue, '0 12 * * * *', 'dailyCredderUpdate');
   BetterSocialCronQueue.addCron(generalDailyQueue, '0 0 * * *', 'dailyDeleteExpiredPost');
   BetterSocialCronQueue.addCron(generalDailyQueue, '0 * * * *', 'refreshMaterializedView');
+  BetterSocialCronQueue.addCron(generalDailyQueue, '0 1 * * * *', 'dailyScoring');
   /**
    * (END) General Queue
    */
