@@ -11,6 +11,7 @@ module.exports = async (signedUserId) => {
         attributes: ['user_id'],
         raw: true
     });
-
-    return anonymousUser.user_id
+    if(anonymousUser){
+      return anonymousUser.user_id
+    }
 }

@@ -21,7 +21,9 @@ const syncFeedPerUserProcess = async (userId) => {
     console.log("START sync main_feed_following")
     const followingUser = await findFollowingUserIds(userId)
     await followManyUserFeed(userId,followingUser,'main_feed_following','user_excl')
-    const anonUserIds = await Promise.all(followingUser.map(findAnonymousUserId));
+    const anonUserIds = await Promise.all(followingUser.map(findAnonymousUserId)).then(users => users.filter(user => {
+      return user !== undefined;
+    }));
     await followManyUserFeed(userId,anonUserIds,'main_feed_following','user_anon')
     const topics = await findFollowingTopicByUser(userId)
     await followManyUserFeed(userId,topics,'main_feed_following','topic')
