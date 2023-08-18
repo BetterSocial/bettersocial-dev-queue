@@ -53,7 +53,7 @@ const followUsers = async (userId, userIds) => {
       const follows = [];
       userIds.map((item) => {
         follows.push({
-          source: "main_feed:" + item.toLowerCase(),
+          source: "main_feed_following:" + item.toLowerCase(),
           target: "user:" + userId,
         });
       });
@@ -80,7 +80,7 @@ const makeTargetsFollowMyAnonymousUser = async (myAnonUserId, targets) => {
       const follows = [];
       targets.map((target) => {
         follows.push({
-          source: "main_feed:" + target.toLowerCase(),
+          source: "main_feed_following:" + target.toLowerCase(),
           target: "user_anon:" + myAnonUserId,
         });
       });
