@@ -15,38 +15,29 @@ const syncFeedPerUser = async (req, res) => {
   }
 }
 
+const requestStream = async (feedType, clientFeed, offset, limit) => {
+  if(feedType == "following"){
+    return await clientFeed.following({offset:offset, limit:limit})
+  }else if(feedType == "follower"){
+    return await clientFeed.followers({offset:offset, limit:limit})
+  }else{
+    return await clientFeed.get({offset:offset, limit:limit})
+  }
+}
+
 const getFeedList = async (clientFeed, feedType) => {
   let offset = 0
   const limit = 500
   let is_finish = false
-  feedList = []
+  let feedList = []
   console.log("Get feed list")
   while(!is_finish){
-    if(feedType == "following"){
-      const feeds = await clientFeed.following({offset:offset, limit:limit})
-      if(feeds.results.length == 0){
-        is_finish = true
-      }else{
-        feedList = feedList.concat(feeds.results)
-        offset += limit
-      }
-    }else if(feedType == "follower"){
-      const feeds = await clientFeed.followers({offset:offset, limit:limit})
-      if(feeds.results.length == 0){
-        is_finish = true
-      }else{
-        feedList = feedList.concat(feeds.results)
-        offset += limit
-      }
-    }
-    else{
-      const feeds = await clientFeed.get({offset:offset, limit:limit})
-      if(feeds.results.length == 0){
-        is_finish = true
-      }else{
-        feedList = feedList.concat(feeds.results)
-        offset += limit
-      }
+    let feeds = await requestStream(feedType, clientFeed, offset, limit)
+    if(feeds.results.length == 0){
+      is_finish = true
+    }else{
+      feedList = feedList.concat(feeds.results)
+      offset += limit
     }
   }
   return feedList
@@ -138,7 +129,7 @@ const resetAndSyncFeed = async (req, res) => {
     const followinfFeed = await listFeedFollowing(feed, userId)
     console.log(`Start reset feed ${feed}`)
     await Promise.all(followinfFeed.map( async (feed) => {
-      targetFeed = feed.target_id.split(":")
+      let targetFeed = feed.target_id.split(":")
       console.log(targetFeed)
       let result = await clinetFeed.unfollow(targetFeed[0], targetFeed[1]);
       console.log(result)
