@@ -1,6 +1,14 @@
 const express = require('express');
 const { refreshPostViewTime } = require("../services");
-const { syncFeedPerUser, unfollowFeed, getFeedFollowing, getFeedFollower, getFeedActivities, resetAndSyncFeed} = require("../services");
+const { 
+    syncFeedPerUser, 
+    unfollowFeed, 
+    getFeedFollowing, 
+    getFeedFollower, 
+    getFeedActivities, 
+    resetAndSyncFeed,
+    syncUserScore
+} = require("../services");
 
 const router = express.Router();
 
@@ -13,6 +21,7 @@ router.post("/feed-follower", getFeedFollower);
 router.post("/feed-activities", getFeedActivities);
 router.post("/reset-sync-feed", resetAndSyncFeed);
 
+router.post("/sync-user-score", syncUserScore);
 
 // sync all user feed
 // router.get("/sync-feed", refreshPostViewTime);
