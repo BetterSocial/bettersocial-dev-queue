@@ -55,7 +55,8 @@
     "jest": "^27.0.3",
     "lint-staged": "^13.2.3",
     "nodemon": "^2.0.7",
-    "prettier": "2.8.8"
+    "prettier": "2.8.8",
+    "supertest": "^6.3.3"
   },
   "lint-staged": {
     "./**/*.{js,ts,jsx,tsx}": [
