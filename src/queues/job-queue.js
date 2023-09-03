@@ -6,6 +6,7 @@ const {unFollowFeedProcessJob} = require('../processes/unfollow-main-feed');
 const {updateMainFeedBroadProcessJob} = require('../processes/update-main-feed-broad');
 const {syncUserFeedProcessJob} = require('../processes/sync-user-feed');
 const processFollowMainFeedF2 = require('../processes/follow-main-feed-f2-process');
+const {removeActivityProcessJob} = require('../processes/remove-activity-process')
 
 const {handlerFailure, handlerCompleted, handlerStalled} = require('./handler');
 
@@ -23,7 +24,8 @@ const {
   unFollowFeedProcessQueue,
   updateMainFeedBroadProcessQueue,
   syncUserFeedQueue,
-  generalDailyQueue
+  generalDailyQueue,
+  removeActivityQueue
 } = require('../config');
 
 const {registerProcess: registerV2Process} = require('../processes/registerv2-process');
@@ -108,7 +110,24 @@ const initQueue = () => {
     console.error('syncUserFeedQueue error : ', err);
   });
 
+  console.info('followMainFeedF2Queue job is working!');
   followMainFeedF2.process(processFollowMainFeedF2.processFollow);
+  followMainFeedF2.on('failed', handlerFailure);
+  followMainFeedF2.on('completed', handlerCompleted);
+  followMainFeedF2.on('stalled', handlerStalled);
+  followMainFeedF2.on('error', (err) => {
+    console.error('followMainFeedF2Queue error : ', err);
+  });
+
+  console.info('removeActivityQueue job is working!');
+  removeActivityQueue.process(removeActivityProcessJob);
+  removeActivityQueue.on('failed', handlerFailure);
+  removeActivityQueue.on('completed', handlerCompleted);
+  removeActivityQueue.on('stalled', handlerStalled);
+  removeActivityQueue.on('error', (err) => {
+    console.error('removeActivity error : ', err);
+  });
+
   unFollowMainFeedF2.process(processFollowMainFeedF2.processUnfollow);
 
   /**
