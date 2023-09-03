@@ -2,7 +2,7 @@ const { User } = require("../../models")
 
 module.exports = async (userId) => {
     if(userId == null) return;
-    user = await User.findOne({
+    let user = await User.findOne({
         where: {
             user_id: userId
         }
