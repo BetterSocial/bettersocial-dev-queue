@@ -22,12 +22,12 @@ const calcScoreOnSyncUserScore = async(data, userDoc, userScoreList) => {
   const nonPrivateEmails = [];
   data.emails.forEach(function(email) {
     // check if it's edu emails
-    if ( !email.match(/.+\@(gmail|yahoo|hotmail|outlook)\..+/)) {// check if it's non private emails by domain
-      console.debug("Email " + email + " is detected as non private emails");
-      nonPrivateEmails.push(email);
-    } else if (email.endsWith(".edu")) {
+    if (email.endsWith(".edu")) {
       console.debug("Email " + email + " is detected as edu emails");
       eduEmails.push(email);
+    } else if ( !email.match(/.+\@(gmail|yahoo|hotmail|outlook)\..+/)) {// check if it's non private emails by domain
+      console.debug("Email " + email + " is detected as non private emails");
+      nonPrivateEmails.push(email);
     } else {
       console.debug("Email " + email + " is not detected as edu nor non private emails");
     }
