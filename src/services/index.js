@@ -9,5 +9,6 @@ module.exports = {
   ...require("./followMainFeedFollowing"),
   ...require("./followMainFeedF2"),
   ...require("./syncFeedPerUser"),
-  ...require("./syncUserScore")
+  ...require("./syncUserScore"),
+  ...require("./syncPostScore")
 };

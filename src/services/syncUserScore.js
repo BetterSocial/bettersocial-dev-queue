@@ -18,33 +18,32 @@ const getListData = async () => {
       db.collection(DB_COLLECTION_POST_SCORE),
       db.collection(DB_COLLECTION_USER_POST_SCORE),
     ]);
-  
+
     return {
       userScoreList,
       postScoreList,
       userPostScoreList,
     };
   };
-  
+
 const syncUserScore = async (req, res) => {
     try {
-        // sample id = 397e2fee-6af1-4551-9aae-29a7826cd173
         let { userId } = req.body
         // Get topic that user follow
         let data_user = await UsersFunction.getUserByUserId(userId);
         // console.log("User => ",data_user.createdAt)
         let topics = await UsersFunction.getUserTopicList(userId);
         let following_users = await UsersFunction.getUserFollowingList(userId);
-        
+
         const scoringProcessData = {
             user_id: userId,
             register_time: data_user.createdAt,//moment().format("YYYY-MM-DD HH:mm:ss"),
             emails: [],
             twitter_acc: "",
-            topics: topics, 
+            topics: topics,
             follow_users: following_users
         };
-        
+
         const { userScoreList } = await getListData();
         let userDoc = await userScoreList.findOne({ _id: data_user.user_id });
         console.debug("findOne userDoc result: " + JSON.stringify(userDoc));

@@ -1,11 +1,11 @@
 const express = require('express');
 const { refreshPostViewTime } = require("../services");
-const { 
-    syncFeedPerUser, 
-    unfollowFeed, 
-    getFeedFollowing, 
-    getFeedFollower, 
-    getFeedActivities, 
+const {
+    syncFeedPerUser,
+    unfollowFeed,
+    getFeedFollowing,
+    getFeedFollower,
+    getFeedActivities,
     resetAndSyncFeed,
     syncUserScore,
     syncPostScore
