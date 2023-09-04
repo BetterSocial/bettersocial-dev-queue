@@ -15,7 +15,7 @@ const {
   QUEUE_UNFOLLOW_FEED_PROCESS,
   QUEUE_UPDATE_MAIN_FEED_BROAD_PROCESS,
   QUEUE_SYNC_USER_FEED,
-  QUEUE_REMOVE_ACTOVITY
+  QUEUE_REMOVE_ACTIVITY
 } = require('../utils');
 const BetterSocialCronQueue = require('../redis/BetterSocialCronQueue');
 const {bullConfig, redisUrl} = require('../redis/MainConfig');
@@ -39,7 +39,7 @@ const unFollowFeedProcessQueue = new Bull(QUEUE_UNFOLLOW_FEED_PROCESS, redisUrl,
     duration: 60 * 1000 // 60 second
   }
 });
-const removeActivityQueue = new Bull(QUEUE_REMOVE_ACTOVITY, redisUrl, bullConfig, {
+const removeActivityQueue = new Bull(QUEUE_REMOVE_ACTIVITY, redisUrl, bullConfig, {
   limiter: {
     max: 300,
     duration: 60 * 1000 // 60 second
