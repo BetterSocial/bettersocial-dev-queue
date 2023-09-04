@@ -21,11 +21,11 @@ module.exports = (sequelize, DataTypes) => {
       //   as: "follower",
       // });
 
-      // models.User.belongsToMany(models.Topics, {
-      //   through: "user_topics",
-      //   foreignKey: "user_id",
-      //   as: "topics",
-      // });
+      models.User.belongsToMany(models.Topics, {
+        through: "user_topics",
+        foreignKey: "user_id",
+        as: "topics",
+      });
 
       // models.User.belongsToMany(models.Locations, {
       //   through: "user_location",

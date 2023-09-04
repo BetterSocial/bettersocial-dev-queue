@@ -8,5 +8,6 @@ module.exports = {
   ...require("./deleteStream"),
   ...require("./followMainFeedFollowing"),
   ...require("./followMainFeedF2"),
-  ...require("./syncFeedPerUser")
+  ...require("./syncFeedPerUser"),
+  ...require("./syncUserScore")
 };

@@ -14,4 +14,5 @@ module.exports = {
   ...require("./update-user-score-on-daily-process-phase1"),
   ...require("./update-post-score-on-daily-process"),
   ...require("./trigger-daily-process"),
+  ...require("./calc-score-on-sync-user-score"),
 };

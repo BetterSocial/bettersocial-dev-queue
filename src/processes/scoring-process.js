@@ -651,4 +651,5 @@ const scoringProcessJob = async (job, done) => {
 
 module.exports = {
   scoringProcessJob,
+  initDataUserScore
 };

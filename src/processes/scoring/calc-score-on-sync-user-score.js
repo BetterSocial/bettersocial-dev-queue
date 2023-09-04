@@ -1,10 +1,9 @@
-require('dotenv').config;
 const { calcUserScore } = require("./calc-user-score");
-const { isStringBlankOrNull } = require("../../utils");
+const { calcQualitativeCriteriaScore } = require('./calc-score-on-create-account')
 const moment = require("moment");
 
-const calcScoreOnCreateAccount = async(data, userDoc, userScoreList) => {
-  console.debug("Starting calcScoreOnCreateAccount");
+const calcScoreOnSyncUserScore = async(data, userDoc, userScoreList) => {
+  console.debug("Starting calcScoreOnSyncUserScore");
 
   const timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
   userDoc.register_time = data.register_time;
@@ -70,7 +69,7 @@ const calcScoreOnCreateAccount = async(data, userDoc, userScoreList) => {
             }
           );
         } else {
-          throw new Error("Followed user data is not found, with id: " + follow);
+        //   throw new Error("Followed user data is not found, with id: " + follow);
         }
       }
     }
@@ -88,50 +87,15 @@ const calcScoreOnCreateAccount = async(data, userDoc, userScoreList) => {
     }
   );
 
+  console.log("updateUserScoreDocs => ", updateUserScoreDocs);
+  // const result = []
   const result = await userScoreList.bulkWrite(updateUserScoreDocs);
 
   console.debug("Update on create account event: " + JSON.stringify(result));
   return result;
 };
 
-const calcQualitativeCriteriaScore = (userDoc) => {
-
-  const WEDU = process.env.W_EDU || 1.4;
-  const WEMAIL = process.env.W_EMAIL || 1.2;
-  const WTWITTER = process.env.W_TWITTER || 2;
-  const WUSERATT = process.env.W_USERATT || 1;
-
-  let q = 1;
-  const countNonPrivateEmails = userDoc.confirmed_acc.non_private_email.length;
-
-  // multiplicate if user has confirmed '.edu' address
-  if (userDoc.confirmed_acc.edu_emails.length > 0) {
-    q = q * WEDU;
-  }
-
-  // multiplicate if user has confirmed other non-private email addresses
-  if (countNonPrivateEmails > 0) {
-    if (countNonPrivateEmails > 3) {
-      countNonPrivateEmails = 3;
-    }
-
-    q = q * (WEMAIL ** (countNonPrivateEmails ** 0.25) );
-  }
-
-  // multiplicate if user has confirmed a twitter account with >200 followers
-  if (!isStringBlankOrNull(userDoc.confirmed_acc.twitter_acc.acc_name) &&
-    userDoc.confirmed_acc.twitter_acc.num_followers > 200) {
-    q = q * WTWITTER;
-  }
-
-  if (userDoc.user_att_score > 0) {
-    q = q * userDoc.user_att_score;
-  }
-
-  return q;
-}
 
 module.exports = {
-  calcScoreOnCreateAccount,
-  calcQualitativeCriteriaScore
+  calcScoreOnSyncUserScore
 }
