@@ -27,6 +27,7 @@ module.exports = {
   QUEUE_SYNC_USER_FEED: 'syncUserFeedQueue',
   QUEUE_UNFOLLOW_FEED_PROCESS: 'unFollowFeedProcessQueue',
   QUEUE_UPDATE_MAIN_FEED_BROAD_PROCESS: 'updateMainFeedBroadProcessQueue',
+  QUEUE_REMOVE_ACTIVITY: "removeActivityQueue",
 
   CREDDER_SCORE_NOT_INDEXED: -1,
   CREDDER_SCORE_NOT_VALID: -2,
