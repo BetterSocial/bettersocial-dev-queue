@@ -209,7 +209,7 @@ const onCreatePost = async (data) => {
   if (!userScoreDoc) {
     // TODO: create if userScoreDoc is not available
     userScoreDoc = await setInitialDataUserScore(data.user_id);
-    throw new Error(`User data is not found, with id: ${data.user_id}`);
+    // throw new Error(`User data is not found, with id: ${data.user_id}`);
   }
 
   let postScoreDoc = await postScoreList.findOne({_id: data.feed_id});
@@ -280,14 +280,16 @@ const getDataToCalcScore = async (
     });
     console.debug(`findOne userScoreDoc result: ${JSON.stringify(followedUserScoreDoc)}`);
     if (!followedUserScoreDoc) {
-      throw new Error(`User data is not found, with id: ${getFollowedUserScoreDoc.id}`);
+      followedUserScoreDoc = await setInitialDataUserScore(getFollowedUserScoreDoc.id);
+      // throw new Error(`User data is not found, with id: ${getFollowedUserScoreDoc.id}`);
     }
   }
   if (getUserScoreDoc) {
     userScoreDoc = await userScoreList.findOne({_id: data.user_id});
     console.debug(`findOne userScoreDoc result: ${JSON.stringify(userScoreDoc)}`);
     if (!userScoreDoc) {
-      throw new Error(`User data is not found, with id: ${data.user_id}`);
+      userScoreDoc = await setInitialDataUserScore(data.user_id);
+      // throw new Error(`User data is not found, with id: ${data.user_id}`);
     }
   }
   if (getPostScoreDoc) {
@@ -303,7 +305,8 @@ const getDataToCalcScore = async (
     });
     console.debug(`findOne author's userScoreDoc result: ${JSON.stringify(authorUserScoreDoc)}`);
     if (!authorUserScoreDoc) {
-      throw new Error(`Author user data is not found, with id: ${postScoreDoc.author_id}`);
+      authorUserScoreDoc = await setInitialDataUserScore(postScoreDoc.author_id);
+      // throw new Error(`Author user data is not found, with id: ${postScoreDoc.author_id}`);
     }
   }
   if (getUserPostScoreDoc) {
@@ -423,7 +426,8 @@ const onBlockUserPost = async (data) => {
     });
     console.debug(`findOne userScoreDoc of author: ${JSON.stringify(authorUserScoreDoc)}`);
     if (!authorUserScoreDoc) {
-      throw new Error(`Author User data is not found, with id: ${postScoreDoc.author_id}`);
+      authorUserScoreDoc = await setInitialDataUserScore(postScoreDoc.author_id);
+      // throw new Error(`Author User data is not found, with id: ${postScoreDoc.author_id}`);
     }
   } else {
     authorUserScoreDoc = await userScoreList.findOne({
@@ -431,7 +435,8 @@ const onBlockUserPost = async (data) => {
     });
     console.debug(`findOne userScoreDoc of blocked user: ${JSON.stringify(authorUserScoreDoc)}`);
     if (!authorUserScoreDoc) {
-      throw new Error(`Blocked User data is not found, with id: ${data.blocked_user_id}`);
+      authorUserScoreDoc = await setInitialDataUserScore(data.blocked_user_id);
+      // throw new Error(`Blocked User data is not found, with id: ${data.blocked_user_id}`);
     }
   }
 
