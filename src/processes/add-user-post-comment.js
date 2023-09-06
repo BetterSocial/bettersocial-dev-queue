@@ -23,15 +23,17 @@ require('dotenv').config()
 const addUserPostCommentProcess = async (job, done) => {
     // let success = await sequelize.query("REFRESH MATERIALIZED VIEW vwm_user_common_follower_count")
     // if(success) return done(null, 'OK')
-    let { postId, comment, commentId, commenterUserId, authorUserId } = job?.data
+    let { postId, parentCommentId, isAnonymous, comment, commentId, commenterUserId, authorUserId } = job?.data
     console.log('job?.data')
     console.log(job?.data)
-    let response = await UserPostComment.create({
+    await UserPostComment.create({
         id: uuid(),
         post_id: postId,
+        parent_comment_id: parentCommentId,
         comment_id: commentId,
         author_user_id: authorUserId,
         commenter_user_id: commenterUserId,
+        is_anonymous: isAnonymous,
         comment
     })
 
