@@ -1,5 +1,5 @@
 const express = require('express');
-const { refreshPostViewTime } = require("../services");
+const {refreshPostViewTime} = require('../services');
 const {
   syncFeedPerUser,
   unfollowFeed,
@@ -10,22 +10,22 @@ const {
   getActivityById,
   removeActivityById,
   syncUserScore
-} = require("../services");
+} = require('../services');
 
 const router = express.Router();
 
-router.get("/refresh-post-view-time", refreshPostViewTime);
+router.get('/refresh-post-view-time', refreshPostViewTime);
 // sync user feed
-router.get("/sync-feed/:userId", syncFeedPerUser);
-router.post("/unfollow-feed", unfollowFeed);
-router.post("/feed-following", getFeedFollowing);
-router.post("/feed-follower", getFeedFollower);
-router.post("/feed-activities", getFeedActivities);
-router.post("/reset-sync-feed", resetAndSyncFeed);
+router.get('/sync-feed/:userId', syncFeedPerUser);
+router.post('/unfollow-feed', unfollowFeed);
+router.post('/feed-following', getFeedFollowing);
+router.post('/feed-follower', getFeedFollower);
+router.post('/feed-activities', getFeedActivities);
+router.post('/reset-sync-feed', resetAndSyncFeed);
 
-router.post("/get-activity-by-id", getActivityById);
-router.post("/remove-activity-by-id", removeActivityById);
-router.post("/sync-user-score", syncUserScore);
+router.post('/get-activity-by-id', getActivityById);
+router.post('/remove-activity-by-id', removeActivityById);
+router.post('/sync-user-score', syncUserScore);
 
 // sync all user feed
 // router.get("/sync-feed", refreshPostViewTime);
