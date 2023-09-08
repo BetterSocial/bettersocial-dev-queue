@@ -22,7 +22,6 @@ const removeActivityProcess = async (feed_group, feed_id, activity_id) => {
   const feed = client.feed(feed_group, feed_id);
   const result = await feed.removeActivity(activity_id);
   console.log(result);
-  // console.log(activity_id, result);
   return result;
 };
 
