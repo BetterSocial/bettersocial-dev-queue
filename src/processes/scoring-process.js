@@ -207,7 +207,8 @@ const onCreatePost = async (data) => {
   let userScoreDoc = await userScoreList.findOne({_id: data.user_id});
   console.debug(`findOne userScoreDoc result: ${JSON.stringify(userScoreDoc)}`);
   if (!userScoreDoc) {
-    userScoreDoc = await setInitialDataUserScore(data.user_id);
+    initialUserScoreDoc = initDataUserScore(data.user_id, data.createdAt);
+    userScoreDoc = await setInitialDataUserScore(data.user_id, initialUserScoreDoc);
   }
 
   let postScoreDoc = await postScoreList.findOne({_id: data.feed_id});
