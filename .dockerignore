@@ -1,0 +1,17 @@
+.git/
+.docker/
+.husky/
+.idea/
+.vscode/
+
+coverage/
+node_modules/
+
+.env
+.env.example
+docker-compose.yml
+Procfile
+
+.eslintcache
+*.log
+npm-debug.log*

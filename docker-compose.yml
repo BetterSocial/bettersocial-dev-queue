@@ -1,0 +1,36 @@
+version: '3.5'
+
+services:
+  webhook:
+    image: 'bettersocial/queue'
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    command: npm run dev
+    hostname: webhook
+    env_file: .env
+    ports:
+      - '8000:8000'
+    volumes:
+      - .:/code
+      - /code/node_modules
+    networks:
+      - bettersocial
+
+  queue:
+    image: 'bettersocial/queue'
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    hostname: queue
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MODE=queue
+    networks:
+      - bettersocial
+
+networks:
+  bettersocial:
+    name: bettersocial-devnetwork
+    external: true
