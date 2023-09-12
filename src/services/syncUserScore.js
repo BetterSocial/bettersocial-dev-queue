@@ -27,7 +27,7 @@ const getListData = async () => {
   };
 };
 
-const setInitialDataUserScore = async (userId) => {
+const setInitialDataUserScore = async (userId, initialUserScoreDoc) => {
   // Get topic that user follow
   const data_user = await UsersFunction.getUserByUserId(userId);
   // console.log("User => ",data_user.createdAt)
@@ -48,7 +48,7 @@ const setInitialDataUserScore = async (userId) => {
   console.debug(`findOne userDoc result: ${JSON.stringify(userDoc)}`);
   if (!userDoc) {
     console.debug('init user score doc');
-    userDoc = initDataUserScore(data_user.user_id, data_user.createdAt);
+    userDoc = initialUserScoreDoc;
     console.debug(`initUser Score : ${JSON.stringify(userDoc)}`);
   }
 
