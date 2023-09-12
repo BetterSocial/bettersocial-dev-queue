@@ -1,48 +1,56 @@
-const stream = require("getstream");
-const { successResponse, errorResponse } = require('../utils');
-require("dotenv").config();
-const { removeActivityQueue } = require("../config");
+const stream = require('getstream');
+const {successResponse, errorResponse} = require('../utils');
+require('dotenv').config();
+const {removeActivityQueue} = require('../config');
 
-const getStreamClient = () => {
-  return stream.connect(process.env.API_KEY, process.env.SECRET, process.env.APP_ID);
-}
+const getStreamClient = async () =>
+  stream.connect(process.env.API_KEY, process.env.SECRET, process.env.APP_ID);
 
 const getActivityById = async (req, res) => {
   try {
-    let { activity_id } = req.body
-    const client = getStreamClient()
-    const success = await client.getActivities({ids: [activity_id]})
-    return successResponse(res, "Activity detail", success);
+    const {activity_id} = req.body;
+    const client = getStreamClient();
+    const success = await client.getActivities({ids: [activity_id]});
+    return successResponse(res, 'Activity detail', success);
   } catch (error) {
     return errorResponse(res, error.toString(), 500);
   }
-}
+};
+
+const removeActivityProcess = async (feed_group, feed_id, activity_id) => {
+  const client = await getStreamClient();
+  const feed = client.feed(feed_group, feed_id);
+  const result = await feed.removeActivity(activity_id);
+  console.log(result);
+  return result;
+};
 
 const removeActivityById = async (req, res) => {
   try {
-    let { activity_id } = req.body
-    let result = await removeActivityProcess(activity_id)
-    return successResponse(res, "Activity detail", result);
+    const {feed_group, feed_id, activity_id} = req.body;
+    // const result = await removeActivityProcess(feed_group, feed_id, activity_id);
+    // return successResponse(
+    //   res,
+    //   `Remove Activity detail ${activity_id} from feed_id ${feed_group}:${feed_id}`,
+    //   result
+    // );
     // by queue
-    // let result = removeActivityQueue.add({activity_id: activity_id})
-    // return successResponse(res, "Activity detail", result);
+    const result = removeActivityQueue.add(
+      {
+        feed_group,
+        feed_id,
+        activity_id
+      },
+      {delay: 60000 * 10}
+    );
+    return successResponse(res, 'Activity detail', result);
   } catch (error) {
     return errorResponse(res, error.toString(), 500);
   }
-}
-
-const removeActivityProcess = async (activity_id) => {
-  const client = getStreamClient()
-  const activity = await client.getActivities({ids: [activity_id]})
-  let object = JSON.parse(activity.results[0].object)
-  let feed = client.feed(object.feed_group, activity.results[0].actor.split(":")[1])
-  const result = await feed.removeActivity(activity_id)
-  console.log(activity_id, result)
-  return result
-}
+};
 
 module.exports = {
   getActivityById,
   removeActivityById,
   removeActivityProcess
-}
+};
