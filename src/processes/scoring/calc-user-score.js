@@ -1,4 +1,4 @@
-require("dotenv").config;
+require("dotenv").config();
 const moment = require("moment");
 
 const updateLastp3Scores = (userScoreDoc, postScoreDoc) => {
