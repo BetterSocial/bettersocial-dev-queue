@@ -1,3 +1,4 @@
+require("dotenv").config;
 const moment = require("moment");
 
 const updateLastp3Scores = (userScoreDoc, postScoreDoc) => {
@@ -11,12 +12,13 @@ const updateLastp3Scores = (userScoreDoc, postScoreDoc) => {
 
 const calcUserScore = async (userDoc) => {
   console.debug("Starting calcUserScore");
+  // ASK: where is #EMAIL variable?
 
   /*
   return {
     _id: userId,
     register_time: timestamp,
-    F_score: 0.0,
+    F_score: 1.0,
     sum_BP_score: 0.0,
     sum_impr_score: 0.0,
     r_score: 1.0,
@@ -48,7 +50,6 @@ const calcUserScore = async (userDoc) => {
     blockpointsPerImpression,
     ageScore,
   } = require("../../utils");
-  require("dotenv").config;
 
   const WY = process.env.W_Y || 1;
   const WF = process.env.W_F || 1;
@@ -74,7 +75,8 @@ const calcUserScore = async (userDoc) => {
   );
 
   // Calculate variables not yet calculated for getting the user score
-  const f = followerScore(userDoc.F_score);
+
+  const f = followerScore(userDoc.F_score); // ASK: should check follower number from db and ask about the validity of the formula
   const BPpImpr_un = blockpointsPerImpression(
     userDoc.sum_BP_score,
     userDoc.sum_impr_score,
