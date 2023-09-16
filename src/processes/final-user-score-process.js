@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const validatePostMessage = (str) => {
   const urlRegex = /(https?:\/\/[^ ]*)/;
   const urlValidation = str.match(urlRegex);
@@ -9,7 +11,6 @@ const validatePostMessage = (str) => {
 };
 
 const finalUserScoreProcess = async (u, p, pPerf, job) => {
-  require("dotenv").config();
   const {
     finalScorePost,
     previousInteractionScore,
@@ -59,10 +60,11 @@ const finalUserScoreProcess = async (u, p, pPerf, job) => {
     "",
     1
   );
+  const att = "";
   const p2 = scoreBasedPostCharacteristics(
     rec,
     WREC,
-    (att = ""),
+    att,
     WATT,
     D,
     WD,
