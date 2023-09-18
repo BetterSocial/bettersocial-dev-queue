@@ -1,10 +1,17 @@
+const register = require("./users-register");
+const registerAnonymous = require("./users-register-anonymous");
+const getUserTopicList = require("./get-user-topic-list");
+const getUserFollowingList = require("./get-user-following-list");
+const getUserFollowerList = require("./get-user-follower-list");
+const getUserByUserId = require("./get-user-by-user-id");
+
 const UsersFunction = {
-  register: require("./users-register"),
-  registerAnonymous: require("./users-register-anonymous"),
-  getUserTopicList: require("./get-user-topic-list"),
-  getUserFollowingList: require("./get-user-following-list"),
-  getUserFollowerList: require("./get-user-follower-list"),
-  getUserByUserId: require("./get-user-by-user-id"),
+  register,
+  registerAnonymous,
+  getUserTopicList,
+  getUserFollowingList,
+  getUserFollowerList,
+  getUserByUserId,
 };
 
 module.exports = UsersFunction;
