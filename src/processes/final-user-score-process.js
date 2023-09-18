@@ -1,26 +1,31 @@
+require("dotenv").config();
+
 const validatePostMessage = (str) => {
   const urlRegex = /(https?:\/\/[^ ]*)/;
   const urlValidation = str.match(urlRegex);
 
   if (urlValidation) {
-    return true
-  } else {
-    return false
+    return true;
   }
-}
+  return false;
+};
 
-const finalUserScoreProcess = async(u, p, pPerf, job) => {
-  require("dotenv").config();
+const finalUserScoreProcess = async (u, p, pPerf, job) => {
   const {
-    finalScorePost, previousInteractionScore, applyMultipliesToTotalScore,
-    scoreBasedPostCharacteristics, RecencyScore, ageOfPost, postPerformanceScore,
-    weightPostLongComments
-  } = require('../utils');
-  const { StatisticPost, PostStatistic } = require('../databases/models');
-  const impression = await StatisticPost.sum('counter');
-  const comment = await PostStatistic.sum('comment_count');
-  const topicLength = job.topics.length; //ambil dari getstream post jumlah topics
-  const durationFeed = job.duration_feed; //ambil dari getstream duration_feed
+    finalScorePost,
+    previousInteractionScore,
+    applyMultipliesToTotalScore,
+    scoreBasedPostCharacteristics,
+    RecencyScore,
+    ageOfPost,
+    postPerformanceScore,
+    weightPostLongComments,
+  } = require("../utils");
+  const { StatisticPost, PostStatistic } = require("../databases/models");
+  const impression = await StatisticPost.sum("counter");
+  const comment = await PostStatistic.sum("comment_count");
+  const topicLength = job.topics.length; // ambil dari getstream post jumlah topics
+  const durationFeed = job.duration_feed; // ambil dari getstream duration_feed
   const now = new Date().toISOString();
   const WU = process.env.W_U || 1;
   const WP1 = process.env.W_P1 || 1;
@@ -44,18 +49,48 @@ const finalUserScoreProcess = async(u, p, pPerf, job) => {
   const rec = RecencyScore(agePost, durationFeed);
   const postLink = validatePostMessage(job.body);
   // need to confirm for variabel prevInteract default set seen userFollowAuthor, followAuthorFollower, linkPost and att
-  const prev = previousInteractionScore('seen', PREVD, PREVUC, PREVPRE);
-  const p1 = applyMultipliesToTotalScore(WTOPIC, topicLength, WFOLLOWS, WDEGREE, WLINK_DOMAIN, 1, "", 1);
-  const p2 = scoreBasedPostCharacteristics(rec, WREC, att="", WATT, D, WD, p, WP, postLink);
+  const prev = previousInteractionScore("seen", PREVD, PREVUC, PREVPRE);
+  const p1 = applyMultipliesToTotalScore(
+    WTOPIC,
+    topicLength,
+    WFOLLOWS,
+    WDEGREE,
+    WLINK_DOMAIN,
+    1,
+    "",
+    1
+  );
+  const att = "";
+  const p2 = scoreBasedPostCharacteristics(
+    rec,
+    WREC,
+    att,
+    WATT,
+    D,
+    WD,
+    p,
+    WP,
+    postLink
+  );
   const pLongC = weightPostLongComments(comment, impression, WLONGC);
   const p3 = postPerformanceScore(pPerf, pLongC);
-  const final_score = finalScorePost(u, WU, p1, WP1, p2, WP2, p3, WP3, prev, WPREV)
+  const final_score = finalScorePost(
+    u,
+    WU,
+    p1,
+    WP1,
+    p2,
+    WP2,
+    p3,
+    WP3,
+    prev,
+    WPREV
+  );
   console.info(`final score post of user : ${final_score}`);
 
-  return { final_score }
-}
+  return { final_score };
+};
 
 module.exports = {
-  finalUserScoreProcess
-}
-
+  finalUserScoreProcess,
+};
