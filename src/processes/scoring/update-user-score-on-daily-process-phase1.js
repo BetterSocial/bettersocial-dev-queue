@@ -45,10 +45,7 @@ const updateUserScoreOnDailyProcessPhase1 = async (
         totalPostScores += lastp3Scores[key].p3_score;
       }
     }
-    userDoc.r_score = await averagePostScore(
-      totalPostScores,
-      lastp3Scores._count
-    );
+    userDoc.r_score = averagePostScore(totalPostScores, lastp3Scores._count);
 
     // update following
     userDoc.userScoreConstant = userScoreConstant;
