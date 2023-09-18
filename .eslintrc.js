@@ -2,37 +2,39 @@ module.exports = {
   env: {
     browser: true,
     commonjs: true,
-    es2021: true
+    es2021: true,
   },
-  extends: ['airbnb-base', 'plugin:prettier/recommended'],
+  extends: ["airbnb-base", "plugin:prettier/recommended"],
   overrides: [
     {
       env: {
-        node: true
+        node: true,
       },
-      files: ['.eslintrc.{js,cjs}'],
+      files: [".eslintrc.{js,cjs}"],
       parserOptions: {
-        sourceType: 'script'
-      }
-    }
+        sourceType: "script",
+      },
+    },
   ],
-  plugins: ['prettier'],
+  plugins: ["prettier"],
   parserOptions: {
-    ecmaVersion: 'latest'
+    ecmaVersion: "latest",
   },
   rules: {
-    'linebreak-style': 'off',
-    'no-console': 'off',
-    'import/prefer-default-export': 'off',
-    'no-use-before-define': 'warn',
-    'no-param-reassign': 'off',
-    'react/prop-types': 'off',
-    camelcase: 'off',
-    'import/no-extraneous-dependencies': 'off',
-    'no-useless-escape': 'warn',
-    'no-nested-ternary': 'off',
-    'no-case-declarations': 'warn',
-    'comma-dangle': 'off',
-    semi: ['error', 'always']
-  }
+    "linebreak-style": "off",
+    "no-console": "off",
+    "import/prefer-default-export": "off",
+    "no-use-before-define": "warn",
+    "no-param-reassign": "off",
+    "react/prop-types": "off",
+    camelcase: "off",
+    "import/no-extraneous-dependencies": "off",
+    "no-useless-escape": "warn",
+    "no-nested-ternary": "off",
+    "no-case-declarations": "warn",
+    "comma-dangle": "off",
+    "global-require": "warn",
+    "no-underscore-dangle": "warn",
+    semi: ["error", "always"],
+  },
 };
