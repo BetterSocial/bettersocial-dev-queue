@@ -1,5 +1,6 @@
 require("dotenv").config();
 const moment = require("moment");
+const { userScoreConstant } = require("./formula/constant");
 
 const updateLastp3Scores = (userScoreDoc, postScoreDoc) => {
   const p3scoreSubDoc = userScoreDoc.last_p3_scores[postScoreDoc._id];
@@ -51,19 +52,6 @@ const calcUserScore = async (userDoc) => {
     ageScore,
   } = require("../../utils");
 
-  const WY = process.env.W_Y || 1;
-  const WF = process.env.W_F || 1;
-  const WB = process.env.W_B || 1;
-  const WR = process.env.W_R || 1;
-  const WQ = process.env.W_Q || 1;
-  const WA = process.env.W_A || 1;
-  const WEDU = process.env.W_EDU || 1.4;
-  const WEMAIL = process.env.W_EMAIL || 1.2;
-  const WTWITTER = process.env.W_TWITTER || 2;
-  const WUSERATT = process.env.W_USERATT || 1;
-  const WLONGC = process.env.W_LONGC || 1;
-  const bpImprGlobal = process.env.BP_IMPR_GLOBAL || 0.00533333333333333;
-
   const ageAccountUser = Math.trunc(
     moment
       .duration(
@@ -80,23 +68,23 @@ const calcUserScore = async (userDoc) => {
   const BPpImpr_un = blockpointsPerImpression(
     userDoc.sum_BP_score,
     userDoc.sum_impr_score,
-    bpImprGlobal
+    userScoreConstant.BpImpr_Global
   );
   const b = blockedPerPostImpression(BPpImpr_un);
   const a = ageScore(ageAccountUser);
   const u1 = userScoreWithoutFollower(
     f,
-    WF,
+    userScoreConstant.w_f,
     b,
-    WB,
+    userScoreConstant.w_b,
     userDoc.r_score,
-    WR,
+    userScoreConstant.w_r,
     userDoc.q_score,
-    WQ,
+    userScoreConstant.w_q,
     a,
-    WA
+    userScoreConstant.w_a
   );
-  const user_score = userScore(u1, userDoc.y_score, WY);
+  const user_score = userScore(u1, userDoc.y_score, userScoreConstant.w_y);
   console.debug(
     `Calculation result ageAccountUser=${ageAccountUser}, f=${f}, BPpImpr_un=${BPpImpr_un}, b=${b}, a=${a}, u1=${u1}`
   );
