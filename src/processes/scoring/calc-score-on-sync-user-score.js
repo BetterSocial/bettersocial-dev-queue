@@ -5,6 +5,7 @@ const {
 } = require("./calc-score-on-create-account");
 
 const { userScoreConstant } = require("./formula/constant");
+const UsersFunction = require("../../databases/functions/users");
 
 const calcScoreOnSyncUserScore = async (data, userDoc, userScoreList) => {
   console.debug("Starting calcScoreOnSyncUserScore");
@@ -93,6 +94,9 @@ const calcScoreOnSyncUserScore = async (data, userDoc, userScoreList) => {
   userDoc.updated_at = timestamp;
 
   userDoc.userScoreConstant = userScoreConstant;
+  const userFollower = await UsersFunction.getUserFollowerList(userDoc._id);
+  userDoc.following = userFollower;
+  userDoc.F_score_update = userFollower.length;
 
   updateUserScoreDocs.push({
     updateOne: {

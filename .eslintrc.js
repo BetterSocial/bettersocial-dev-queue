@@ -34,6 +34,7 @@ module.exports = {
     "no-case-declarations": "warn",
     "comma-dangle": "off",
     "global-require": "warn",
+    "no-underscore-dangle": "warn",
     semi: ["error", "always"],
   },
 };
