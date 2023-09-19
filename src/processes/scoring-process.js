@@ -72,6 +72,7 @@ const initDataUserScore = (userId, timestamp) => ({
     last_update: timestamp, // when is the last update time of this counter
   },
   following: [], // list of user ids this user follows
+  follower: [], // list of user ids that follows this user
   blocking: [],
   last_p3_scores: {
     // list of last p3 score along with the post information.
