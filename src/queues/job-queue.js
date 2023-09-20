@@ -6,7 +6,7 @@ const {unFollowFeedProcessJob} = require('../processes/unfollow-main-feed');
 const {updateMainFeedBroadProcessJob} = require('../processes/update-main-feed-broad');
 const {syncUserFeedProcessJob} = require('../processes/sync-user-feed');
 const processFollowMainFeedF2 = require('../processes/follow-main-feed-f2-process');
-const {removeActivityProcessJob} = require('../processes/remove-activity-process')
+const {removeActivityProcessJob} = require('../processes/remove-activity-process');
 
 const {handlerFailure, handlerCompleted, handlerStalled} = require('./handler');
 
@@ -19,6 +19,7 @@ const {
   addUserPostCommentQueue,
   deleteUserPostCommentQueue,
   registerV2Queue,
+  automateWelcomeMsgQueue,
   followMainFeedF2,
   unFollowMainFeedF2,
   unFollowFeedProcessQueue,
@@ -29,6 +30,9 @@ const {
 } = require('../config');
 
 const {registerProcess: registerV2Process} = require('../processes/registerv2-process');
+const {
+  automateWelcomeMsgProcess: autoWelcomeMsgProcess
+} = require('../processes/auto-welcome-msg-process');
 const {credderScoreProcess} = require('../processes/credder-score-process');
 
 const BetterSocialQueue = require('../redis/BetterSocialQueue');
@@ -55,6 +59,12 @@ const initQueue = () => {
   registerV2Queue.on('failed', handlerFailure);
   registerV2Queue.on('completed', handlerCompleted);
   registerV2Queue.on('stalled', handlerStalled);
+
+  console.log('Automate Welcome Msg is working');
+  automateWelcomeMsgQueue.process(autoWelcomeMsgProcess);
+  automateWelcomeMsgQueue.on('failed', handlerFailure);
+  automateWelcomeMsgQueue.on('completed', handlerCompleted);
+  automateWelcomeMsgQueue.on('stalled', handlerStalled);
 
   console.info('scoringProcessQueue job is working!');
   scoringProcessQueue.process(scoringProcessJob);

@@ -8,6 +8,7 @@ const {
   QUEUE_GENERAL_DAILY,
   QUEUE_NAME_CREDDER_SCORE,
   QUEUE_NAME_REGISTER_V2,
+  QUEUE_AUTOMATE_WELCOME_MSG,
   QUEUE_NEWS,
   QUEUE_SCORING_PROCESS,
   QUEUE_SCORING_DAILY_PROCESS,
@@ -25,6 +26,7 @@ const {bullConfig, redisUrl} = require('../redis/MainConfig');
  */
 const newsQueue = new Bull(QUEUE_NEWS, redisUrl, bullConfig);
 const registerV2Queue = new Bull(QUEUE_NAME_REGISTER_V2, redisUrl, bullConfig);
+const automateWelcomeMsgQueue = new Bull(QUEUE_AUTOMATE_WELCOME_MSG, redisUrl, bullConfig);
 const scoringProcessQueue = new Bull(QUEUE_SCORING_PROCESS, redisUrl, bullConfig);
 const scoringDailyProcessQueue = new Bull(QUEUE_SCORING_DAILY_PROCESS, redisUrl, bullConfig);
 const deleteActivityProcessQueue = new Bull(QUEUE_DELETE_ACTIVITY_PROCESS, redisUrl, bullConfig, {
@@ -78,6 +80,7 @@ module.exports = {
   deleteUserPostCommentQueue,
   newsQueue,
   registerV2Queue,
+  automateWelcomeMsgQueue,
   scoringDailyProcessQueue,
   scoringProcessQueue,
   followMainFeedF2,
