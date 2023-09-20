@@ -40,20 +40,12 @@ const calcUserPostScore = async (userPostScoreDoc) => {
   const PREVD = process.env.PREV_D || 0.05;
   const PREVUC = process.env.PREV_UC || 0.8;
   const PREVPRE = process.env.PREV_PRE || 0.5;
-  const WTOPIC = process.env.W_TOPIC || 2;
-  const WFOLLOWS = process.env.W_FOLLOWS || 3;
-  const WDEGREE = process.env.W_DEGREE || 1.5;
-  const WLINK_DOMAIN = process.env.W_LINK_DOMAIN || 2.5;
   const WP1 = process.env.W_P1 || 1;
   const WPREV = process.env.W_PREV || 1;
 
   // Put the calculation result in the user doc
   userPostScoreDoc.p1_score = applyMultipliesToTotalScore(
-    WTOPIC,
     userPostScoreDoc.topics_followed,
-    WFOLLOWS,
-    WDEGREE,
-    WLINK_DOMAIN,
     userPostScoreDoc.author_follower,
     userPostScoreDoc.second_degree_follower,
     userPostScoreDoc.domain_follower

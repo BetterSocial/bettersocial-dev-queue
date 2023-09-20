@@ -1,6 +1,7 @@
 const moment = require("moment");
 const {
   USER_SCORE_WEIGHT,
+  POST_SCORE_P1_WEIGHT,
   FINAL_SCORE_WEIGHT,
 } = require("../processes/scoring/formula/constant");
 /*
@@ -240,11 +241,7 @@ const followersQuality = (userScoreWithoutFollowerScore, followersCount) => {
   @description formula for variable p1
 */
 const applyMultipliesToTotalScore = (
-  wTopic,
   topicFollowed,
-  wFollow,
-  wDegree,
-  wLinkDomain,
   userFollowAuthor,
   followAuthorFollower,
   followDomain
@@ -253,18 +250,18 @@ const applyMultipliesToTotalScore = (
 
   // multiplier by #topicFollowed
   if (topicFollowed > 0) {
-    result *= wTopic ** (topicFollowed ** 0.5);
+    result *= POST_SCORE_P1_WEIGHT.W_TOPIC ** (topicFollowed ** 0.5);
   }
 
   // multiplier by follow status of the user
   if (userFollowAuthor) {
-    result *= wFollow;
+    result *= POST_SCORE_P1_WEIGHT.W_FOLLOWS;
   } else if (followAuthorFollower) {
-    result *= wDegree;
+    result *= POST_SCORE_P1_WEIGHT.W_2DEGREE;
   }
 
   if (followDomain) {
-    result *= wLinkDomain;
+    result *= POST_SCORE_P1_WEIGHT.W_LINK_DOMAIN;
   }
 
   return result;

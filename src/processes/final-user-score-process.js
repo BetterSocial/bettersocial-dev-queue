@@ -33,10 +33,6 @@ const finalUserScoreProcess = async (u, p, pPerf, job) => {
   const PREVD = process.env.PREV_D || 0.05;
   const PREVUC = process.env.PREV_UC || 0.8;
   const PREVPRE = process.env.PREV_PRE || 0.5;
-  const WTOPIC = process.env.W_TOPIC || 2;
-  const WFOLLOWS = process.env.W_FOLLOWS || 3;
-  const WDEGREE = process.env.W_DEGREE || 1.5;
-  const WLINK_DOMAIN = process.env.W_LINK_DOMAIN || 2.5;
   const D = process.env.D || 1;
   const WD = process.env.W_D || 1;
   const WP = process.env.W_P || 1;
@@ -45,16 +41,7 @@ const finalUserScoreProcess = async (u, p, pPerf, job) => {
   const postLink = validatePostMessage(job.body);
   // need to confirm for variabel prevInteract default set seen userFollowAuthor, followAuthorFollower, linkPost and att
   const prev = previousInteractionScore("seen", PREVD, PREVUC, PREVPRE);
-  const p1 = applyMultipliesToTotalScore(
-    WTOPIC,
-    topicLength,
-    WFOLLOWS,
-    WDEGREE,
-    WLINK_DOMAIN,
-    1,
-    "",
-    1
-  );
+  const p1 = applyMultipliesToTotalScore(topicLength, 1, "", 1);
   const att = "";
   const p2 = scoreBasedPostCharacteristics(
     rec,
