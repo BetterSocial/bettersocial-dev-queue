@@ -121,10 +121,6 @@ const calcPostScore = async (postScoreDoc) => {
   */
 
   const P_REC = process.env.P_REC || 7;
-  const WREC = process.env.W_REC || 1;
-  const WATT = process.env.W_ATT || 1;
-  const WD = process.env.W_D || 1;
-  const WP = process.env.W_P || 1;
   const WLONGC = process.env.W_LONGC || 1;
 
   const agePost = ageOfPost(
@@ -136,13 +132,9 @@ const calcPostScore = async (postScoreDoc) => {
   const p = postCountScore(postScoreDoc.count_weekly_posts, P_REC);
   const p2 = scoreBasedPostCharacteristics(
     rec,
-    WREC,
     postScoreDoc.att_score,
-    WATT,
     postScoreDoc.domain_score,
-    WD,
     p,
-    WP,
     postScoreDoc.has_link
   );
 

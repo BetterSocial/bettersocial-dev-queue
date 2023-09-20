@@ -2,6 +2,7 @@ const moment = require("moment");
 const {
   USER_SCORE_WEIGHT,
   POST_SCORE_P1_WEIGHT,
+  POST_SCORE_P2_WEIGHT,
   FINAL_SCORE_WEIGHT,
 } = require("../processes/scoring/formula/constant");
 /*
@@ -270,21 +271,14 @@ const applyMultipliesToTotalScore = (
 /*
   @description formula for variable p2
 */
-const scoreBasedPostCharacteristics = (
-  rec,
-  wRec,
-  att,
-  wAtt,
-  d,
-  wD,
-  p,
-  wP,
-  postLink
-) => {
+const scoreBasedPostCharacteristics = (rec, att, d, p, postLink) => {
   // console.log("rec:"+rec+", wRec:"+wRec+", att:"+att+", wAtt:"+wAtt+", d:"+d+", wD:"+wD+", p:"+p+", wP:"+wP+", postLink:"+postLink);
-  let result = rec ** wRec * att ** wAtt * p ** wP;
+  let result =
+    rec ** POST_SCORE_P2_WEIGHT.W_REC *
+    att ** POST_SCORE_P2_WEIGHT.W_ATT *
+    p ** POST_SCORE_P2_WEIGHT.W_P;
   if (postLink) {
-    result *= d ** wD;
+    result *= d ** POST_SCORE_P2_WEIGHT.W_D;
   }
 
   return result;

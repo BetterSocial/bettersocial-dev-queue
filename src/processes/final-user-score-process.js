@@ -28,14 +28,10 @@ const finalUserScoreProcess = async (u, p, pPerf, job) => {
   const durationFeed = job.duration_feed; // ambil dari getstream duration_feed
   const now = new Date().toISOString();
   const WLONGC = process.env.W_LONGC || 1;
-  const WATT = process.env.W_ATT || 1;
-  const WREC = process.env.W_REC || 1;
   const PREVD = process.env.PREV_D || 0.05;
   const PREVUC = process.env.PREV_UC || 0.8;
   const PREVPRE = process.env.PREV_PRE || 0.5;
   const D = process.env.D || 1;
-  const WD = process.env.W_D || 1;
-  const WP = process.env.W_P || 1;
   const agePost = ageOfPost(durationFeed, now, now);
   const rec = RecencyScore(agePost, durationFeed);
   const postLink = validatePostMessage(job.body);
@@ -43,17 +39,7 @@ const finalUserScoreProcess = async (u, p, pPerf, job) => {
   const prev = previousInteractionScore("seen", PREVD, PREVUC, PREVPRE);
   const p1 = applyMultipliesToTotalScore(topicLength, 1, "", 1);
   const att = "";
-  const p2 = scoreBasedPostCharacteristics(
-    rec,
-    WREC,
-    att,
-    WATT,
-    D,
-    WD,
-    p,
-    WP,
-    postLink
-  );
+  const p2 = scoreBasedPostCharacteristics(rec, att, D, p, postLink);
   const pLongC = weightPostLongComments(comment, impression, WLONGC);
   const p3 = postPerformanceScore(pPerf, pLongC);
   const final_score = finalScorePost(u, p1, p2, p3, prev);
