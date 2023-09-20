@@ -245,7 +245,7 @@ async function calcScoreOnBlockPost(
     const timestamp = moment().utc().format(REGULAR_TIME_FORMAT);
     if (
       !postScoreDoc.anonimity &&
-      !blockedByUser(userScoreDoc, authorUserScoreDoc)
+      !(await blockedByUser(userScoreDoc, authorUserScoreDoc))
     ) {
       console.debug(
         `Adding user ${authorUserScoreDoc._id} as blocked by user ${userScoreDoc._id}`
