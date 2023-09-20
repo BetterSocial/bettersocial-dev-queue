@@ -102,6 +102,7 @@ async function calcScoreOnBlockUser(
   userScoreList
 ) {
   // Check whether the user has blocked the author (possible reprocess), by looking at the blocking list in user score doc
+  let result = null;
   if (
     userScoreDoc.blocking &&
     userScoreDoc.blocking.indexOf(authorUserScoreDoc._id) > -1
@@ -163,10 +164,9 @@ async function calcScoreOnBlockUser(
       },
     });
 
-    const result = await userScoreList.bulkWrite(updateUserScoreDocs);
-
-    return result;
+    result = await userScoreList.bulkWrite(updateUserScoreDocs);
   }
+  return result;
 }
 
 /*
@@ -196,11 +196,9 @@ async function calcScoreOnBlockPost(
   data,
   userScoreDoc,
   authorUserScoreDoc,
-  userScoreList,
   postScoreDoc,
-  postScoreList,
   userPostScoreDoc,
-  userPostScoreList
+  connectionList
 ) {
   // Check whether the activity has been recorded (possible reprocess), by looking at the activity log in user-post score doc.
   const existingActivityLog = userPostScoreDoc.activity_log[data.activity_time];
@@ -328,15 +326,15 @@ async function calcScoreOnBlockPost(
         },
       });
 
-      await userScoreList.bulkWrite(updateUserScoreDocs);
+      await connectionList.userScoreList.bulkWrite(updateUserScoreDocs);
 
-      await postScoreList.updateOne(
+      await connectionList.postScoreList.updateOne(
         { _id: postScoreDoc._id }, // query data to be updated
         { $set: postScoreDoc }, // updates
         { upsert: false } // options
       );
 
-      result = await userPostScoreList.updateOne(
+      const result = await connectionList.userPostScoreList.updateOne(
         { _id: userPostScoreDoc._id }, // query data to be updated
         { $set: userPostScoreDoc }, // updates
         { upsert: true } // options
@@ -358,11 +356,9 @@ const calcScoreOnBlockUserPost = async (
   data,
   userScoreDoc,
   authorUserScoreDoc,
-  userScoreList,
   postScoreDoc,
-  postScoreList,
   userPostScoreDoc,
-  userPostScoreList
+  connectionList
 ) => {
   console.debug("Starting calcScoreOnBlockUserPost");
 
@@ -413,7 +409,7 @@ const calcScoreOnBlockUserPost = async (
       data,
       userScoreDoc,
       authorUserScoreDoc,
-      userScoreList
+      connectionList.userScoreList
     );
   } else {
     console.debug("calcScoreOnBlockUserPost -> block user with post reference");
@@ -421,11 +417,9 @@ const calcScoreOnBlockUserPost = async (
       data,
       userScoreDoc,
       authorUserScoreDoc,
-      userScoreList,
       postScoreDoc,
-      postScoreList,
       userPostScoreDoc,
-      userPostScoreList
+      connectionList
     );
   }
 

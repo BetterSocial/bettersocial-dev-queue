@@ -1,5 +1,8 @@
 const moment = require("moment");
-const { USER_SCORE_WEIGHT } = require("../processes/scoring/formula/constant");
+const {
+  USER_SCORE_WEIGHT,
+  FINAL_SCORE_WEIGHT,
+} = require("../processes/scoring/formula/constant");
 /*
   @description formula for variable P
 */
@@ -138,24 +141,13 @@ const userScore = (u1, y) => {
 /*
   @description formula for variable T_t
 */
-const finalScorePost = (
-  userScore,
-  weightUserScroe,
-  p1,
-  weightp1,
-  p2,
-  weightp2,
-  p3,
-  weightp3,
-  prev,
-  weightprev
-) => {
+const finalScorePost = (userScore, p1, p2, p3, prev) => {
   return (
-    userScore ** weightUserScroe *
-    p1 ** weightp1 *
-    p2 ** weightp2 *
-    p3 ** weightp3 *
-    prev ** weightprev
+    userScore ** FINAL_SCORE_WEIGHT.W_U *
+    p1 ** FINAL_SCORE_WEIGHT.W_P1 *
+    p2 ** FINAL_SCORE_WEIGHT.W_P2 *
+    p3 ** FINAL_SCORE_WEIGHT.W_P3 *
+    prev ** FINAL_SCORE_WEIGHT.W_PREV
   );
 };
 

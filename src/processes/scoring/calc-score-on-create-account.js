@@ -30,7 +30,7 @@ const calcScoreOnCreateAccount = async (data, userDoc, userScoreList) => {
     if (email.endsWith(".edu")) {
       console.debug(`Email ${email} is detected as edu emails`);
       eduEmails.push(email);
-    } else if (!email.match(/.+\@(gmail|yahoo|hotmail|outlook)\..+/)) {
+    } else if (!email.match(/.+@(gmail|yahoo|hotmail|outlook)\..+/)) {
       // check if it's non private emails by domain
       console.debug(`Email ${email} is detected as non private emails`);
       nonPrivateEmails.push(email);

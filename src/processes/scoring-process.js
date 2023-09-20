@@ -483,16 +483,18 @@ const onBlockUserPost = async (data) => {
       authorUserScoreDoc = await setInitialDataUserScore(data.blocked_user_id);
     }
   }
-
+  const connectionList = {
+    userScoreList,
+    postScoreList,
+    userPostScoreList,
+  };
   const result = await calcScoreOnBlockUserPost(
     data,
     userScoreDoc,
     authorUserScoreDoc,
-    userScoreList,
     postScoreDoc,
-    postScoreList,
     userPostScoreDoc,
-    userPostScoreList
+    connectionList
   );
   return result;
 };
