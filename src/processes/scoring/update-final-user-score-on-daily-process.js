@@ -8,7 +8,7 @@ const {
   EVENT_DAILY_PROCESS_POST_SCORE,
 } = require("../scoring-constant");
 
-const { userScoreConstant } = require("./formula/constant");
+const { USER_SCORE_WEIGHT } = require("./formula/constant");
 
 const scoringProcessQueue = require("../../queues/queueSenderForRedis"); // uncomment this line if using redis as message queue server
 // const scoringProcessQueue = require("../../queues/queueSenderForKafka"); // uncomment this line if using kafka as message queue server
@@ -336,7 +336,7 @@ const updateFinalUserScoreOnDailyProcess = async (
                     else: "$y_score",
                   },
                 },
-                userScoreConstant.w_y,
+                USER_SCORE_WEIGHT.W_Y,
               ],
             },
           ],

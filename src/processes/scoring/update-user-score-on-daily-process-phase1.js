@@ -5,7 +5,7 @@ const {
   REGULAR_TIME_FORMAT,
   EVENT_DAILY_PROCESS_USER_SCORE_PHASE2,
 } = require("../scoring-constant");
-const { userScoreConstant } = require("./formula/constant");
+const { USER_SCORE_WEIGHT } = require("./formula/constant");
 const UsersFunction = require("../../databases/functions/users");
 
 const scoringProcessQueue = require("../../queues/queueSenderForRedis"); // uncomment this line if using redis as message queue server
@@ -48,7 +48,7 @@ const updateUserScoreOnDailyProcessPhase1 = async (
     userDoc.r_score = averagePostScore(totalPostScores, lastp3Scores._count);
 
     // update following
-    userDoc.userScoreConstant = userScoreConstant;
+    userDoc.USER_SCORE_WEIGHT = USER_SCORE_WEIGHT;
     const userFollower = await UsersFunction.getUserFollowerList(userDoc._id);
     userDoc.following = userFollower;
     userDoc.F_score_update = userFollower.length;

@@ -1,6 +1,5 @@
 require("dotenv").config();
 const moment = require("moment");
-const { userScoreConstant } = require("./formula/constant");
 
 const updateLastp3Scores = (userScoreDoc, postScoreDoc) => {
   const p3scoreSubDoc = userScoreDoc.last_p3_scores[postScoreDoc._id];
@@ -67,24 +66,18 @@ const calcUserScore = async (userDoc) => {
   const f = followerScore(userDoc.F_score); // ASK: should check follower number from db and ask about the validity of the formula
   const BPpImpr_un = blockpointsPerImpression(
     userDoc.sum_BP_score,
-    userDoc.sum_impr_score,
-    userScoreConstant.BpImpr_Global
+    userDoc.sum_impr_score
   );
   const b = blockedPerPostImpression(BPpImpr_un);
   const a = ageScore(ageAccountUser);
   const u1 = userScoreWithoutFollower(
     f,
-    userScoreConstant.w_f,
     b,
-    userScoreConstant.w_b,
     userDoc.r_score,
-    userScoreConstant.w_r,
     userDoc.q_score,
-    userScoreConstant.w_q,
-    a,
-    userScoreConstant.w_a
+    a
   );
-  const user_score = userScore(u1, userDoc.y_score, userScoreConstant.w_y);
+  const user_score = userScore(u1, userDoc.y_score);
   console.debug(
     `Calculation result ageAccountUser=${ageAccountUser}, f=${f}, BPpImpr_un=${BPpImpr_un}, b=${b}, a=${a}, u1=${u1}`
   );

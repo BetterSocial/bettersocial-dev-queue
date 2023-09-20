@@ -34,7 +34,7 @@ module.exports = {
     "no-case-declarations": "warn",
     "comma-dangle": "off",
     "global-require": "warn",
-    "no-underscore-dangle": "warn",
+    "no-underscore-dangle": ["error", { allow: ["_id"] }], // because we use mongo and its id start with underscore
     semi: ["error", "always"],
   },
 };
