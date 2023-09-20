@@ -1,6 +1,10 @@
-const moment = require("moment");
+require("dotenv").config();
+const {
+  applyMultipliesToTotalScore,
+  previousInteractionScore,
+} = require("../../utils");
 
-const calcUserPostScore = async(userPostScoreDoc) => {
+const calcUserPostScore = async (userPostScoreDoc) => {
   console.debug("Starting calcUserPostScore");
 
   /*
@@ -33,41 +37,45 @@ const calcUserPostScore = async(userPostScoreDoc) => {
     created_at: timestamp,
     updated_at: timestamp,
   */
-  const { applyMultipliesToTotalScore, previousInteractionScore } = require('../../utils');
-  require('dotenv').config;
-
   const PREVD = process.env.PREV_D || 0.05;
   const PREVUC = process.env.PREV_UC || 0.8;
   const PREVPRE = process.env.PREV_PRE || 0.5;
-  const WTOPIC = process.env.W_TOPIC || 2;
-  const WFOLLOWS = process.env.W_FOLLOWS || 3;
-  const WDEGREE = process.env.W_DEGREE || 1.5;
-  const WLINK_DOMAIN = process.env.W_LINK_DOMAIN || 2.5;
   const WP1 = process.env.W_P1 || 1;
   const WPREV = process.env.W_PREV || 1;
 
   // Put the calculation result in the user doc
-  userPostScoreDoc.p1_score = applyMultipliesToTotalScore(WTOPIC, userPostScoreDoc.topics_followed,
-      WFOLLOWS, WDEGREE, WLINK_DOMAIN, userPostScoreDoc.author_follower,
-      userPostScoreDoc.second_degree_follower, userPostScoreDoc.domain_follower);
+  userPostScoreDoc.p1_score = applyMultipliesToTotalScore(
+    userPostScoreDoc.topics_followed,
+    userPostScoreDoc.author_follower,
+    userPostScoreDoc.second_degree_follower,
+    userPostScoreDoc.domain_follower
+  );
 
-  let prevInteract = '';
-  if (userPostScoreDoc.downvote_count > 0)
-    prevInteract = 'downvote';
-  else if (userPostScoreDoc.upvote_count > 0)
-    prevInteract = 'upvote';
-  else if (userPostScoreDoc.comment_count > 0)
-    prevInteract = 'comment';
-  else if (userPostScoreDoc.seen_count > 0)
-    prevInteract = 'seen';
+  let prevInteract = "";
+  if (userPostScoreDoc.downvote_count > 0) prevInteract = "downvote";
+  else if (userPostScoreDoc.upvote_count > 0) prevInteract = "upvote";
+  else if (userPostScoreDoc.comment_count > 0) prevInteract = "comment";
+  else if (userPostScoreDoc.seen_count > 0) prevInteract = "seen";
 
-  userPostScoreDoc.p_prev_score = previousInteractionScore(prevInteract, PREVD, PREVUC, PREVPRE);
-  userPostScoreDoc.user_post_score = userPostScoreDoc.post_score * (userPostScoreDoc.p1_score ** WP1) * (userPostScoreDoc.p_prev_score ** WPREV);
+  userPostScoreDoc.p_prev_score = previousInteractionScore(
+    prevInteract,
+    PREVD,
+    PREVUC,
+    PREVPRE
+  );
+  userPostScoreDoc.user_post_score =
+    userPostScoreDoc.post_score *
+    userPostScoreDoc.p1_score ** WP1 *
+    userPostScoreDoc.p_prev_score ** WPREV;
 
-  console.debug("calcUserPostScore: Final user post score doc: " + JSON.stringify(userPostScoreDoc));
+  console.debug(
+    `calcUserPostScore: Final user post score doc: ${JSON.stringify(
+      userPostScoreDoc
+    )}`
+  );
   return userPostScoreDoc;
 };
 
 module.exports = {
-  calcUserPostScore
-}
+  calcUserPostScore,
+};

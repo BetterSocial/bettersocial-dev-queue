@@ -4,7 +4,7 @@ const {
   calcQualitativeCriteriaScore,
 } = require("./calc-score-on-create-account");
 
-const { userScoreConstant } = require("./formula/constant");
+const { USER_SCORE_WEIGHT } = require("./formula/constant");
 const UsersFunction = require("../../databases/functions/users");
 
 const calcScoreOnSyncUserScore = async (data, userDoc, userScoreList) => {
@@ -93,7 +93,7 @@ const calcScoreOnSyncUserScore = async (data, userDoc, userScoreList) => {
   await calcUserScore(userDoc);
   userDoc.updated_at = timestamp;
 
-  userDoc.userScoreConstant = userScoreConstant;
+  userDoc.USER_SCORE_WEIGHT = USER_SCORE_WEIGHT;
   const userFollower = await UsersFunction.getUserFollowerList(userDoc._id);
   userDoc.following = userFollower;
   userDoc.F_score_update = userFollower.length;

@@ -1,52 +1,88 @@
-const moment = require("moment");
+require("dotenv").config();
 const {
-  scoreBasedPostCharacteristics, RecencyScore, ageOfPost, postPerformanceScore,
-  weightPostLongComments, postCountScore, finalScorePost,
-  postScore, nonBpScoreWilsonScore, durationScoreWilsonScore,
-  upDownScoreWilsonScore, upDownScore
-} = require('../../utils');
+  scoreBasedPostCharacteristics,
+  RecencyScore,
+  ageOfPost,
+  postPerformanceScore,
+  weightPostLongComments,
+  postCountScore,
+  finalScorePost,
+  postScore,
+  nonBpScoreWilsonScore,
+  durationScoreWilsonScore,
+  upDownScoreWilsonScore,
+  upDownScore,
+} = require("../../utils");
 
 const calcPostPerformanceScore = (postScoreDoc) => {
-    const Z_NON_BP = process.env.Z_NONBP;
-    const EV_NON_BP = process.env.EV_NONBP_PERCENTAGE;
-    const WW_NON_BP = process.env.WW_NONBP;
-    const WW_D = process.env.WW_D;
-    const WW_UP_DOWN = process.env.WW_UPDOWN;
-    const Z_D = process.env.Z_D;
-    const EV_D_PERCENTAGE = process.env.EV_D_PERCENTAGE;
-    const Z_UPDOWN = process.env.Z_UPDOWN;
-    const EV_UPDOWN_PERCENTAGE = process.env.EV_UPDOWN_PERCENTAGE;
-    const W_DOWN = process.env.W_DOWN;
-    const W_N = process.env.W_N;
+  const Z_NON_BP = process.env.Z_NONBP;
+  const EV_NON_BP = process.env.EV_NONBP_PERCENTAGE;
+  const WW_NON_BP = process.env.WW_NONBP;
+  const { WW_D } = process.env.WW_D;
+  const WW_UP_DOWN = process.env.WW_UPDOWN;
+  const { Z_D } = process.env;
+  const { EV_D_PERCENTAGE } = process.env;
+  const { Z_UPDOWN } = process.env;
+  const { EV_UPDOWN_PERCENTAGE } = process.env;
+  const { W_DOWN } = process.env;
+  const { W_N } = process.env;
+  const impression = postScoreDoc.impr_score;
 
-    const impression = postScoreDoc.impr_score;
-
-    /*
+  /*
       @description block point get from table post_blocked
     */
-    const wsnonbp = nonBpScoreWilsonScore(postScoreDoc.BP_score, impression, Z_NON_BP, EV_NON_BP);
-    /*
+  const wsnonbp = nonBpScoreWilsonScore(
+    postScoreDoc.BP_score,
+    impression,
+    Z_NON_BP,
+    EV_NON_BP
+  );
+  /*
       @description
     */
-    const wsd = durationScoreWilsonScore(impression, postScoreDoc.D_score, Z_D, EV_D_PERCENTAGE);
-    /*
+  const wsd = durationScoreWilsonScore(
+    impression,
+    postScoreDoc.D_score,
+    Z_D,
+    EV_D_PERCENTAGE
+  );
+  /*
       @description upvote = Sum of Upvote-Points of a Post
       downvote = Sum of Downvote-Points of a Post
     */
-    const sUpDown = upDownScore(impression, postScoreDoc.upvote_point, postScoreDoc.downvote_point, W_DOWN, W_N);
-    const wsupdown = upDownScoreWilsonScore(impression, sUpDown, Z_UPDOWN, EV_UPDOWN_PERCENTAGE);
-    const pPerf = postScore(impression, wsnonbp, WW_NON_BP, wsd, WW_D, wsupdown, WW_UP_DOWN);
+  const sUpDown = upDownScore(
+    impression,
+    postScoreDoc.upvote_point,
+    postScoreDoc.downvote_point,
+    W_DOWN,
+    W_N
+  );
+  const wsupdown = upDownScoreWilsonScore(
+    impression,
+    sUpDown,
+    Z_UPDOWN,
+    EV_UPDOWN_PERCENTAGE
+  );
+  const pPerf = postScore(
+    impression,
+    wsnonbp,
+    WW_NON_BP,
+    wsd,
+    WW_D,
+    wsupdown,
+    WW_UP_DOWN
+  );
 
-    postScoreDoc.s_updown_score = sUpDown;
-    postScoreDoc.WS_updown_score = wsupdown;
-    postScoreDoc.WS_D_score = wsd;
-    postScoreDoc.WS_nonBP_score = wsnonbp;
-    postScoreDoc.p_perf_score = pPerf;
+  postScoreDoc.s_updown_score = sUpDown;
+  postScoreDoc.WS_updown_score = wsupdown;
+  postScoreDoc.WS_D_score = wsd;
+  postScoreDoc.WS_nonBP_score = wsnonbp;
+  postScoreDoc.p_perf_score = pPerf;
 
-    return pPerf;
-}
+  return pPerf;
+};
 
-const calcPostScore = async(postScoreDoc) => {
+const calcPostScore = async (postScoreDoc) => {
   console.debug("Starting calcPostScore");
 
   /*
@@ -83,30 +119,30 @@ const calcPostScore = async(postScoreDoc) => {
     created_at: timestamp,
     updated_at: timestamp,
   */
-  require('dotenv').config;
 
   const P_REC = process.env.P_REC || 7;
-  const WREC = process.env.W_REC || 1;
-  const WATT = process.env.W_ATT || 1;
-  const WD = process.env.W_D || 1;
-  const WP = process.env.W_P || 1;
   const WLONGC = process.env.W_LONGC || 1;
 
-  const WU = process.env.W_U || 1;
-  const WP1 = process.env.W_P1 || 1;
-  const WP2 = process.env.W_P2 || 1;
-  const WP3 = process.env.W_P3 || 1;
-  const WPREV = process.env.W_PREV || 1;
-  const PREVD = process.env.PREV_D || 0.05;
-  const PREVUC = process.env.PREV_UC || 0.8;
-  const PREVPRE = process.env.PREV_PRE || 0.5;
-
-  const agePost = ageOfPost(postScoreDoc.expiration_setting, postScoreDoc.time, new Date().toISOString());
+  const agePost = ageOfPost(
+    postScoreDoc.expiration_setting,
+    postScoreDoc.time,
+    new Date().toISOString()
+  );
   const rec = RecencyScore(agePost, postScoreDoc.expiration_setting);
   const p = postCountScore(postScoreDoc.count_weekly_posts, P_REC);
-  const p2 = scoreBasedPostCharacteristics(rec, WREC, postScoreDoc.att_score, WATT, postScoreDoc.domain_score, WD, p, WP, postScoreDoc.has_link);
+  const p2 = scoreBasedPostCharacteristics(
+    rec,
+    postScoreDoc.att_score,
+    postScoreDoc.domain_score,
+    p,
+    postScoreDoc.has_link
+  );
 
-  const pLongC = weightPostLongComments(postScoreDoc.longC_score, postScoreDoc.impr_score, WLONGC);
+  const pLongC = weightPostLongComments(
+    postScoreDoc.longC_score,
+    postScoreDoc.impr_score,
+    WLONGC
+  );
 
   // calculate post performance score
   const pPerf = calcPostPerformanceScore(postScoreDoc);
@@ -117,7 +153,7 @@ const calcPostScore = async(postScoreDoc) => {
   const p1 = 1;
   const prev = 1;
 
-  const final_score = finalScorePost(postScoreDoc.u_score, WU, p1, WP1, p2, WP2, p3, WP3, prev, WPREV);
+  const final_score = finalScorePost(postScoreDoc.u_score, p1, p2, p3, prev);
 
   postScoreDoc.rec_score = rec;
   postScoreDoc.p2_score = p2;
@@ -125,10 +161,12 @@ const calcPostScore = async(postScoreDoc) => {
   postScoreDoc.p3_score = p3;
   postScoreDoc.post_score = final_score;
 
-  console.debug("calcPostScore => Final post score doc: " + JSON.stringify(postScoreDoc));
+  console.debug(
+    `calcPostScore => Final post score doc: ${JSON.stringify(postScoreDoc)}`
+  );
   return postScoreDoc;
 };
 
 module.exports = {
-  calcPostScore
-}
+  calcPostScore,
+};

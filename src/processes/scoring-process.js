@@ -1,9 +1,19 @@
-// const moment = require("moment");
 const { getDb } = require("../config/mongodb_conn");
 const {
   DB_COLLECTION_USER_SCORE,
   DB_COLLECTION_POST_SCORE,
   DB_COLLECTION_USER_POST_SCORE,
+  EVENT_CREATE_ACCOUNT,
+  EVENT_CREATE_POST,
+  EVENT_UPVOTE_POST,
+  EVENT_CANCEL_UPVOTE_POST,
+  EVENT_DOWNVOTE_POST,
+  EVENT_CANCEL_DOWNVOTE_POST,
+  EVENT_BLOCK_USER_POST,
+  EVENT_COMMENT_POST,
+  EVENT_VIEW_POST,
+  EVENT_FOLLOW_USER,
+  EVENT_UNFOLLOW_USER,
 } = require("./scoring-constant");
 const {
   calcScoreOnCreateAccount,
@@ -72,6 +82,7 @@ const initDataUserScore = (userId, timestamp) => ({
     last_update: timestamp, // when is the last update time of this counter
   },
   following: [], // list of user ids this user follows
+  follower: [], // list of user ids that follows this user
   blocking: [],
   last_p3_scores: {
     // list of last p3 score along with the post information.
@@ -159,6 +170,21 @@ const initDataUserPostScore = (userId, feedId, timestamp) => ({
   updated_at: timestamp,
 });
 
+const getListData = async () => {
+  const db = await getDb();
+  const [userScoreList, postScoreList, userPostScoreList] = await Promise.all([
+    db.collection(DB_COLLECTION_USER_SCORE),
+    db.collection(DB_COLLECTION_POST_SCORE),
+    db.collection(DB_COLLECTION_USER_POST_SCORE),
+  ]);
+
+  return {
+    userScoreList,
+    postScoreList,
+    userPostScoreList,
+  };
+};
+
 /*
  * Job processor on create account event. Received data:
  *   - user_id : text, id of the created user
@@ -178,8 +204,8 @@ const onCreateAccount = async (data) => {
     console.debug("init user score doc");
     userDoc = initDataUserScore(data.user_id, data.register_time);
   }
-
-  return await calcScoreOnCreateAccount(data, userDoc, userScoreList);
+  const result = await calcScoreOnCreateAccount(data, userDoc, userScoreList);
+  return result;
 };
 
 /*
@@ -222,7 +248,7 @@ const onCreatePost = async (data) => {
   }
 
   // put last post by user
-  return await calcScoreOnCreatePost(
+  const result = await calcScoreOnCreatePost(
     data,
     postScoreDoc,
     postScoreList,
@@ -230,21 +256,7 @@ const onCreatePost = async (data) => {
     userScoreList,
     db
   );
-};
-
-const getListData = async () => {
-  const db = await getDb();
-  const [userScoreList, postScoreList, userPostScoreList] = await Promise.all([
-    db.collection(DB_COLLECTION_USER_SCORE),
-    db.collection(DB_COLLECTION_POST_SCORE),
-    db.collection(DB_COLLECTION_USER_POST_SCORE),
-  ]);
-
-  return {
-    userScoreList,
-    postScoreList,
-    userPostScoreList,
-  };
+  return result;
 };
 
 /**
@@ -360,8 +372,8 @@ const getDataToCalcScore = async (
 const onUpvotePost = async (data) => {
   console.debug("scoring onUpvotePost");
   const score = await getDataToCalcScore(data);
-
-  return await calcScoreOnUpvotePost(data, score);
+  const result = await calcScoreOnUpvotePost(data, score);
+  return result;
 };
 
 /*
@@ -374,7 +386,8 @@ const onCancelUpvotePost = async (data) => {
   console.debug("scoring onCancelUpvotePost");
   const score = await getDataToCalcScore(data);
 
-  return await calcScoreOnCancelUpvotePost(data, score);
+  const result = await calcScoreOnCancelUpvotePost(data, score);
+  return result;
 };
 
 /*
@@ -387,7 +400,8 @@ const onDownvotePost = async (data) => {
   console.debug("scoring onDownvotePost");
   const score = await getDataToCalcScore(data);
 
-  return await calcScoreOnDownvotePost(data, score);
+  const result = await calcScoreOnDownvotePost(data, score);
+  return result;
 };
 
 /*
@@ -400,7 +414,8 @@ const onCancelDownvotePost = async (data) => {
   console.debug("scoring onCancelDownvotePost");
   const score = await getDataToCalcScore(data);
 
-  return await calcScoreOnCancelDownvotePost(data, score);
+  const result = await calcScoreOnCancelDownvotePost(data, score);
+  return result;
 };
 
 /*
@@ -468,17 +483,20 @@ const onBlockUserPost = async (data) => {
       authorUserScoreDoc = await setInitialDataUserScore(data.blocked_user_id);
     }
   }
-
-  return await calcScoreOnBlockUserPost(
+  const connectionList = {
+    userScoreList,
+    postScoreList,
+    userPostScoreList,
+  };
+  const result = await calcScoreOnBlockUserPost(
     data,
     userScoreDoc,
     authorUserScoreDoc,
-    userScoreList,
     postScoreDoc,
-    postScoreList,
     userPostScoreDoc,
-    userPostScoreList
+    connectionList
   );
+  return result;
 };
 
 /*
@@ -500,7 +518,7 @@ const onCommentPost = async (data) => {
     userScoreList,
   } = await getDataToCalcScore(data, false);
 
-  return await calcScoreOnCommentPost(
+  const result = await calcScoreOnCommentPost(
     data,
     postScoreDoc,
     postScoreList,
@@ -509,6 +527,7 @@ const onCommentPost = async (data) => {
     authorUserScoreDoc,
     userScoreList
   );
+  return result;
 };
 
 /*
@@ -530,7 +549,7 @@ const onViewPost = async (data) => {
     userScoreList,
   } = await getDataToCalcScore(data, false);
 
-  return await calcScoreOnViewPost(
+  const result = await calcScoreOnViewPost(
     data,
     postScoreDoc,
     postScoreList,
@@ -539,6 +558,7 @@ const onViewPost = async (data) => {
     authorUserScoreDoc,
     userScoreList
   );
+  return result;
 };
 
 /*
@@ -554,12 +574,13 @@ const onFollowUser = async (data) => {
       id: data.followed_user_id,
     });
 
-  return await calcScoreOnFollowUser(
+  const result = await calcScoreOnFollowUser(
     data,
     userScoreDoc,
     followedUserScoreDoc,
     userScoreList
   );
+  return result;
 };
 
 /*
@@ -575,35 +596,23 @@ const onUnfollowUser = async (data) => {
       id: data.unfollowed_user_id,
     });
 
-  return await calcScoreOnUnfollowUser(
+  const result = await calcScoreOnUnfollowUser(
     data,
     userScoreDoc,
     followedUserScoreDoc,
     userScoreList
   );
+  return result;
 };
 
 /*
  * Main function of scoring process job
  */
 const scoringProcessJob = async (job, done) => {
-  const {
-    EVENT_CREATE_ACCOUNT,
-    EVENT_CREATE_POST,
-    EVENT_UPVOTE_POST,
-    EVENT_CANCEL_UPVOTE_POST,
-    EVENT_DOWNVOTE_POST,
-    EVENT_CANCEL_DOWNVOTE_POST,
-    EVENT_BLOCK_USER_POST,
-    EVENT_COMMENT_POST,
-    EVENT_VIEW_POST,
-    EVENT_FOLLOW_USER,
-    EVENT_UNFOLLOW_USER,
-  } = require("./scoring-constant");
-
   // console.log("scoringProcessJob: " + JSON.stringify(job.data));
   try {
     // console.info('running job scoring with id: ' + job.id);
+    let result = null;
     const messageData = job.data;
     switch (messageData.event) {
       case EVENT_CREATE_ACCOUNT:

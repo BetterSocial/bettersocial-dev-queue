@@ -1,7 +1,7 @@
 require("dotenv").config();
 const {
-  userScoreConstant,
-  postScoreP3Constant,
+  USER_SCORE_WEIGHT,
+  POST_SCORE_P3_WEIGHT,
 } = require("./scoring/formula/constant");
 const {
   userScore,
@@ -38,16 +38,12 @@ const userScoreProcess = async (pPerf, job) => {
     where: { author_user_id: job.user_id },
   });
 
-  const bp = blockpointsPerImpression(
-    totalBlocks,
-    impression,
-    userScoreConstant.BpImpr_Global
-  );
+  const bp = blockpointsPerImpression(totalBlocks, impression);
   const b = blockedPerPostImpression(bp);
   const pLongC = weightPostLongComments(
     comment,
     impression,
-    postScoreP3Constant.w_longC
+    POST_SCORE_P3_WEIGHT.W_LONG_C
   );
   const postPerformance = postPerformanceScore(pPerf, pLongC);
   const r = averagePostScore(postPerformance, countPosts);
@@ -58,30 +54,19 @@ const userScoreProcess = async (pPerf, job) => {
   const ageAccountUser = results[0]?.age_days || 0;
   const a = ageScore(ageAccountUser);
   const q = multiplicationFromQualityCriteriaScore(
-    userScoreConstant.w_edu,
+    USER_SCORE_WEIGHT.W_EDU,
     "",
-    userScoreConstant.w_email,
+    USER_SCORE_WEIGHT.W_EMAIL,
     "",
-    userScoreConstant.w_twitter,
+    USER_SCORE_WEIGHT.W_TWITTER,
     "",
     "",
-    userScoreConstant.w_useratt
+    USER_SCORE_WEIGHT.W_USERATT
   );
-  const u1 = userScoreWithoutFollower(
-    F,
-    userScoreConstant.w_f,
-    b,
-    userScoreConstant.w_b,
-    r,
-    userScoreConstant.w_r,
-    q,
-    userScoreConstant.w_q,
-    a,
-    userScoreConstant.w_a
-  );
+  const u1 = userScoreWithoutFollower(F, b, r, q, a);
   const userScoreWithoutFollowerScore = followerScore(F);
   const y = followersQuality(userScoreWithoutFollowerScore, F);
-  const user_score = userScore(u1, y, userScoreConstant.w_y);
+  const user_score = userScore(u1, y);
 
   console.info(`score of user : ${user_score}`);
   return { user_score };
