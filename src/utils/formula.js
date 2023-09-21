@@ -5,6 +5,11 @@ const {
   POST_SCORE_P2_WEIGHT,
   FINAL_SCORE_WEIGHT,
 } = require("../processes/scoring/formula/constant");
+
+const safeValue = (number) => {
+  return number === 0 ? 1 : number;
+};
+
 /*
   @description formula for variable P
 */
@@ -143,13 +148,13 @@ const userScore = (u1, y) => {
 /*
   @description formula for variable T_t
 */
-const finalScorePost = (userScore, p1, p2, p3, prev) => {
+const finalScorePost = (u_score, p1, p2, p3, prev) => {
   return (
-    userScore ** FINAL_SCORE_WEIGHT.W_U *
-    p1 ** FINAL_SCORE_WEIGHT.W_P1 *
-    p2 ** FINAL_SCORE_WEIGHT.W_P2 *
-    p3 ** FINAL_SCORE_WEIGHT.W_P3 *
-    prev ** FINAL_SCORE_WEIGHT.W_PREV
+    safeValue(u_score) ** FINAL_SCORE_WEIGHT.W_U *
+    safeValue(p1) ** FINAL_SCORE_WEIGHT.W_P1 *
+    safeValue(p2) ** FINAL_SCORE_WEIGHT.W_P2 *
+    safeValue(p3) ** FINAL_SCORE_WEIGHT.W_P3 *
+    safeValue(prev) ** FINAL_SCORE_WEIGHT.W_PREV
   );
 };
 
