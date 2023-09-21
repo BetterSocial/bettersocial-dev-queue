@@ -8,11 +8,11 @@ const preAutomateWelcomeMsgProcess = async (returnPrepopulatedDm) => {
     let currentTime = momentTz().tz('America/Los_Angeles');
     let getCurrentTimeHour = currentTime.hours();
 
+    const randomTime = sample([6, 7, 8, 9]);
     let additionalDays = 0;
-    if (parseInt(getCurrentTimeHour) > 6) {
+    if (parseInt(getCurrentTimeHour) > randomTime) {
       additionalDays = 1;
     }
-    const randomTime = sample([6, 7, 8, 9]);
     let requiredTime = momentTz()
       .tz('America/Los_Angeles')
       .set({hour: randomTime})
