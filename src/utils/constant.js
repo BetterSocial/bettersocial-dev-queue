@@ -20,6 +20,7 @@ module.exports = {
   QUEUE_GENERAL_DAILY: 'generalDaily',
   QUEUE_NAME_CREDDER_SCORE: 'credderScoreQueue',
   QUEUE_NAME_REGISTER_V2: 'registerV2',
+  QUEUE_AUTOMATE_WELCOME_MSG: 'automateWelcomeMsgQueue',
   QUEUE_NAME_TEST: 'testQueue',
   QUEUE_NEWS: 'newsQueue',
   QUEUE_SCORING_DAILY_PROCESS: 'scoringDailyProcessQueue',
