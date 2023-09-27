@@ -6,13 +6,9 @@ const {LogError} = require('../../databases/models');
 const preAutomateWelcomeMsgProcess = async (returnPrepopulatedDm) => {
   try {
     let currentTime = momentTz().tz('America/Los_Angeles');
-    let getCurrentTimeHour = currentTime.hours();
 
     const randomTime = sample([6, 7, 8, 9]);
-    let additionalDays = 0;
-    if (parseInt(getCurrentTimeHour) > randomTime) {
-      additionalDays = 1;
-    }
+    const additionalDays = 1;
     let requiredTime = momentTz()
       .tz('America/Los_Angeles')
       .set({hour: randomTime})
