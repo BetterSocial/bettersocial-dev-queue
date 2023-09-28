@@ -1,0 +1,93 @@
+name: testing
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+
+    env:
+      php-version: '8.2'
+      php-extensions: mongodb-mongodb/mongo-php-driver@1.16.2
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testing
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      # Setup PHP
+      - name: Setup PHP cache environment
+        id: phpextcache
+        uses: shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ env.php-version }}
+          extensions: ${{ env.php-extensions }}
+          key: php-ext-${{ env.php-version }}
+      - name: Cache extensions
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.phpextcache.outputs.dir }}
+          key: ${{ steps.phpextcache.outputs.key }}
+          restore-keys: ${{ steps.phpextcache.outputs.key }}
+      - name: Use PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.php-version }}
+          extensions: mongodb-mongodb/mongo-php-driver@1.16.2
+      - name: Save php executable path
+        id: php-path
+        run: echo "path=$(which php)" >> $GITHUB_OUTPUT
+
+      # Setup migration repository
+      - name: checkout admin-system (migration) repository
+        uses: actions/checkout@v3
+        with:
+          repository: 'BetterSocial/admin-system'
+          path: 'admin-system'
+          fetch-depth: 1
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Composer install
+        run: composer install --no-interaction --no-progress --no-suggest --prefer-dist --optimize-autoloader --no-scripts --no-dev
+        working-directory: admin-system
+
+      # Setup testing
+      - run: npm ci
+      - run: npm run test:coverage
+        env:
+          EXECUTABLE_PHP: ${{ steps.php-path.outputs.path }}
+          LARAVEL_PATH: ${{ github.workspace }}/admin-system
+          DB_HOST: localhost
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          DB_NAME: testing
+          DB_SSL: false
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
