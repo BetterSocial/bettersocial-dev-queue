@@ -17,7 +17,7 @@ const preAutomateWelcomeMsgProcess = async (returnPrepopulatedDm) => {
     console.log('currentTime', currentTime);
     console.log('requiredTime', requiredTime);
 
-    const diffTime = requiredTime.diff(currentTime, 'miliseconds');
+    const diffTime = requiredTime.diff(currentTime, 'milliseconds');
     returnPrepopulatedDm.resultPrepopulated = returnPrepopulatedDm.resultPrepopulated.filter(
       (results) => results.targetUser.username === process.env.USERNAME_ADMIN
     );
