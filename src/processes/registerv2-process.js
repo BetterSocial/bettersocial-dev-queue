@@ -4,8 +4,6 @@ const {LogError} = require('../databases/models');
 const UserLocationFunction = require('../databases/functions/userLocation');
 const UserTopicFunction = require('../databases/functions/userTopic');
 const UserFollowUserFunction = require('../databases/functions/userFollowUser');
-const momentTz = require('moment-timezone');
-const {sample} = require('lodash');
 
 const {
   Locations,
@@ -19,7 +17,6 @@ const {
 const LocationFunction = require('../databases/functions/location');
 const {addUserToTopicChannel} = require('./helper');
 const ProcessHelper = require('./helper');
-const {automateWelcomeMsgQueue} = require('../config');
 const {preAutomateWelcomeMsgProcess} = require('./helper/preAutoWelcomeMsg');
 
 const {syncFeedPerUserProcess} = require('../services/syncFeedPerUser');
