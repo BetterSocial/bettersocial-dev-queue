@@ -1,10 +1,10 @@
-const moment = require("moment");
+const moment = require('moment');
 const {
   USER_SCORE_WEIGHT,
   POST_SCORE_P1_WEIGHT,
   POST_SCORE_P2_WEIGHT,
-  FINAL_SCORE_WEIGHT,
-} = require("../processes/scoring/formula/constant");
+  FINAL_SCORE_WEIGHT
+} = require('../processes/scoring/formula/constant');
 
 const safeValue = (number) => {
   return number === 0 ? 1 : number;
@@ -58,9 +58,7 @@ const upDownScoreWilsonScore = (impr, sUpDown, zUpDown, evUpDown) => {
 
   const evUpDownPercentage = evUpDown / 100;
   const result =
-    (sUpDown + zUpDown ** 2 / (2 * impr)) /
-    (1 + zUpDown ** 2 / impr) /
-    evUpDownPercentage;
+    (sUpDown + zUpDown ** 2 / (2 * impr)) / (1 + zUpDown ** 2 / impr) / evUpDownPercentage;
 
   return result;
 };
@@ -93,11 +91,7 @@ const nonBpScoreWilsonScore = (bp, impr, zNonbp, evNonBp) => {
     return 1;
   }
   evNonBp /= 100;
-  return (
-    (1 - bp / impr + zNonbp ** 2 / (2 * impr)) /
-    (1 + zNonbp ** 2 / impr) /
-    evNonBp
-  );
+  return (1 - bp / impr + zNonbp ** 2 / (2 * impr)) / (1 + zNonbp ** 2 / impr) / evNonBp;
 };
 
 /*
@@ -109,10 +103,7 @@ const upDownScore = (impr, upvote, downvote, wDown, wN) => {
   }
 
   return (
-    (-impr * wDown +
-      upvote +
-      downvote * wDown +
-      wN * (impr - upvote - downvote)) /
+    (-impr * wDown + upvote + downvote * wDown + wN * (impr - upvote - downvote)) /
     (impr * (1 - wDown))
   );
 };
@@ -189,7 +180,7 @@ const averagePostScore = (postPerformanceScore, countPosts) => {
   if (countPosts === 0) {
     return 1;
   }
-  return (postPerformanceScore + (10 - Math.min(10, countPosts))) / 10;
+  return (postPerformanceScore + (10 - Math.min(10, countPosts))) / 10 || 1;
 };
 
 /*
@@ -228,10 +219,10 @@ const multiplicationFromQualityCriteriaScore = (
 const userScoreWithoutFollower = (f, b, r, q, a) => {
   return (
     f ** USER_SCORE_WEIGHT.W_F *
-    b ** USER_SCORE_WEIGHT.W_B *
-    r ** USER_SCORE_WEIGHT.W_R *
-    q ** USER_SCORE_WEIGHT.W_Q *
-    a ** USER_SCORE_WEIGHT.W_A
+      b ** USER_SCORE_WEIGHT.W_B *
+      r ** USER_SCORE_WEIGHT.W_R *
+      q ** USER_SCORE_WEIGHT.W_Q *
+      a ** USER_SCORE_WEIGHT.W_A || 1
   );
 };
 
@@ -293,13 +284,13 @@ const scoreBasedPostCharacteristics = (rec, att, d, p, postLink) => {
   @description formula for variable p_perv
 */
 const previousInteractionScore = (prevInteract, prevD, prevUc, prevPre) => {
-  if (prevInteract === "seen") {
+  if (prevInteract === 'seen') {
     return prevPre;
   }
-  if (prevInteract === "downvote") {
+  if (prevInteract === 'downvote') {
     return prevD;
   }
-  if (prevInteract === "upvote" || prevInteract === "comment") {
+  if (prevInteract === 'upvote' || prevInteract === 'comment') {
     return prevUc;
   }
   return 1; // none interaction
@@ -309,16 +300,16 @@ const previousInteractionScore = (prevInteract, prevD, prevUc, prevPre) => {
   @description formula for variable Rec
 */
 const RecencyScore = (ageOfPost, expirationSetting) => {
-  if (expirationSetting === "1") {
+  if (expirationSetting === '1') {
     return 1 - 0.007 * ageOfPost;
   }
-  if (expirationSetting === "7") {
+  if (expirationSetting === '7') {
     return 1.3 - 0.4 * ageOfPost ** 0.15;
   }
-  if (expirationSetting === "30") {
+  if (expirationSetting === '30') {
     return 0.95 - 0.225 * ageOfPost ** 0.215;
   }
-  if (expirationSetting === "never") {
+  if (expirationSetting === 'never') {
     return Math.max(0.02, 0.95 - 0.225 * ageOfPost ** 0.215);
   }
 };
@@ -328,12 +319,10 @@ const RecencyScore = (ageOfPost, expirationSetting) => {
 */
 const ageOfPost = (expirationSetting, postDateTime, nowDateTime) => {
   const diffHours = Math.trunc(
-    moment
-      .duration(moment.utc(nowDateTime).diff(moment.utc(postDateTime)))
-      .as("hours")
+    moment.duration(moment.utc(nowDateTime).diff(moment.utc(postDateTime))).as('hours')
   );
 
-  if (expirationSetting === "never") {
+  if (expirationSetting === 'never') {
     return Math.max(1, diffHours);
   }
   return Math.min(expirationSetting * 24, Math.max(1, diffHours));
@@ -353,10 +342,7 @@ const ageScore = (age) => {
 /*
   @description formula for calculating post interaction (upvote / downvote / block) point
 */
-const postInteractionPoint = (
-  totalInteractionLast7Days,
-  maxInteractionWeekly
-) => {
+const postInteractionPoint = (totalInteractionLast7Days, maxInteractionWeekly) => {
   if (totalInteractionLast7Days <= 0) {
     return 0;
   }
@@ -391,5 +377,5 @@ module.exports = {
   applyMultipliesToTotalScore,
   scoreBasedPostCharacteristics,
   RecencyScore,
-  ageOfPost,
+  ageOfPost
 };
