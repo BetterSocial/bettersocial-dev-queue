@@ -10,7 +10,7 @@ const USER_SCORE_WEIGHT = {
   W_EMAIL: process.env.W_EMAIL || 1.2, // Weight of User's confirmed work addresses
   W_TWITTER: process.env.W_TWITTER || 2, // Weight of: User has Twitter account connected & has more than 200 followers on Twitter
   W_USERATT: process.env.W_USERATT || 1,
-  BP_IMPR_GLOBAL: process.env.BP_IMPR_GLOBAL || 0.00533333333333333, // Expected Blockpoints per Post Impression (posts from last 7d) - set manually based on real data
+  BP_IMPR_GLOBAL: process.env.BP_IMPR_GLOBAL || 0.00533333333333333 // Expected Blockpoints per Post Impression (posts from last 7d) - set manually based on real data
 };
 
 const POST_SCORE_P1_WEIGHT = {
@@ -19,11 +19,11 @@ const POST_SCORE_P1_WEIGHT = {
   W_2DEGREE: process.env.W_2DEGRE || 1.5, // Weight for a post if the user follows a person who follows the post's author
   W_LINK_DOMAIN: process.env.W_LINKDOMAIN || 2.5, // Weight for a post if the post has a link preview AND the user follows the domain of that preview
   W_DOMAIN_POST: process.env.W_DOMAINPOST || 3, // Weight for a post posted by a domain page, if the user follows that domain
-  W_DOMAIN_POST_2ND: process.env.W_DOMAINPOST2ND || 1.3, // Weight for a post posted by a domain page, if the user follows a person that follows that domain
+  W_DOMAIN_POST_2ND: process.env.W_DOMAINPOST2ND || 1.3 // Weight for a post posted by a domain page, if the user follows a person that follows that domain
 };
 
 const POST_SCORE_P2_WEIGHT = {
-  W_REC: process.env.W_REC || 1, // Weight of recency score
+  W_REC: process.env.W_REC || 3, // Weight of recency score
   W_ATT: process.env.W_ATT || 1, // Weight of post attributes score
   W_D: process.env.W_D || 1, // Weight of domain score
   W_P: process.env.W_P || 1, // Weight of Post Count, which is the total posts of a user within last 7 days
@@ -41,7 +41,7 @@ const POST_SCORE_P2_WEIGHT = {
   W_STATE: process.env.W_STATE || 1.2, // Weight for GEO - State
   W_GLOBAL: process.env.W_GLOBAL || 0.8, // Weight for GEO - Country or Global
   W_PUBLIC: process.env.W_PUBLIC || 0.8, // Weight for Privacy setting = Public
-  W_FOLLOWING: process.env.W_FOLLOWING || 1.3, // Weight for Privacy setting = Following (users the user is following)
+  W_FOLLOWING: process.env.W_FOLLOWING || 1.3 // Weight for Privacy setting = Following (users the user is following)
 };
 
 const POST_SCORE_P3_WEIGHT = {
@@ -58,19 +58,19 @@ const POST_SCORE_P3_WEIGHT = {
   W_DOWN: process.env.W_N || -0.05, // Weight applied to "Don't care" reactions (Impressions without Up or Downvote) within the 'UPDOWN score'
   DUR_MIN: process.env.DUR_MIN || 2500, // Minimum duration of post view to count as D - fix component
   DUR_MARG: process.env.DUR_MARG || 400, // Marginal additional duration of post view per word to count as D - variable component
-  W_LONG_C: process.env.W_LONGC || 1, // Weight of p_longC score for long comments to post
+  W_LONG_C: process.env.W_LONGC || 0 // Weight of p_longC score for long comments to post
 };
 
 const PREVIOUS_INTERACTION_WEIGHT = {
   PREV_D: process.env.PREV_D || 0.05, // Multiplier  if user has previously downvoted post
   PREV_UC: process.env.PREV_UC || 0.8, // Multiplier if User has previously upvoted or commented on the post
-  PREV_PRE: process.env.PREV_PRE || 0.5, // Multiplier if the User has previously seen, but NOT up/downvoted or commented a post
+  PREV_PRE: process.env.PREV_PRE || 0.5 // Multiplier if the User has previously seen, but NOT up/downvoted or commented a post
 };
 
 const REACTION_WEIGHT = {
   SIGN_U_REC: process.env.SIGNU_REC || 50, // Expected/recommended number of upvotes per user in 7days
   SIGN_D_REC: process.env.SIGND_REC || 50, // Expected/recommended number of downvotes per user in 7days
-  SIGN_B_REC: process.env.SIGNB_REC || 4, // Expected/recommended number of Blocks (of other users) per user in 7days
+  SIGN_B_REC: process.env.SIGNB_REC || 4 // Expected/recommended number of Blocks (of other users) per user in 7days
 };
 
 const FINAL_SCORE_WEIGHT = {
@@ -78,7 +78,7 @@ const FINAL_SCORE_WEIGHT = {
   W_P2: process.env.W_P2 || 1, // weight of postscore2 (stable factors)
   W_P1: process.env.W_P1 || 1, // weight of postscore1 (Core factors)
   W_P3: process.env.W_P3 || 1, // weight of postscore3 (containing p_perf & p_longC)
-  W_PREV: process.env.W_PREV || 1, // weight of score for previous interactions of the user with this post
+  W_PREV: process.env.W_PREV || 1 // weight of score for previous interactions of the user with this post
 };
 
 module.exports = {
@@ -88,5 +88,5 @@ module.exports = {
   POST_SCORE_P3_WEIGHT,
   PREVIOUS_INTERACTION_WEIGHT,
   REACTION_WEIGHT,
-  FINAL_SCORE_WEIGHT,
+  FINAL_SCORE_WEIGHT
 };
