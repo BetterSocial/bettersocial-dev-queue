@@ -91,11 +91,11 @@ const nonBpScoreWilsonScore = (bp, impr) => {
   if (impr === 0) {
     return 1;
   }
-  POST_SCORE_P3_WEIGHT.EV_NON_BP /= 100;
+  const evNonBp = POST_SCORE_P3_WEIGHT.EV_NON_BP / 100;
   return (
     (1 - bp / impr + POST_SCORE_P3_WEIGHT.Z_NON_BP ** 2 / (2 * impr)) /
     (1 + POST_SCORE_P3_WEIGHT.Z_NON_BP ** 2 / impr) /
-    POST_SCORE_P3_WEIGHT.EV_NON_BP
+    evNonBp
   );
 };
 
@@ -188,7 +188,7 @@ const averagePostScore = (postPerformanceScore, countPosts) => {
   if (countPosts === 0) {
     return 1;
   }
-  return (postPerformanceScore + (10 - Math.min(10, countPosts))) / 10;
+  return (postPerformanceScore + (10 - Math.min(10, countPosts))) / 10 || 1;
 };
 
 /*
@@ -227,10 +227,10 @@ const multiplicationFromQualityCriteriaScore = (
 const userScoreWithoutFollower = (f, b, r, q, a) => {
   return (
     f ** USER_SCORE_WEIGHT.W_F *
-    b ** USER_SCORE_WEIGHT.W_B *
-    r ** USER_SCORE_WEIGHT.W_R *
-    q ** USER_SCORE_WEIGHT.W_Q *
-    a ** USER_SCORE_WEIGHT.W_A
+      b ** USER_SCORE_WEIGHT.W_B *
+      r ** USER_SCORE_WEIGHT.W_R *
+      q ** USER_SCORE_WEIGHT.W_Q *
+      a ** USER_SCORE_WEIGHT.W_A || 1
   );
 };
 

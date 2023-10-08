@@ -23,7 +23,7 @@ const POST_SCORE_P1_WEIGHT = {
 };
 
 const POST_SCORE_P2_WEIGHT = {
-  W_REC: process.env.W_REC || 1, // Weight of recency score
+  W_REC: process.env.W_REC || 3, // Weight of recency score
   W_ATT: process.env.W_ATT || 1, // Weight of post attributes score
   W_D: process.env.W_D || 1, // Weight of domain score
   W_P: process.env.W_P || 1, // Weight of Post Count, which is the total posts of a user within last 7 days
@@ -58,7 +58,7 @@ const POST_SCORE_P3_WEIGHT = {
   W_N: process.env.W_N || -0.05, // Weight applied to "Don't care" reactions (Impressions without Up or Downvote) within the 'UPDOWN score'
   DUR_MIN: process.env.DUR_MIN || 2500, // Minimum duration of post view to count as D - fix component
   DUR_MARG: process.env.DUR_MARG || 400, // Marginal additional duration of post view per word to count as D - variable component
-  W_LONG_C: process.env.W_LONGC || 1 // Weight of p_longC score for long comments to post
+  W_LONG_C: process.env.W_LONGC || 0 // Weight of p_longC score for long comments to post
 };
 
 const PREVIOUS_INTERACTION_WEIGHT = {
