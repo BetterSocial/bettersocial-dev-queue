@@ -1,10 +1,11 @@
-const moment = require("moment");
+const moment = require('moment');
 const {
   USER_SCORE_WEIGHT,
   POST_SCORE_P1_WEIGHT,
   POST_SCORE_P2_WEIGHT,
-  FINAL_SCORE_WEIGHT,
-} = require("../processes/scoring/formula/constant");
+  POST_SCORE_P3_WEIGHT,
+  FINAL_SCORE_WEIGHT
+} = require('../processes/scoring/formula/constant');
 
 const safeValue = (number) => {
   return number === 0 ? 1 : number;
@@ -20,14 +21,17 @@ const postCountScore = (totalPostLastWeek, maxAmountPostWeekly) => {
 /*
   @description formula for variable p_perf
 */
-const postScore = (impr, wsNonBp, wwNonBp, wsD, wwD, wsUpdown, wwUpdown) => {
+const postScore = (impr, wsNonBp, wsD, wsUpdown) => {
   let p_perf = 1;
 
   if (impr >= 5) {
     if (impr < 50) {
-      p_perf = wsNonBp ** wwNonBp * wsD ** wwD;
+      p_perf = wsNonBp ** POST_SCORE_P3_WEIGHT.WW_NON_BP * wsD ** POST_SCORE_P3_WEIGHT.WW_D;
     } else {
-      p_perf = wsNonBp ** wwNonBp * wsD ** wwD * wsUpdown ** wwUpdown;
+      p_perf =
+        wsNonBp ** POST_SCORE_P3_WEIGHT.WW_NON_BP *
+        wsD ** POST_SCORE_P3_WEIGHT.WW_D *
+        wsUpdown ** POST_SCORE_P3_WEIGHT.WW_UP_DOWN;
     }
   }
 
@@ -51,15 +55,15 @@ const weightPostLongComments = (longC, impr, wlongC) => {
 /*
   @description formula for variable WS_updown
 */
-const upDownScoreWilsonScore = (impr, sUpDown, zUpDown, evUpDown) => {
+const upDownScoreWilsonScore = (impr, sUpDown) => {
   if (impr === 0) {
     return 1;
   }
 
-  const evUpDownPercentage = evUpDown / 100;
+  const evUpDownPercentage = POST_SCORE_P3_WEIGHT.EV_UP_DOWN / 100;
   const result =
-    (sUpDown + zUpDown ** 2 / (2 * impr)) /
-    (1 + zUpDown ** 2 / impr) /
+    (sUpDown + POST_SCORE_P3_WEIGHT.Z_UP_DOWN ** 2 / (2 * impr)) /
+    (1 + POST_SCORE_P3_WEIGHT.Z_UP_DOWN ** 2 / impr) /
     evUpDownPercentage;
 
   return result;
@@ -68,19 +72,14 @@ const upDownScoreWilsonScore = (impr, sUpDown, zUpDown, evUpDown) => {
 /*
   @description formula for variable WS_D
 */
-const durationScoreWilsonScore = (
-  impr,
-  duration,
-  zValueDurationDist,
-  durationDistributionPercentage
-) => {
+const durationScoreWilsonScore = (impr, duration) => {
   if (impr === 0) {
     return 1;
   }
-  const duration_distribution = durationDistributionPercentage / 100;
+  const duration_distribution = POST_SCORE_P3_WEIGHT.EV_D / 100;
   return (
-    (duration / impr + zValueDurationDist ** 2 / (2 * impr)) /
-    (1 + zValueDurationDist ** 2 / impr) /
+    (duration / impr + POST_SCORE_P3_WEIGHT.Z_D ** 2 / (2 * impr)) /
+    (1 + POST_SCORE_P3_WEIGHT.Z_D ** 2 / impr) /
     duration_distribution
   );
 };
@@ -88,32 +87,32 @@ const durationScoreWilsonScore = (
 /*
   @description formula for variable WS_nonBP
 */
-const nonBpScoreWilsonScore = (bp, impr, zNonbp, evNonBp) => {
+const nonBpScoreWilsonScore = (bp, impr) => {
   if (impr === 0) {
     return 1;
   }
-  evNonBp /= 100;
+  POST_SCORE_P3_WEIGHT.EV_NON_BP /= 100;
   return (
-    (1 - bp / impr + zNonbp ** 2 / (2 * impr)) /
-    (1 + zNonbp ** 2 / impr) /
-    evNonBp
+    (1 - bp / impr + POST_SCORE_P3_WEIGHT.Z_NON_BP ** 2 / (2 * impr)) /
+    (1 + POST_SCORE_P3_WEIGHT.Z_NON_BP ** 2 / impr) /
+    POST_SCORE_P3_WEIGHT.EV_NON_BP
   );
 };
 
 /*
   @description formula for variable sUpDown
 */
-const upDownScore = (impr, upvote, downvote, wDown, wN) => {
+const upDownScore = (impr, upvote, downvote) => {
   if (impr === 0) {
     return 1;
   }
 
   return (
-    (-impr * wDown +
+    (-impr * POST_SCORE_P3_WEIGHT.W_DOWN +
       upvote +
-      downvote * wDown +
-      wN * (impr - upvote - downvote)) /
-    (impr * (1 - wDown))
+      downvote * POST_SCORE_P3_WEIGHT.W_DOWN +
+      POST_SCORE_P3_WEIGHT.W_N * (impr - upvote - downvote)) /
+    (impr * (1 - POST_SCORE_P3_WEIGHT.W_DOWN))
   );
 };
 
@@ -293,13 +292,13 @@ const scoreBasedPostCharacteristics = (rec, att, d, p, postLink) => {
   @description formula for variable p_perv
 */
 const previousInteractionScore = (prevInteract, prevD, prevUc, prevPre) => {
-  if (prevInteract === "seen") {
+  if (prevInteract === 'seen') {
     return prevPre;
   }
-  if (prevInteract === "downvote") {
+  if (prevInteract === 'downvote') {
     return prevD;
   }
-  if (prevInteract === "upvote" || prevInteract === "comment") {
+  if (prevInteract === 'upvote' || prevInteract === 'comment') {
     return prevUc;
   }
   return 1; // none interaction
@@ -309,16 +308,16 @@ const previousInteractionScore = (prevInteract, prevD, prevUc, prevPre) => {
   @description formula for variable Rec
 */
 const RecencyScore = (ageOfPost, expirationSetting) => {
-  if (expirationSetting === "1") {
+  if (expirationSetting === '1') {
     return 1 - 0.007 * ageOfPost;
   }
-  if (expirationSetting === "7") {
+  if (expirationSetting === '7') {
     return 1.3 - 0.4 * ageOfPost ** 0.15;
   }
-  if (expirationSetting === "30") {
+  if (expirationSetting === '30') {
     return 0.95 - 0.225 * ageOfPost ** 0.215;
   }
-  if (expirationSetting === "never") {
+  if (expirationSetting === 'never') {
     return Math.max(0.02, 0.95 - 0.225 * ageOfPost ** 0.215);
   }
 };
@@ -328,12 +327,10 @@ const RecencyScore = (ageOfPost, expirationSetting) => {
 */
 const ageOfPost = (expirationSetting, postDateTime, nowDateTime) => {
   const diffHours = Math.trunc(
-    moment
-      .duration(moment.utc(nowDateTime).diff(moment.utc(postDateTime)))
-      .as("hours")
+    moment.duration(moment.utc(nowDateTime).diff(moment.utc(postDateTime))).as('hours')
   );
 
-  if (expirationSetting === "never") {
+  if (expirationSetting === 'never') {
     return Math.max(1, diffHours);
   }
   return Math.min(expirationSetting * 24, Math.max(1, diffHours));
@@ -353,10 +350,7 @@ const ageScore = (age) => {
 /*
   @description formula for calculating post interaction (upvote / downvote / block) point
 */
-const postInteractionPoint = (
-  totalInteractionLast7Days,
-  maxInteractionWeekly
-) => {
+const postInteractionPoint = (totalInteractionLast7Days, maxInteractionWeekly) => {
   if (totalInteractionLast7Days <= 0) {
     return 0;
   }
@@ -391,5 +385,5 @@ module.exports = {
   applyMultipliesToTotalScore,
   scoreBasedPostCharacteristics,
   RecencyScore,
-  ageOfPost,
+  ageOfPost
 };
