@@ -50,17 +50,7 @@ const postPerformanceScoreProcess = async (job) => {
       job.id_feed,
       job.user_id
     );
-    const WW_NON_BP = process.env.WW_NONBP;
-    const {WW_D} = process.env;
-    const WW_UP_DOWN = process.env.WW_UPDOWN;
-    const Z_NON_BP = process.env.Z_NONBP;
-    const EV_NON_BP = process.env.EV_NONBP_PERCENTAGE;
-    const {Z_D} = process.env;
-    const {EV_D_PERCENTAGE} = process.env;
-    const {Z_UPDOWN} = process.env;
-    const {EV_UPDOWN_PERCENTAGE} = process.env;
-    const {W_DOWN} = process.env;
-    const {W_N} = process.env;
+
     const {DUR_MIN} = process.env;
     const {DUR_MARG} = process.env;
     const D_BENCH = dBench(DUR_MIN, DUR_MARG, validatePostMessage(job.body));
