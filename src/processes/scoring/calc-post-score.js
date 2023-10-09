@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 const {
   scoreBasedPostCharacteristics,
   RecencyScore,
@@ -11,67 +11,27 @@ const {
   nonBpScoreWilsonScore,
   durationScoreWilsonScore,
   upDownScoreWilsonScore,
-  upDownScore,
-} = require("../../utils");
+  upDownScore
+} = require('../../utils');
 
 const calcPostPerformanceScore = (postScoreDoc) => {
-  const Z_NON_BP = process.env.Z_NONBP;
-  const EV_NON_BP = process.env.EV_NONBP_PERCENTAGE;
-  const WW_NON_BP = process.env.WW_NONBP;
-  const { WW_D } = process.env.WW_D;
-  const WW_UP_DOWN = process.env.WW_UPDOWN;
-  const { Z_D } = process.env;
-  const { EV_D_PERCENTAGE } = process.env;
-  const { Z_UPDOWN } = process.env;
-  const { EV_UPDOWN_PERCENTAGE } = process.env;
-  const { W_DOWN } = process.env;
-  const { W_N } = process.env;
   const impression = postScoreDoc.impr_score;
 
   /*
       @description block point get from table post_blocked
     */
-  const wsnonbp = nonBpScoreWilsonScore(
-    postScoreDoc.BP_score,
-    impression,
-    Z_NON_BP,
-    EV_NON_BP
-  );
+  const wsnonbp = nonBpScoreWilsonScore(postScoreDoc.BP_score, impression);
   /*
       @description
     */
-  const wsd = durationScoreWilsonScore(
-    impression,
-    postScoreDoc.D_score,
-    Z_D,
-    EV_D_PERCENTAGE
-  );
+  const wsd = durationScoreWilsonScore(impression, postScoreDoc.D_score);
   /*
       @description upvote = Sum of Upvote-Points of a Post
       downvote = Sum of Downvote-Points of a Post
     */
-  const sUpDown = upDownScore(
-    impression,
-    postScoreDoc.upvote_point,
-    postScoreDoc.downvote_point,
-    W_DOWN,
-    W_N
-  );
-  const wsupdown = upDownScoreWilsonScore(
-    impression,
-    sUpDown,
-    Z_UPDOWN,
-    EV_UPDOWN_PERCENTAGE
-  );
-  const pPerf = postScore(
-    impression,
-    wsnonbp,
-    WW_NON_BP,
-    wsd,
-    WW_D,
-    wsupdown,
-    WW_UP_DOWN
-  );
+  const sUpDown = upDownScore(impression, postScoreDoc.upvote_point, postScoreDoc.downvote_point);
+  const wsupdown = upDownScoreWilsonScore(impression, sUpDown);
+  const pPerf = postScore(impression, wsnonbp, wsd, wsupdown);
 
   postScoreDoc.s_updown_score = sUpDown;
   postScoreDoc.WS_updown_score = wsupdown;
@@ -83,7 +43,7 @@ const calcPostPerformanceScore = (postScoreDoc) => {
 };
 
 const calcPostScore = async (postScoreDoc) => {
-  console.debug("Starting calcPostScore");
+  console.debug('Starting calcPostScore');
 
   /*
     _id: feedId,
@@ -138,11 +98,7 @@ const calcPostScore = async (postScoreDoc) => {
     postScoreDoc.has_link
   );
 
-  const pLongC = weightPostLongComments(
-    postScoreDoc.longC_score,
-    postScoreDoc.impr_score,
-    WLONGC
-  );
+  const pLongC = weightPostLongComments(postScoreDoc.longC_score, postScoreDoc.impr_score, WLONGC);
 
   // calculate post performance score
   const pPerf = calcPostPerformanceScore(postScoreDoc);
@@ -161,12 +117,11 @@ const calcPostScore = async (postScoreDoc) => {
   postScoreDoc.p3_score = p3;
   postScoreDoc.post_score = final_score;
 
-  console.debug(
-    `calcPostScore => Final post score doc: ${JSON.stringify(postScoreDoc)}`
-  );
+  console.debug(`calcPostScore => Final post score doc: ${JSON.stringify(postScoreDoc)}`);
   return postScoreDoc;
 };
 
 module.exports = {
   calcPostScore,
+  calcPostPerformanceScore
 };

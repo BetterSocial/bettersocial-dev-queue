@@ -54,8 +54,8 @@ const POST_SCORE_P3_WEIGHT = {
   WW_NON_BP: process.env.WW_NONBP || 45, // Weight(exponential) applied to nonBP "Wilson" score
   WW_UP_DOWN: process.env.WW_UPDOWN || 8, // Weight(exponential) applied to UpDown Score's "Wilson" score
   WW_D: process.env.WW_D || 1, // Weight(exponential) applied to #D's "Wilson" score  (Duration)
-  w_Down: process.env.W_DOWN || -1.2, // Weight applied to Downvotes within the 'UPDOWN score'
-  W_DOWN: process.env.W_N || -0.05, // Weight applied to "Don't care" reactions (Impressions without Up or Downvote) within the 'UPDOWN score'
+  W_DOWN: process.env.W_DOWN || -1.2, // Weight applied to Downvotes within the 'UPDOWN score'
+  W_N: process.env.W_N || -0.05, // Weight applied to "Don't care" reactions (Impressions without Up or Downvote) within the 'UPDOWN score'
   DUR_MIN: process.env.DUR_MIN || 2500, // Minimum duration of post view to count as D - fix component
   DUR_MARG: process.env.DUR_MARG || 400, // Marginal additional duration of post view per word to count as D - variable component
   W_LONG_C: process.env.W_LONGC || 0 // Weight of p_longC score for long comments to post
