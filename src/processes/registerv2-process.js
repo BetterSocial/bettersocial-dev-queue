@@ -63,7 +63,11 @@ const registerProcess = async (job, done) => {
 
     await ProcessHelper.followDefaultLocation(userId);
     const returnPrepopulatedDm = await ProcessHelper.prepopulatedDm(userId, follows);
-    await preAutomateWelcomeMsgProcess(returnPrepopulatedDm);
+
+    if (process.env.AUTO_WLCM_MSG === 'true') {
+      await preAutomateWelcomeMsgProcess(returnPrepopulatedDm);
+    }
+
     await ProcessHelper.followUser(userId, follows);
     await ProcessHelper.followAnonymousUser(anonUserId, follows);
     await ProcessHelper.followTopic(userId, topics);
