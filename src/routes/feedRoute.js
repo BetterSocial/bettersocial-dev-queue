@@ -9,7 +9,9 @@ const {
   resetAndSyncFeed,
   getActivityById,
   removeActivityById,
-  syncUserScore
+  syncUserScore,
+  activityScore,
+  getWeightValue
 } = require('../services');
 
 const router = express.Router();
@@ -26,6 +28,9 @@ router.post('/reset-sync-feed', resetAndSyncFeed);
 router.post('/get-activity-by-id', getActivityById);
 router.post('/remove-activity-by-id', removeActivityById);
 router.post('/sync-user-score', syncUserScore);
+
+router.post('/check-activity-score', activityScore);
+router.get('/get-weight-value', getWeightValue);
 
 // sync all user feed
 // router.get("/sync-feed", refreshPostViewTime);

@@ -10,5 +10,7 @@ module.exports = {
   ...require("./followMainFeedF2"),
   ...require("./syncFeedPerUser"),
   ...require("./getStreamActivities"),
-  ...require("./syncUserScore")
+  ...require("./syncUserScore"),
+  ...require("./activityScore"),
+  ...require("./getWeightValue")
 };
