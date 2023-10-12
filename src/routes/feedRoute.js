@@ -13,6 +13,7 @@ const {
   activityScore,
   getWeightValue
 } = require('../services');
+const auth = require('../middlewares/dev-auth');
 
 const router = express.Router();
 
@@ -29,8 +30,8 @@ router.post('/get-activity-by-id', getActivityById);
 router.post('/remove-activity-by-id', removeActivityById);
 router.post('/sync-user-score', syncUserScore);
 
-router.post('/check-activity-score', activityScore);
-router.get('/get-weight-value', getWeightValue);
+router.post('/check-activity-score', auth.dev, activityScore);
+router.get('/get-weight-value', auth.dev, getWeightValue);
 
 // sync all user feed
 // router.get("/sync-feed", refreshPostViewTime);
