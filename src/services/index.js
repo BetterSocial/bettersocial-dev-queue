@@ -12,5 +12,6 @@ module.exports = {
   ...require("./getStreamActivities"),
   ...require("./syncUserScore"),
   ...require("./activityScore"),
-  ...require("./getWeightValue")
+  ...require("./getWeightValue"),
+  ...require("./lastP3Score")
 };
