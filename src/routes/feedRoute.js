@@ -12,7 +12,8 @@ const {
   syncUserScore,
   activityScore,
   getWeightValue,
-  lastP3Score
+  lastP3Score,
+  updatePostScoreGetstream
 } = require('../services');
 const auth = require('../middlewares/dev-auth');
 
@@ -34,6 +35,7 @@ router.post('/sync-user-score', syncUserScore);
 router.post('/check-activity-score', auth.dev, activityScore);
 router.get('/get-weight-value', auth.dev, getWeightValue);
 router.post('/update-last-p3', auth.dev, lastP3Score);
+router.post('/update-post-score-getstream', auth.dev, updatePostScoreGetstream);
 
 // sync all user feed
 // router.get("/sync-feed", refreshPostViewTime);
