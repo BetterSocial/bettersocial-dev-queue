@@ -49,9 +49,9 @@ const updateUserScoreOnDailyProcessPhase1 = async (
 
     // update following
     userDoc.USER_SCORE_WEIGHT = USER_SCORE_WEIGHT;
-    const userFollower = await UsersFunction.getUserFollowerList(userDoc._id);
-    userDoc.following = userFollower;
-    userDoc.F_score_update = userFollower.length;
+    userDoc.follower = await UsersFunction.getUserFollowerList(userDoc._id);
+    userDoc.following = await UsersFunction.getUserFollowingList(userDoc._id);
+    userDoc.F_score_update = userDoc.follower.length;
 
     // Update values from up-to-dated fields into daily-updated field
     userDoc.F_score = userDoc.F_score_update;
