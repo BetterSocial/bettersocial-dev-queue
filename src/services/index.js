@@ -13,5 +13,6 @@ module.exports = {
   ...require("./syncUserScore"),
   ...require("./activityScore"),
   ...require("./getWeightValue"),
-  ...require("./lastP3Score")
+  ...require("./lastP3Score"),
+  ...require("./updatePostScoreGetstream"),
 };
