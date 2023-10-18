@@ -1,4 +1,4 @@
-const { getDb } = require("../config/mongodb_conn");
+const {getDb} = require('../config/mongodb_conn');
 const {
   DB_COLLECTION_USER_SCORE,
   DB_COLLECTION_POST_SCORE,
@@ -13,8 +13,8 @@ const {
   EVENT_COMMENT_POST,
   EVENT_VIEW_POST,
   EVENT_FOLLOW_USER,
-  EVENT_UNFOLLOW_USER,
-} = require("./scoring-constant");
+  EVENT_UNFOLLOW_USER
+} = require('./scoring-constant');
 const {
   calcScoreOnCreateAccount,
   calcScoreOnCreatePost,
@@ -26,162 +26,30 @@ const {
   calcScoreOnCommentPost,
   calcScoreOnViewPost,
   calcScoreOnFollowUser,
-  calcScoreOnUnfollowUser,
-} = require("./scoring");
+  calcScoreOnUnfollowUser
+} = require('./scoring');
 
-const { setInitialDataUserScore } = require("../services/syncUserScore");
-
-const initDataUserScore = (userId, timestamp) => ({
-  _id: userId,
-  register_time: timestamp,
-  F_score: 1.0,
-  F_score_update: 1.0,
-  sum_BP_score: 1.0,
-  sum_BP_score_update: 1.0,
-  sum_impr_score: 0.0,
-  sum_impr_score_update: 0.0,
-  r_score: 1.0,
-  age_score: 0.0,
-  q_score: 1.0,
-  y_score: 1.0,
-  u1_score: 1.0,
-  user_score: 1.0,
-  confirmed_acc: {
-    edu_emails: [],
-    non_private_email: [],
-    twitter_acc: {
-      acc_name: "",
-      num_followers: 0,
-    },
-  },
-  topics: [],
-  user_att: "",
-  user_att_score: 1.0,
-  last_upvotes: {
-    counter: 0, // how many upvotes made by this user, in the last 7 days from "last_update"
-    earliest_time: "", // the earliest time of upvote when counting the upvotes
-    last_time: "", // the last time of upvote when counting the upvotes
-    last_update: timestamp, // when is the last update time of this counter
-  },
-  last_downvotes: {
-    counter: 0, // how many downvotes made by this user, in the last 7 days from "last_update"
-    earliest_time: "", // the earliest time of downvote when counting the downvotes
-    last_time: "", // the last time of downvote when counting the downvotes
-    last_update: timestamp, // when is the last update time of this counter
-  },
-  last_blocks: {
-    counter: 0, // how many blocks made by this user, in the last 7 days from "last_update"
-    earliest_time: "", // the earliest time of block when counting the blocks
-    last_time: "", // the last time of block when counting the blocks
-    last_update: timestamp, // when is the last update time of this counter
-  },
-  last_posts: {
-    counter: 0, // how many posts made by this user, in the last 7 days from "last_update"
-    earliest_time: "", // the earliest time of post when counting the posts
-    last_time: "", // the last time of post when counting the posts
-    last_update: timestamp, // when is the last update time of this counter
-  },
-  following: [], // list of user ids this user follows
-  follower: [], // list of user ids that follows this user
-  blocking: [],
-  last_p3_scores: {
-    // list of last p3 score along with the post information.
-    _count: 0,
-    // format of <key>:<value>
-    // <post id> : { "time":"...", "p3_score": ... }
-  },
-  last_daily_process: "",
-  created_at: timestamp,
-  updated_at: timestamp,
-});
-
-const initDataPostScore = (feedId, timestamp) => ({
-  _id: feedId,
-  foreign_id: "",
-  time: "",
-  author_id: "",
-  has_link: false,
-  expiration_setting: "1",
-  expired_at: "",
-  topics: [],
-  privacy: "",
-  anonimity: false,
-  rec_score: 1.0, // recency score, based on expiration setting and now
-  att_score: 1.0, // post-attributes score
-  count_weekly_posts: 0.0, // total posts by user A (author) within last 7 days before this post
-  impr_score: 0.0,
-  domain_score: 1.0,
-  longC_score: 1.0,
-  p_longC_score: 1.0,
-  W_score: 0.0,
-  D_bench_score: 0.0,
-  D_score: 1.0,
-  downvote_point: 0.0,
-  upvote_point: 0.0,
-  s_updown_score: 0.0,
-  BP_score: 1.0,
-  WS_updown_score: 0.0,
-  WS_D_score: 0.0,
-  WS_nonBP_score: 1.0,
-  p_perf_score: 1.0,
-  p2_score: 0.0,
-  p3_score: 1.0,
-  u_score: 1.0,
-  post_score: 1.0,
-  has_done_final_process: false,
-  created_at: timestamp,
-  updated_at: timestamp,
-});
-
-const initDataUserPostScore = (userId, feedId, timestamp) => ({
-  _id: `${userId}:${feedId}`,
-  user_id: userId,
-  feed_id: feedId,
-  author_id: "",
-  topics_followed: 0,
-  author_follower: false,
-  second_degree_follower: false,
-  domain_follower: false,
-  p1_score: 0.0,
-  upvote_count: 0,
-  comment_count: 0,
-  downvote_count: 0,
-  block_count: 0,
-  last_updown: "",
-  last_block: "",
-  seen_count: 0,
-  p_prev_score: 0.0,
-  post_score: 0.0,
-  user_post_score: 0.0,
-  downvote_point: 0.0,
-  upvote_point: 0.0,
-  block_point: 0.0,
-  activity_log: {},
-  comment_log: {},
-  impression_log: {},
-  anomaly_activities: {
-    upvote_time: "",
-    cancel_upvote_time: "",
-    downvote_time: "",
-    cancel_downvote_time: "",
-    block_time: "",
-  },
-  created_at: timestamp,
-  updated_at: timestamp,
-});
+const {
+  setInitialDataUserScore
+} = require('../processes/scoring/formula/set-initial-data-user-score');
+const {
+  initDataUserScore,
+  initDataPostScore,
+  initDataUserPostScore
+} = require('./scoring/formula/initial_score_value');
 
 const getListData = async () => {
   const db = await getDb();
   const [userScoreList, postScoreList, userPostScoreList] = await Promise.all([
     db.collection(DB_COLLECTION_USER_SCORE),
     db.collection(DB_COLLECTION_POST_SCORE),
-    db.collection(DB_COLLECTION_USER_POST_SCORE),
+    db.collection(DB_COLLECTION_USER_POST_SCORE)
   ]);
 
   return {
     userScoreList,
     postScoreList,
-    userPostScoreList,
+    userPostScoreList
   };
 };
 
@@ -195,13 +63,13 @@ const getListData = async () => {
  *   - follow_users : array of text, optional (can be empty), user ids that followed by the user
  */
 const onCreateAccount = async (data) => {
-  console.debug("scoring onCreateAccount");
-  const { userScoreList } = await getListData();
+  console.debug('scoring onCreateAccount');
+  const {userScoreList} = await getListData();
 
-  let userDoc = await userScoreList.findOne({ _id: data.user_id });
+  let userDoc = await userScoreList.findOne({_id: data.user_id});
   console.debug(`findOne userDoc result: ${JSON.stringify(userDoc)}`);
   if (!userDoc) {
-    console.debug("init user score doc");
+    console.debug('init user score doc');
     userDoc = initDataUserScore(data.user_id, data.register_time);
   }
   const result = await calcScoreOnCreateAccount(data, userDoc, userScoreList);
@@ -227,23 +95,19 @@ const onCreateAccount = async (data) => {
  */
 const onCreatePost = async (data) => {
   const db = await getDb();
-  console.debug("scoring onCreatePost");
-  const { postScoreList, userScoreList } = await getListData();
+  console.debug('scoring onCreatePost');
+  const {postScoreList, userScoreList} = await getListData();
 
-  let userScoreDoc = await userScoreList.findOne({ _id: data.user_id });
+  let userScoreDoc = await userScoreList.findOne({_id: data.user_id});
   console.debug(`findOne userScoreDoc result: ${JSON.stringify(userScoreDoc)}`);
   if (!userScoreDoc) {
-    const initialUserScoreDoc = initDataUserScore(data.user_id, data.createdAt);
-    userScoreDoc = await setInitialDataUserScore(
-      data.user_id,
-      initialUserScoreDoc
-    );
+    userScoreDoc = await setInitialDataUserScore(data.user_id);
   }
 
-  let postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
+  let postScoreDoc = await postScoreList.findOne({_id: data.feed_id});
   console.debug(`findOne postScoreDoc result: ${JSON.stringify(postScoreDoc)}`);
   if (!postScoreDoc) {
-    console.debug("init post score doc");
+    console.debug('init post score doc');
     postScoreDoc = initDataPostScore(data.feed_id, data.created_at);
   }
 
@@ -281,8 +145,7 @@ const getDataToCalcScore = async (
   getUserPostScoreDoc = true,
   getFollowedUserScoreDoc = {}
 ) => {
-  const { postScoreList, userPostScoreList, userScoreList } =
-    await getListData();
+  const {postScoreList, userPostScoreList, userScoreList} = await getListData();
   let userScoreDoc;
   let postScoreDoc;
   let authorUserScoreDoc;
@@ -291,64 +154,44 @@ const getDataToCalcScore = async (
 
   if (getFollowedUserScoreDoc.id) {
     followedUserScoreDoc = await userScoreList.findOne({
-      _id: getFollowedUserScoreDoc.id,
+      _id: getFollowedUserScoreDoc.id
     });
-    console.debug(
-      `findOne userScoreDoc result: ${JSON.stringify(followedUserScoreDoc)}`
-    );
+    console.debug(`findOne userScoreDoc result: ${JSON.stringify(followedUserScoreDoc)}`);
     if (!followedUserScoreDoc) {
-      followedUserScoreDoc = await setInitialDataUserScore(
-        getFollowedUserScoreDoc.id
-      );
+      followedUserScoreDoc = await setInitialDataUserScore(getFollowedUserScoreDoc.id);
     }
   }
   if (getUserScoreDoc) {
-    userScoreDoc = await userScoreList.findOne({ _id: data.user_id });
-    console.debug(
-      `findOne userScoreDoc result: ${JSON.stringify(userScoreDoc)}`
-    );
+    userScoreDoc = await userScoreList.findOne({_id: data.user_id});
+    console.debug(`findOne userScoreDoc result: ${JSON.stringify(userScoreDoc)}`);
     if (!userScoreDoc) {
       userScoreDoc = await setInitialDataUserScore(data.user_id);
     }
   }
   if (getPostScoreDoc) {
-    postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
-    console.debug(
-      `findOne postScoreDoc result: ${JSON.stringify(postScoreDoc)}`
-    );
+    postScoreDoc = await postScoreList.findOne({_id: data.feed_id});
+    console.debug(`findOne postScoreDoc result: ${JSON.stringify(postScoreDoc)}`);
     if (!postScoreDoc) {
       throw new Error(`Post data is not found, with id: ${data.feed_id}`);
     }
   }
   if (getAuthorUserScoreDoc) {
     authorUserScoreDoc = await userScoreList.findOne({
-      _id: postScoreDoc.author_id,
+      _id: postScoreDoc.author_id
     });
-    console.debug(
-      `findOne author's userScoreDoc result: ${JSON.stringify(
-        authorUserScoreDoc
-      )}`
-    );
+    console.debug(`findOne author's userScoreDoc result: ${JSON.stringify(authorUserScoreDoc)}`);
     if (!authorUserScoreDoc) {
-      authorUserScoreDoc = await setInitialDataUserScore(
-        postScoreDoc.author_id
-      );
+      authorUserScoreDoc = await setInitialDataUserScore(postScoreDoc.author_id);
     }
   }
   if (getUserPostScoreDoc) {
     userPostScoreDoc = await userPostScoreList.findOne({
-      _id: `${data.user_id}:${data.feed_id}`,
+      _id: `${data.user_id}:${data.feed_id}`
     });
-    console.debug(
-      `findOne userPostScoreDoc result: ${JSON.stringify(userPostScoreDoc)}`
-    );
+    console.debug(`findOne userPostScoreDoc result: ${JSON.stringify(userPostScoreDoc)}`);
     if (!userPostScoreDoc) {
-      console.debug("init user post score doc");
-      userPostScoreDoc = initDataUserPostScore(
-        data.user_id,
-        data.feed_id,
-        data.activity_time
-      );
+      console.debug('init user post score doc');
+      userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
     }
   }
   return {
@@ -359,7 +202,7 @@ const getDataToCalcScore = async (
     userPostScoreDoc,
     userPostScoreList,
     authorUserScoreDoc,
-    followedUserScoreDoc,
+    followedUserScoreDoc
   };
 };
 
@@ -370,7 +213,7 @@ const getDataToCalcScore = async (
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onUpvotePost = async (data) => {
-  console.debug("scoring onUpvotePost");
+  console.debug('scoring onUpvotePost');
   const score = await getDataToCalcScore(data);
   const result = await calcScoreOnUpvotePost(data, score);
   return result;
@@ -383,7 +226,7 @@ const onUpvotePost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onCancelUpvotePost = async (data) => {
-  console.debug("scoring onCancelUpvotePost");
+  console.debug('scoring onCancelUpvotePost');
   const score = await getDataToCalcScore(data);
 
   const result = await calcScoreOnCancelUpvotePost(data, score);
@@ -397,7 +240,7 @@ const onCancelUpvotePost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onDownvotePost = async (data) => {
-  console.debug("scoring onDownvotePost");
+  console.debug('scoring onDownvotePost');
   const score = await getDataToCalcScore(data);
 
   const result = await calcScoreOnDownvotePost(data, score);
@@ -411,7 +254,7 @@ const onDownvotePost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onCancelDownvotePost = async (data) => {
-  console.debug("scoring onCancelDownvotePost");
+  console.debug('scoring onCancelDownvotePost');
   const score = await getDataToCalcScore(data);
 
   const result = await calcScoreOnCancelDownvotePost(data, score);
@@ -426,59 +269,48 @@ const onCancelDownvotePost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onBlockUserPost = async (data) => {
-  console.debug("scoring onBlockUserPost");
-  const { userScoreDoc, userScoreList, postScoreList, userPostScoreList } =
-    await getDataToCalcScore(data, true, false, false, false);
+  console.debug('scoring onBlockUserPost');
+  const {userScoreDoc, userScoreList, postScoreList, userPostScoreList} = await getDataToCalcScore(
+    data,
+    true,
+    false,
+    false,
+    false
+  );
 
   let postScoreDoc;
   let authorUserScoreDoc;
   let userPostScoreDoc;
   if (data.feed_id) {
-    postScoreDoc = await postScoreList.findOne({ _id: data.feed_id });
-    console.debug(
-      `findOne postScoreDoc result: ${JSON.stringify(postScoreDoc)}`
-    );
+    postScoreDoc = await postScoreList.findOne({_id: data.feed_id});
+    console.debug(`findOne postScoreDoc result: ${JSON.stringify(postScoreDoc)}`);
     if (!postScoreDoc) {
       throw new Error(`Post data is not found, with id: ${data.feed_id}`);
     }
 
     userPostScoreDoc = await userPostScoreList.findOne({
-      _id: `${data.user_id}:${data.feed_id}`,
+      _id: `${data.user_id}:${data.feed_id}`
     });
-    console.debug(
-      `findOne userPostScoreDoc result: ${JSON.stringify(userPostScoreDoc)}`
-    );
+    console.debug(`findOne userPostScoreDoc result: ${JSON.stringify(userPostScoreDoc)}`);
     if (!userPostScoreDoc) {
-      console.debug("init user post score doc");
-      userPostScoreDoc = initDataUserPostScore(
-        data.user_id,
-        data.feed_id,
-        data.activity_time
-      );
+      console.debug('init user post score doc');
+      userPostScoreDoc = initDataUserPostScore(data.user_id, data.feed_id, data.activity_time);
       userPostScoreDoc.author_id = postScoreDoc.author_id;
     }
 
     // Get author user doc, if the blocked user id is given, but still we get the doc by using author id of the post, just to make sure it won't mistaken.
     authorUserScoreDoc = await userScoreList.findOne({
-      _id: postScoreDoc.author_id,
+      _id: postScoreDoc.author_id
     });
-    console.debug(
-      `findOne userScoreDoc of author: ${JSON.stringify(authorUserScoreDoc)}`
-    );
+    console.debug(`findOne userScoreDoc of author: ${JSON.stringify(authorUserScoreDoc)}`);
     if (!authorUserScoreDoc) {
-      authorUserScoreDoc = await setInitialDataUserScore(
-        postScoreDoc.author_id
-      );
+      authorUserScoreDoc = await setInitialDataUserScore(postScoreDoc.author_id);
     }
   } else {
     authorUserScoreDoc = await userScoreList.findOne({
-      _id: data.blocked_user_id,
+      _id: data.blocked_user_id
     });
-    console.debug(
-      `findOne userScoreDoc of blocked user: ${JSON.stringify(
-        authorUserScoreDoc
-      )}`
-    );
+    console.debug(`findOne userScoreDoc of blocked user: ${JSON.stringify(authorUserScoreDoc)}`);
     if (!authorUserScoreDoc) {
       authorUserScoreDoc = await setInitialDataUserScore(data.blocked_user_id);
     }
@@ -486,7 +318,7 @@ const onBlockUserPost = async (data) => {
   const connectionList = {
     userScoreList,
     postScoreList,
-    userPostScoreList,
+    userPostScoreList
   };
   const result = await calcScoreOnBlockUserPost(
     data,
@@ -508,14 +340,14 @@ const onBlockUserPost = async (data) => {
  *   - activity_time : time, when the user comment the post/feed
  */
 const onCommentPost = async (data) => {
-  console.debug("scoring onCommentPost");
+  console.debug('scoring onCommentPost');
   const {
     postScoreDoc,
     postScoreList,
     userPostScoreDoc,
     userPostScoreList,
     authorUserScoreDoc,
-    userScoreList,
+    userScoreList
   } = await getDataToCalcScore(data, false);
 
   const result = await calcScoreOnCommentPost(
@@ -539,14 +371,14 @@ const onCommentPost = async (data) => {
  *   - activity_time : time, when the user comment the post/feed
  */
 const onViewPost = async (data) => {
-  console.debug("scoring onViewPost");
+  console.debug('scoring onViewPost');
   const {
     postScoreDoc,
     postScoreList,
     userPostScoreDoc,
     userPostScoreList,
     authorUserScoreDoc,
-    userScoreList,
+    userScoreList
   } = await getDataToCalcScore(data, false);
 
   const result = await calcScoreOnViewPost(
@@ -568,11 +400,17 @@ const onViewPost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onFollowUser = async (data) => {
-  console.debug("scoring onFollowUser");
-  const { userScoreDoc, userScoreList, followedUserScoreDoc } =
-    await getDataToCalcScore(data, true, false, false, false, {
-      id: data.followed_user_id,
-    });
+  console.debug('scoring onFollowUser');
+  const {userScoreDoc, userScoreList, followedUserScoreDoc} = await getDataToCalcScore(
+    data,
+    true,
+    false,
+    false,
+    false,
+    {
+      id: data.followed_user_id
+    }
+  );
 
   const result = await calcScoreOnFollowUser(
     data,
@@ -590,11 +428,17 @@ const onFollowUser = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onUnfollowUser = async (data) => {
-  console.debug("scoring onUnfollowUser");
-  const { userScoreDoc, userScoreList, followedUserScoreDoc } =
-    await getDataToCalcScore(data, true, false, false, false, {
-      id: data.unfollowed_user_id,
-    });
+  console.debug('scoring onUnfollowUser');
+  const {userScoreDoc, userScoreList, followedUserScoreDoc} = await getDataToCalcScore(
+    data,
+    true,
+    false,
+    false,
+    false,
+    {
+      id: data.unfollowed_user_id
+    }
+  );
 
   const result = await calcScoreOnUnfollowUser(
     data,
@@ -649,7 +493,7 @@ const scoringProcessJob = async (job, done) => {
         result = await onUnfollowUser(messageData.data);
         break;
       default:
-        throw Error("Unknown event");
+        throw Error('Unknown event');
     }
     // console.info(result);
     done(null, result);
@@ -660,6 +504,5 @@ const scoringProcessJob = async (job, done) => {
 };
 
 module.exports = {
-  scoringProcessJob,
-  initDataUserScore,
+  scoringProcessJob
 };

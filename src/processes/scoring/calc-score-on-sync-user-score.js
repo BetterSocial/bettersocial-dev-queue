@@ -94,9 +94,10 @@ const calcScoreOnSyncUserScore = async (data, userDoc, userScoreList) => {
   userDoc.updated_at = timestamp;
 
   userDoc.USER_SCORE_WEIGHT = USER_SCORE_WEIGHT;
-  const userFollower = await UsersFunction.getUserFollowerList(userDoc._id);
-  userDoc.following = userFollower;
-  userDoc.F_score_update = userFollower.length;
+  userDoc.follower = await UsersFunction.getUserFollowerList(userDoc._id);
+  userDoc.following = await UsersFunction.getUserFollowingList(userDoc._id);;
+  userDoc.F_score_update = userDoc.follower.length;
+  userDoc.F_score = userDoc.F_score_update;
 
   updateUserScoreDocs.push({
     updateOne: {
