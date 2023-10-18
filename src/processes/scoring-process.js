@@ -36,7 +36,7 @@ const {
   initDataUserScore,
   initDataPostScore,
   initDataUserPostScore
-} = require('./scoring/formula/initial_score_value');
+} = require('./scoring/formula/initial-score-value');
 
 const getListData = async () => {
   const db = await getDb();
