@@ -1,9 +1,8 @@
-require("dotenv").config;
-const moment = require("moment");
-const { calcUserPostScore } = require("./calc-user-post-score");
-const { calcPostScore } = require("./calc-post-score");
-const { isStringBlankOrNull, postInteractionPoint } = require("../../utils");
-const REGULAR_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+const moment = require('moment');
+const {calcUserPostScore} = require('./calc-user-post-score');
+const {calcPostScore} = require('./calc-post-score');
+const {isStringBlankOrNull, postInteractionPoint} = require('../../utils');
+const REGULAR_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 /*
  * Update last blocks information, with condition for update:
@@ -17,33 +16,22 @@ const REGULAR_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
  */
 function updateLastBlocks(lastBlocks, activityTime) {
   // Get the activity time in moment object, so it would be easier to count the difference between times.
-  const momentActivityTime = moment.utc(
-    activityTime,
-    REGULAR_TIME_FORMAT,
-    true
-  );
+  const momentActivityTime = moment.utc(activityTime, REGULAR_TIME_FORMAT, true);
 
   if (!isStringBlankOrNull(lastBlocks.last_update)) {
     const dayDiffLastUpdateAndPostTime = moment
       .duration(
-        momentActivityTime.diff(
-          moment.utc(lastBlocks.last_update, REGULAR_TIME_FORMAT, true)
-        )
+        momentActivityTime.diff(moment.utc(lastBlocks.last_update, REGULAR_TIME_FORMAT, true))
       )
-      .as("days");
+      .as('days');
 
-    console.debug(
-      "calcScoreOnUnblockUser:updateLastBlocks -> there is last blocks data"
-    );
+    console.debug('calcScoreOnUnblockUser:updateLastBlocks -> there is last blocks data');
 
     // continue, if last_update is earlier from activity time, less than a day.
     // note: minus duration means last update is later than activity time.
-    if (
-      dayDiffLastUpdateAndPostTime >= 0 &&
-      dayDiffLastUpdateAndPostTime <= 1
-    ) {
+    if (dayDiffLastUpdateAndPostTime >= 0 && dayDiffLastUpdateAndPostTime <= 1) {
       console.debug(
-        "calcScoreOnUnblockUser:updateLastBlocks -> last_update is earlier from activity time and less than a day"
+        'calcScoreOnUnblockUser:updateLastBlocks -> last_update is earlier from activity time and less than a day'
       );
 
       // continue, if earliest_time is empty or not more than 7 days earlier from activity time
@@ -51,15 +39,13 @@ function updateLastBlocks(lastBlocks, activityTime) {
       if (!isStringBlankOrNull(lastBlocks.earliest_time)) {
         const dayDiffEarliestTimeAndActivityTime = moment
           .duration(
-            momentActivityTime.diff(
-              moment.utc(lastBlocks.earliest_time, REGULAR_TIME_FORMAT, true)
-            )
+            momentActivityTime.diff(moment.utc(lastBlocks.earliest_time, REGULAR_TIME_FORMAT, true))
           )
-          .as("days");
+          .as('days');
 
         if (dayDiffEarliestTimeAndActivityTime <= 7) {
           console.debug(
-            "calcScoreOnUnblockUser:updateLastBlocks -> earliest_time is less than or equals 7 days earlier from activity time"
+            'calcScoreOnUnblockUser:updateLastBlocks -> earliest_time is less than or equals 7 days earlier from activity time'
           );
 
           lastBlocks.last_update = activityTime;
@@ -86,26 +72,18 @@ const calcScoreOnUnblockUserPost = async (
   blockedUserScoreDoc,
   userScoreList
 ) => {
-  console.debug("Starting calcScoreOnBlockUserPost");
+  console.debug('Starting calcScoreOnBlockUserPost');
   // Check whether the user has blocked the author (possible reprocess), by looking at the blocking list in user score doc
-  if (
-    userScoreDoc.blocking &&
-    userScoreDoc.blocking.indexOf(blockedUserScoreDoc._id) > -1
-  ) {
+  if (userScoreDoc.blocking && userScoreDoc.blocking.indexOf(blockedUserScoreDoc._id) > -1) {
     console.debug(
-      "User " +
-        blockedUserScoreDoc._id +
-        " already blocked by user " +
-        userScoreDoc._id
+      'User ' + blockedUserScoreDoc._id + ' already blocked by user ' + userScoreDoc._id
     );
 
     // 1. Update Last blocks information
     updateLastBlocks(userScoreDoc.last_blocks, data.activity_time);
 
     // 2. Delete following of the author (if exists)
-    const followingIndex = userScoreDoc.following.indexOf(
-      blockedUserScoreDoc._id
-    );
+    const followingIndex = userScoreDoc.following.indexOf(blockedUserScoreDoc._id);
     if (followingIndex > -1) {
       userScoreDoc.following.splice(followingIndex);
     }
@@ -116,28 +94,25 @@ const calcScoreOnUnblockUserPost = async (
 
     const [result] = await Promise.all([
       userScoreList.updateOne(
-        { _id: userScoreDoc._id }, // query data to be updated
+        {_id: userScoreDoc._id}, // query data to be updated
         {
           $set: {
             last_blocks: userScoreDoc.last_blocks,
             following: userScoreDoc.following,
             blocking: userScoreDoc.blocking,
-            updated_at: userScoreDoc.updated_at,
-          },
+            updated_at: userScoreDoc.updated_at
+          }
         }, // updates
-        { upsert: false } // options
+        {upsert: false} // options
       ),
 
-      updateScoreToStream(postScoreDoc),
+      updateScoreToStream(postScoreDoc)
     ]);
 
     return result;
   } else {
     console.debug(
-      "Skipping unblock user " +
-        blockedUserScoreDoc._id +
-        " as blocked by user " +
-        userScoreDoc._id
+      'Skipping unblock user ' + blockedUserScoreDoc._id + ' as blocked by user ' + userScoreDoc._id
     );
   }
 };
@@ -179,11 +154,11 @@ async function calcScoreOnBlockPost(
   const existingActivityLog = userPostScoreDoc.activity_log[data.activity_time];
   if (existingActivityLog) {
     console.debug(
-      "calcScoreOnBlockUserPost:calcScoreOnBlockPost -> skip block process since it already exists in the log : " +
+      'calcScoreOnBlockUserPost:calcScoreOnBlockPost -> skip block process since it already exists in the log : ' +
         existingActivityLog
     );
   } else {
-    userPostScoreDoc.activity_log[data.activity_time] = "block";
+    userPostScoreDoc.activity_log[data.activity_time] = 'block';
 
     // 2. Check whether the post already been blocked (possible race condition with the unblock request).
     //    If it has been blocked, then update the anomaly activities of block, then stop.
@@ -191,49 +166,31 @@ async function calcScoreOnBlockPost(
       // Put it in anomaly of block event if the anomaly is empty,
       // or current anomaly time is earlier than this activity time
       if (
-        userPostScoreDoc.anomaly_activities.block_time === "" ||
+        userPostScoreDoc.anomaly_activities.block_time === '' ||
         moment
           .utc(data.activity_time)
-          .diff(
-            moment.utc(userPostScoreDoc.anomaly_activities.block_time),
-            "seconds"
-          ) > 0
+          .diff(moment.utc(userPostScoreDoc.anomaly_activities.block_time), 'seconds') > 0
       ) {
-        console.debug(
-          "calcScoreOnBlockUserPost:calcScoreOnBlockPost -> set anomaly block time"
-        );
+        console.debug('calcScoreOnBlockUserPost:calcScoreOnBlockPost -> set anomaly block time');
         userPostScoreDoc.anomaly_activities.block_time = data.activity_time;
       }
     } else {
-      console.debug(
-        "calcScoreOnBlockUserPost:calcScoreOnBlockPost -> not yet blocked, set values"
-      );
+      console.debug('calcScoreOnBlockUserPost:calcScoreOnBlockPost -> not yet blocked, set values');
 
       const timestamp = moment().utc().format(REGULAR_TIME_FORMAT);
       if (!postScoreDoc.anonimity) {
         // Check whether the user has blocked the author (possible reprocess), by looking at the blocking list in user score doc
-        if (
-          userScoreDoc.blocking &&
-          userScoreDoc.blocking.indexOf(blockedUserScoreDoc._id) > -1
-        ) {
+        if (userScoreDoc.blocking && userScoreDoc.blocking.indexOf(blockedUserScoreDoc._id) > -1) {
           console.debug(
-            "User " +
-              blockedUserScoreDoc._id +
-              " already blocked by user " +
-              userScoreDoc._id
+            'User ' + blockedUserScoreDoc._id + ' already blocked by user ' + userScoreDoc._id
           );
         } else {
           console.debug(
-            "Adding user " +
-              blockedUserScoreDoc._id +
-              " as blocked by user " +
-              userScoreDoc._id
+            'Adding user ' + blockedUserScoreDoc._id + ' as blocked by user ' + userScoreDoc._id
           );
 
           // 2. Delete following of the author (if exists)
-          const followingIndex = userScoreDoc.following.indexOf(
-            blockedUserScoreDoc._id
-          );
+          const followingIndex = userScoreDoc.following.indexOf(blockedUserScoreDoc._id);
           if (followingIndex > -1) {
             userScoreDoc.following.splice(followingIndex);
           }
@@ -251,11 +208,7 @@ async function calcScoreOnBlockPost(
       // 5. Update post-score doc:
       //    1. "BP Score"
       //    2. Recalculate post score
-      const B_REC = process.env.B_REC || 4.0;
-      const blockPoint = postInteractionPoint(
-        userScoreDoc.last_blocks.counter,
-        B_REC
-      );
+      const blockPoint = postInteractionPoint(userScoreDoc.last_blocks.counter, 'block');
       postScoreDoc.BP_score = postScoreDoc.BP_score + blockPoint;
       await calcPostScore(postScoreDoc);
       postScoreDoc.updated_at = timestamp; // format current time in utc
@@ -271,35 +224,34 @@ async function calcScoreOnBlockPost(
 
       const [, , result] = await Promise.all([
         userScoreList.updateOne(
-          { _id: userScoreDoc._id }, // query data to be updated
+          {_id: userScoreDoc._id}, // query data to be updated
           {
             $set: {
               last_blocks: userScoreDoc.last_blocks,
               following: userScoreDoc.following,
               blocking: userScoreDoc.blocking,
-              updated_at: userScoreDoc.updated_at,
-            },
+              updated_at: userScoreDoc.updated_at
+            }
           }, // updates
-          { upsert: false } // options
+          {upsert: false} // options
         ),
 
         postScoreList.updateOne(
-          { _id: postScoreDoc._id }, // query data to be updated
-          { $set: postScoreDoc }, // updates
-          { upsert: false } // options
+          {_id: postScoreDoc._id}, // query data to be updated
+          {$set: postScoreDoc}, // updates
+          {upsert: false} // options
         ),
 
         userPostScoreList.updateOne(
-          { _id: userPostScoreDoc._id }, // query data to be updated
-          { $set: userPostScoreDoc }, // updates
-          { upsert: true } // options
+          {_id: userPostScoreDoc._id}, // query data to be updated
+          {$set: userPostScoreDoc}, // updates
+          {upsert: true} // options
         ),
-        updateScoreToStream(postScoreDoc),
+        updateScoreToStream(postScoreDoc)
       ]);
-      console.debug("Update on block post event: " + JSON.stringify(result));
+      console.debug('Update on block post event: ' + JSON.stringify(result));
       console.debug(
-        "calcScoreOnBlockPost => user post score doc: " +
-          JSON.stringify(userPostScoreDoc)
+        'calcScoreOnBlockPost => user post score doc: ' + JSON.stringify(userPostScoreDoc)
       );
     }
   }
@@ -352,17 +304,10 @@ const calcScoreOnUnblockUser = async (
   // handle the calculation based on condition
   let result;
   if (!postScoreDoc) {
-    console.debug(
-      "calcScoreOnBlockUserPost -> block user without post reference"
-    );
-    result = await calcScoreOnBlockUser(
-      data,
-      userScoreDoc,
-      blockedUserScoreDoc,
-      userScoreList
-    );
+    console.debug('calcScoreOnBlockUserPost -> block user without post reference');
+    result = await calcScoreOnBlockUser(data, userScoreDoc, blockedUserScoreDoc, userScoreList);
   } else {
-    console.debug("calcScoreOnBlockUserPost -> block user with post reference");
+    console.debug('calcScoreOnBlockUserPost -> block user with post reference');
     result = await calcScoreOnBlockPost(
       data,
       userScoreDoc,
@@ -379,5 +324,5 @@ const calcScoreOnUnblockUser = async (
 };
 
 module.exports = {
-  calcScoreOnBlockUserPost,
+  calcScoreOnBlockUserPost
 };
