@@ -10,7 +10,8 @@ const USER_SCORE_WEIGHT = {
   W_EMAIL: process.env.W_EMAIL || 1.2, // Weight of User's confirmed work addresses
   W_TWITTER: process.env.W_TWITTER || 2, // Weight of: User has Twitter account connected & has more than 200 followers on Twitter
   W_USERATT: process.env.W_USERATT || 1,
-  BP_IMPR_GLOBAL: process.env.BP_IMPR_GLOBAL || 0.00533333333333333 // Expected Blockpoints per Post Impression (posts from last 7d) - set manually based on real data
+  BP_IMPR_GLOBAL: process.env.BP_IMPR_GLOBAL || 0.00533333333333333, // Expected Blockpoints per Post Impression (posts from last 7d) - set manually based on real data
+  W_PU: process.env.W_PU || 0.01 // weight of user punishment by admin
 };
 
 const POST_SCORE_P1_WEIGHT = {
