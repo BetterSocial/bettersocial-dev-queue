@@ -42,7 +42,7 @@ const calcScoreOnSyncUserScore = async (data, userDoc, userScoreList) => {
     non_private_email: nonPrivateEmails,
     twitter_acc: {
       acc_name: data.twitter_acc,
-      num_followers: 0 // TODO check number of followers
+      num_followers: 0
     }
   };
 

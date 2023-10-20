@@ -102,20 +102,23 @@ async function calcScoreOnBlockUser(data, userScoreDoc, authorUserScoreDoc, user
 
       authorUserScoreDoc.F_score_update -= 1;
       authorUserScoreDoc.updated_at = timestamp;
-
-      updateUserScoreDocs.push({
-        updateOne: {
-          filter: {_id: authorUserScoreDoc._id}, // query data to be updated
-          update: {
-            $set: {
-              F_score_update: authorUserScoreDoc.F_score_update,
-              updated_at: authorUserScoreDoc.updated_at
-            }
-          }, // updates
-          upsert: false
-        }
-      });
     }
+
+    // Update author following and block data
+    authorUserScoreDoc.sum_BP_score_update += 1;
+    updateUserScoreDocs.push({
+      updateOne: {
+        filter: {_id: authorUserScoreDoc._id}, // query data to be updated
+        update: {
+          $set: {
+            F_score_update: authorUserScoreDoc.F_score_update,
+            sum_BP_score_update: authorUserScoreDoc.sum_BP_score_update,
+            updated_at: authorUserScoreDoc.updated_at
+          }
+        }, // updates
+        upsert: false
+      }
+    });
 
     // 3. Add the author in blocking list
     userScoreDoc.blocking.push(authorUserScoreDoc._id);
