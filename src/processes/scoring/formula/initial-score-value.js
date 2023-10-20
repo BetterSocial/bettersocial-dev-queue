@@ -59,7 +59,11 @@ const initDataUserScore = (userId, timestamp) => ({
   },
   last_daily_process: '',
   created_at: timestamp,
-  updated_at: timestamp
+  updated_at: timestamp,
+  blocked_by_admin: {
+    status: false,
+    last_update: ''
+  }
 });
 
 const initDataPostScore = (feedId, timestamp) => ({
