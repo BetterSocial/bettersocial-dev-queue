@@ -2,16 +2,8 @@ const moment = require('moment');
 const {successResponse, errorResponse} = require('../../utils');
 const {onBlockUserPost} = require('../../processes/scoring-process');
 
-const isValidData = (data) => {
-  let valid = true;
-  if (!data) {
-    valid = false;
-  } else if (!data.user_id) {
-    valid = false;
-  } else if (!data.blocked_user_id) {
-    valid = false;
-  }
-  return valid;
+const isValidData = ({user_id, blocked_user_id}) => {
+  return !!user_id && !!blocked_user_id;
 };
 
 const blockUser = async (req, res) => {

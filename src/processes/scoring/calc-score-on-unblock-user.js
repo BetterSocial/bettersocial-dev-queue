@@ -7,7 +7,7 @@ const REGULAR_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const calcScoreOnUnblockUser = async (data, userScoreDoc, blockedUserScoreDoc, connectionList) => {
   console.debug('Starting calcScoreOnUnblockUserPost');
   // Check whether the user has blocked the author (possible reprocess), by looking at the blocking list in user score doc
-  if (userScoreDoc.blocking && userScoreDoc.blocking.includes(blockedUserScoreDoc._id)) {
+  if (userScoreDoc.blocking?.includes(blockedUserScoreDoc._id)) {
     console.debug('User ' + blockedUserScoreDoc._id + ' is blocked by user ' + userScoreDoc._id);
 
     // Delete the author in blocking list

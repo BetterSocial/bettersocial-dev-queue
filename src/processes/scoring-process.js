@@ -341,13 +341,7 @@ const onBlockUserPost = async (data) => {
  */
 const onUnblockUser = async (data) => {
   console.debug('scoring onUnblockUser');
-  const {userScoreDoc, userScoreList, postScoreList, userPostScoreList} = await getDataToCalcScore(
-    data,
-    true,
-    false,
-    false,
-    false
-  );
+  const {userScoreDoc, userScoreList} = await getDataToCalcScore(data, true, false, false, false);
 
   let authorUserScoreDoc;
 
