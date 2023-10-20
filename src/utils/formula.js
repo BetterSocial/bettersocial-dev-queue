@@ -4,7 +4,8 @@ const {
   POST_SCORE_P1_WEIGHT,
   POST_SCORE_P2_WEIGHT,
   POST_SCORE_P3_WEIGHT,
-  FINAL_SCORE_WEIGHT
+  FINAL_SCORE_WEIGHT,
+  REACTION_WEIGHT
 } = require('../processes/scoring/formula/constant');
 
 const safeValue = (number) => {
@@ -350,10 +351,26 @@ const ageScore = (age) => {
 /*
   @description formula for calculating post interaction (upvote / downvote / block) point
 */
-const postInteractionPoint = (totalInteractionLast7Days, maxInteractionWeekly) => {
+const postInteractionPoint = (totalInteractionLast7Days, iteractionType) => {
   if (totalInteractionLast7Days <= 0) {
     return 0;
   }
+
+  let maxInteractionWeekly;
+  switch (iteractionType) {
+    case 'upvote':
+      maxInteractionWeekly = REACTION_WEIGHT.SIGN_U_REC;
+      break;
+    case 'downvote':
+      maxInteractionWeekly = REACTION_WEIGHT.SIGN_D_REC;
+      break;
+    case 'block':
+      maxInteractionWeekly = REACTION_WEIGHT.SIGN_B_REC;
+      break;
+    default:
+      return 1;
+  }
+
   if (totalInteractionLast7Days <= maxInteractionWeekly) {
     return 1;
   }
