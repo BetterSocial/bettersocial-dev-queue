@@ -1,11 +1,10 @@
-require("dotenv").config;
-const moment = require("moment");
-const { calcUserPostScore } = require("./calc-user-post-score");
-const { calcPostScore } = require("./calc-post-score");
-const { updateLastp3Scores } = require("./calc-user-score");
-const { updateScoreToStream } = require("./update-score-to-stream");
-const { isStringBlankOrNull, postInteractionPoint } = require("../../utils");
-const REGULAR_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+const moment = require('moment');
+const {calcUserPostScore} = require('./calc-user-post-score');
+const {calcPostScore} = require('./calc-post-score');
+const {updateLastp3Scores} = require('./calc-user-score');
+const {updateScoreToStream} = require('./update-score-to-stream');
+const {isStringBlankOrNull, postInteractionPoint} = require('../../utils');
+const REGULAR_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 /*
  * Update last downvotes information, with condition for update:
@@ -22,34 +21,23 @@ const REGULAR_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
  */
 function updateLastDownvotes(userScoreDoc, activityTime, isUpvoted) {
   // Get the activity time in moment object, so it would be easier to count the difference between times.
-  const momentActivityTime = moment.utc(
-    activityTime,
-    REGULAR_TIME_FORMAT,
-    true
-  );
+  const momentActivityTime = moment.utc(activityTime, REGULAR_TIME_FORMAT, true);
 
   const lastDownvotes = userScoreDoc.last_downvotes;
   if (!isStringBlankOrNull(lastDownvotes.last_update)) {
     const dayDiffLastUpdateAndPostTime = moment
       .duration(
-        momentActivityTime.diff(
-          moment.utc(lastDownvotes.last_update, REGULAR_TIME_FORMAT, true)
-        )
+        momentActivityTime.diff(moment.utc(lastDownvotes.last_update, REGULAR_TIME_FORMAT, true))
       )
-      .as("days");
+      .as('days');
 
-    console.debug(
-      "calcScoreOnDownvotePost:updateLastDownvotes -> there is last blocks data"
-    );
+    console.debug('calcScoreOnDownvotePost:updateLastDownvotes -> there is last blocks data');
 
     // continue, if last_update is earlier from activity time, less than a day.
     // note: minus duration means last update is later than activity time.
-    if (
-      dayDiffLastUpdateAndPostTime >= 0 &&
-      dayDiffLastUpdateAndPostTime <= 1
-    ) {
+    if (dayDiffLastUpdateAndPostTime >= 0 && dayDiffLastUpdateAndPostTime <= 1) {
       console.debug(
-        "calcScoreOnDownvotePost:updateLastDownvotes -> last_update is earlier from activity time and less than a day"
+        'calcScoreOnDownvotePost:updateLastDownvotes -> last_update is earlier from activity time and less than a day'
       );
 
       // continue, if earliest_time is empty or not more than 7 days earlier from activity time
@@ -61,27 +49,23 @@ function updateLastDownvotes(userScoreDoc, activityTime, isUpvoted) {
               moment.utc(lastDownvotes.earliest_time, REGULAR_TIME_FORMAT, true)
             )
           )
-          .as("days");
+          .as('days');
 
         if (dayDiffEarliestTimeAndActivityTime > 7) {
           console.debug(
-            "calcScoreOnDownvotePost:updateLastDownvotes -> earliest_time is more than 7 days earlier from activity time"
+            'calcScoreOnDownvotePost:updateLastDownvotes -> earliest_time is more than 7 days earlier from activity time'
           );
           isUpdate = false;
         }
       } else {
-        console.debug(
-          "calcScoreOnDownvotePost:updateLastDownvotes -> earliest_time is empty"
-        );
+        console.debug('calcScoreOnDownvotePost:updateLastDownvotes -> earliest_time is empty');
         lastDownvotes.earliest_time = activityTime;
       }
 
       if (isUpdate) {
         const currentCount = lastDownvotes.counter;
 
-        console.debug(
-          "calcScoreOnDownvotePost:updateLastDownvotes -> update the counter"
-        );
+        console.debug('calcScoreOnDownvotePost:updateLastDownvotes -> update the counter');
         lastDownvotes.last_update = activityTime;
         lastDownvotes.last_time = activityTime;
         lastDownvotes.counter = currentCount + 1;
@@ -93,38 +77,29 @@ function updateLastDownvotes(userScoreDoc, activityTime, isUpvoted) {
   if (isUpvoted) {
     const dayDiffLastUpdateUpvoteAndPostTime = moment
       .duration(
-        momentActivityTime.diff(
-          moment.utc(lastUpvotes.last_update, REGULAR_TIME_FORMAT, true)
-        )
+        momentActivityTime.diff(moment.utc(lastUpvotes.last_update, REGULAR_TIME_FORMAT, true))
       )
-      .as("days");
+      .as('days');
 
-    console.debug(
-      "calcScoreOnDownvotePost:updateLastDownvotes -> the post is upvoted previously"
-    );
+    console.debug('calcScoreOnDownvotePost:updateLastDownvotes -> the post is upvoted previously');
 
     // continue, if last_update is earlier from activity time, less than a day.
     // note: minus duration means last update is later than activity time.
-    if (
-      dayDiffLastUpdateUpvoteAndPostTime >= 0 &&
-      dayDiffLastUpdateUpvoteAndPostTime <= 1
-    ) {
+    if (dayDiffLastUpdateUpvoteAndPostTime >= 0 && dayDiffLastUpdateUpvoteAndPostTime <= 1) {
       console.debug(
-        "calcScoreOnDownvotePost:updateLastDownvotes -> last_update of upvotes is earlier from activity time and less than a day"
+        'calcScoreOnDownvotePost:updateLastDownvotes -> last_update of upvotes is earlier from activity time and less than a day'
       );
 
       // continue, if earliest_time is empty or not more than 7 days earlier from activity time
       const dayDiffEarliestTimeUpvotesAndActivityTime = moment
         .duration(
-          momentActivityTime.diff(
-            moment.utc(lastUpvotes.earliest_time, REGULAR_TIME_FORMAT, true)
-          )
+          momentActivityTime.diff(moment.utc(lastUpvotes.earliest_time, REGULAR_TIME_FORMAT, true))
         )
-        .as("days");
+        .as('days');
 
       if (dayDiffEarliestTimeUpvotesAndActivityTime <= 7) {
         console.debug(
-          "calcScoreOnDownvotePost:updateLastDownvotes -> earliest_time of downvotes is less than 7 days earlier from activity time, update the counter and last update"
+          'calcScoreOnDownvotePost:updateLastDownvotes -> earliest_time of downvotes is less than 7 days earlier from activity time, update the counter and last update'
         );
         lastUpvotes.last_update = activityTime;
         lastUpvotes.counter = lastUpvotes.counter - 1;
@@ -150,7 +125,7 @@ function updateLastDownvotes(userScoreDoc, activityTime, isUpvoted) {
  * @returns
  */
 const calcScoreOnDownvotePost = async (data, score) => {
-  console.debug("Starting calcScoreOnDownvotePost");
+  console.debug('Starting calcScoreOnDownvotePost');
 
   /*
     _id: userId+":"+feedId,
@@ -188,7 +163,7 @@ const calcScoreOnDownvotePost = async (data, score) => {
     postScoreList,
     userPostScoreDoc,
     userPostScoreList,
-    authorUserScoreDoc,
+    authorUserScoreDoc
   } = score;
   const timestamp = moment().utc().format(REGULAR_TIME_FORMAT);
 
@@ -197,42 +172,38 @@ const calcScoreOnDownvotePost = async (data, score) => {
   const existingActivityLog = userPostScoreDoc.activity_log[data.activity_time];
   if (existingActivityLog) {
     console.debug(
-      "calcScoreOnDownvotePost -> skip downvote count since it already exists in the log : " +
+      'calcScoreOnDownvotePost -> skip downvote count since it already exists in the log : ' +
         existingActivityLog
     );
   } else {
-    userPostScoreDoc.activity_log[data.activity_time] = "downvote";
+    userPostScoreDoc.activity_log[data.activity_time] = 'downvote';
 
     // check if there is anomaly of cancel downvote that happened after this time of activity,
     // then reset the anomaly of cancel downvote
     if (
-      userPostScoreDoc.anomaly_activities.cancel_downvote_time !== "" &&
+      userPostScoreDoc.anomaly_activities.cancel_downvote_time !== '' &&
       moment
         .utc(userPostScoreDoc.anomaly_activities.cancel_downvote_time)
-        .diff(moment.utc(data.activity_time), "seconds") > 0
+        .diff(moment.utc(data.activity_time), 'seconds') > 0
     ) {
-      console.debug("calcScoreOnDownvotePost -> reset cancel downvote time");
-      userPostScoreDoc.anomaly_activities.cancel_downvote_time = "";
+      console.debug('calcScoreOnDownvotePost -> reset cancel downvote time');
+      userPostScoreDoc.anomaly_activities.cancel_downvote_time = '';
     } else {
       if (userPostScoreDoc.downvote_count > 0) {
         // already downvoted, but downvote again ? Probably this downvote event should be happened
         // before cancel downvote. Put it in anomaly of downvote event if the anomaly is empty,
         // or current anomaly time is earlier than this activity time
         if (
-          userPostScoreDoc.anomaly_activities.downvote_time === "" ||
+          userPostScoreDoc.anomaly_activities.downvote_time === '' ||
           moment
             .utc(data.activity_time)
-            .diff(
-              moment.utc(userPostScoreDoc.anomaly_activities.downvote_time),
-              "seconds"
-            ) > 0
+            .diff(moment.utc(userPostScoreDoc.anomaly_activities.downvote_time), 'seconds') > 0
         ) {
-          console.debug("calcScoreOnDownvotePost -> set anomaly downvote time");
-          userPostScoreDoc.anomaly_activities.downvote_time =
-            data.activity_time;
+          console.debug('calcScoreOnDownvotePost -> set anomaly downvote time');
+          userPostScoreDoc.anomaly_activities.downvote_time = data.activity_time;
         }
       } else {
-        console.debug("calcScoreOnDownvotePost -> set downvote count = 1");
+        console.debug('calcScoreOnDownvotePost -> set downvote count = 1');
 
         // check whether the user previously has downvote the post.
         // If it does, then need to update several additional information regarding the downvote
@@ -245,16 +216,10 @@ const calcScoreOnDownvotePost = async (data, score) => {
         //    1. increment downvote point
         //    2. decrement upvote point with previous calculated upvote point, if upvoted previously
         //    3. Recalculate post score
-        const D_REC = process.env.D_REC || 50.0;
-        const downvotePoint = postInteractionPoint(
-          userScoreDoc.last_downvotes.counter,
-          D_REC
-        );
-        postScoreDoc.downvote_point =
-          postScoreDoc.downvote_point + downvotePoint;
+        const downvotePoint = postInteractionPoint(userScoreDoc.last_downvotes.counter, 'downvote');
+        postScoreDoc.downvote_point = postScoreDoc.downvote_point + downvotePoint;
         if (isUpvoted) {
-          postScoreDoc.upvote_point =
-            postScoreDoc.upvote_point - userPostScoreDoc.upvote_point;
+          postScoreDoc.upvote_point = postScoreDoc.upvote_point - userPostScoreDoc.upvote_point;
         }
         await calcPostScore(postScoreDoc);
         postScoreDoc.updated_at = timestamp; // format current time in utc
@@ -274,35 +239,35 @@ const calcScoreOnDownvotePost = async (data, score) => {
 
         await Promise.all([
           userScoreList.updateOne(
-            { _id: authorUserScoreDoc._id }, // query data to be updated
+            {_id: authorUserScoreDoc._id}, // query data to be updated
             {
               $set: {
                 last_p3_scores: authorUserScoreDoc.last_p3_scores,
-                updated_at: authorUserScoreDoc.updated_at,
-              },
+                updated_at: authorUserScoreDoc.updated_at
+              }
             }, // updates
-            { upsert: false } // options
+            {upsert: false} // options
           ),
 
           userScoreList.updateOne(
-            { _id: userScoreDoc._id }, // query data to be updated
+            {_id: userScoreDoc._id}, // query data to be updated
             {
               $set: {
                 last_upvotes: userScoreDoc.last_upvotes,
                 last_downvotes: userScoreDoc.last_downvotes,
-                updated_at: userScoreDoc.updated_at,
-              },
+                updated_at: userScoreDoc.updated_at
+              }
             }, // updates
-            { upsert: false } // options
+            {upsert: false} // options
           ),
 
           postScoreList.updateOne(
-            { _id: postScoreDoc._id }, // query data to be updated
-            { $set: postScoreDoc }, // updates
-            { upsert: false } // options
+            {_id: postScoreDoc._id}, // query data to be updated
+            {$set: postScoreDoc}, // updates
+            {upsert: false} // options
           ),
 
-          await updateScoreToStream(postScoreDoc),
+          await updateScoreToStream(postScoreDoc)
         ]);
       }
     }
@@ -314,20 +279,19 @@ const calcScoreOnDownvotePost = async (data, score) => {
   userPostScoreDoc.updated_at = moment().utc().format(REGULAR_TIME_FORMAT); // format current time in utc
 
   const result = await userPostScoreList.updateOne(
-    { _id: userPostScoreDoc._id }, // query data to be updated
-    { $set: userPostScoreDoc }, // updates
-    { upsert: true } // options
+    {_id: userPostScoreDoc._id}, // query data to be updated
+    {$set: userPostScoreDoc}, // updates
+    {upsert: true} // options
   );
 
-  console.debug("Update on downvote post event: " + JSON.stringify(result));
+  console.debug('Update on downvote post event: ' + JSON.stringify(result));
   console.debug(
-    "calcScoreOnDownvotePost => user post score doc: " +
-      JSON.stringify(userPostScoreDoc)
+    'calcScoreOnDownvotePost => user post score doc: ' + JSON.stringify(userPostScoreDoc)
   );
 
   return result;
 };
 
 module.exports = {
-  calcScoreOnDownvotePost,
+  calcScoreOnDownvotePost
 };

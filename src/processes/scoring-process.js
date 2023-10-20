@@ -13,7 +13,8 @@ const {
   EVENT_COMMENT_POST,
   EVENT_VIEW_POST,
   EVENT_FOLLOW_USER,
-  EVENT_UNFOLLOW_USER
+  EVENT_UNFOLLOW_USER,
+  EVENT_UNBLOCK_USER
 } = require('./scoring-constant');
 const {
   calcScoreOnCreateAccount,
@@ -26,7 +27,8 @@ const {
   calcScoreOnCommentPost,
   calcScoreOnViewPost,
   calcScoreOnFollowUser,
-  calcScoreOnUnfollowUser
+  calcScoreOnUnfollowUser,
+  calcScoreOnUnblockUser
 } = require('./scoring');
 
 const {
@@ -36,7 +38,7 @@ const {
   initDataUserScore,
   initDataPostScore,
   initDataUserPostScore
-} = require('./scoring/formula/initial_score_value');
+} = require('./scoring/formula/initial-score-value');
 
 const getListData = async () => {
   const db = await getDb();
@@ -332,6 +334,39 @@ const onBlockUserPost = async (data) => {
 };
 
 /*
+ * Job processor on unblock user event. Received data:
+ *   - user_id: text, id of the user who doing the action
+ *   - blocked_user_id: text, optional, id of the user which being blocked
+ *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
+ */
+const onUnblockUser = async (data) => {
+  console.debug('scoring onUnblockUser');
+  const {userScoreDoc, userScoreList} = await getDataToCalcScore(data, true, false, false, false);
+
+  let authorUserScoreDoc;
+
+  authorUserScoreDoc = await userScoreList.findOne({
+    _id: data.unblocked_user_id
+  });
+  console.debug(`findOne userScoreDoc of unblocked user: ${JSON.stringify(authorUserScoreDoc)}`);
+  if (!authorUserScoreDoc) {
+    authorUserScoreDoc = await setInitialDataUserScore(data.unblocked_user_id);
+  }
+
+  const connectionList = {
+    userScoreList
+  };
+
+  const result = await calcScoreOnUnblockUser(
+    data,
+    userScoreDoc,
+    authorUserScoreDoc,
+    connectionList
+  );
+  return result;
+};
+
+/*
  * Job processor on comment post event. Received data:
  *   - comment_id : text, id of the created comment
  *   - feed_id : text, id of the post/feed which commented
@@ -483,6 +518,9 @@ const scoringProcessJob = async (job, done) => {
       case EVENT_BLOCK_USER_POST:
         result = await onBlockUserPost(messageData.data);
         break;
+      case EVENT_UNBLOCK_USER:
+        result = await onUnblockUser(messageData.data);
+        break;
       case EVENT_VIEW_POST:
         result = await onViewPost(messageData.data);
         break;
@@ -504,5 +542,7 @@ const scoringProcessJob = async (job, done) => {
 };
 
 module.exports = {
-  scoringProcessJob
+  scoringProcessJob,
+  onBlockUserPost,
+  onUnblockUser
 };
