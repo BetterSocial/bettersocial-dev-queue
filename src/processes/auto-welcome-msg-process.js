@@ -28,7 +28,7 @@ const automateWelcomeMsgProcess = async (job, done) => {
       // channelState.messages.length <= 2 mean only 2 message about admin follow the newUsers and newUsers following newUsers
       if (channelState.messages.length <= 2) {
         const toBeSent = {
-          text: `Hi ${ownUsername}.\nThis is Bastian, Founder of Better Social (I’m not a bot, I promise!). Thanks for signing up as one of our first users, the team & I really appreciates your support and I hope you will give us a chance in our fight to improve the broken social media landscape.\nThis is an uphill battle against giant corporations – I would love to hear from you how we can improve this app, and what would make it more likely for you to recommend the app to your friends and start posting here.\nAny feedback & criticism, but also questions are very welcome, and I promise to personally respond!\nThank you so much!\nBastian`,
+          text: `Hi ${resultPrepopulated.ownUser.username}.\nThis is Bastian, Founder of Better Social (I’m not a bot, I promise!). Thanks for signing up as one of our first users, the team & I really appreciates your support and I hope you will give us a chance in our fight to improve the broken social media landscape.\nThis is an uphill battle against giant corporations – I would love to hear from you how we can improve this app, and what would make it more likely for you to recommend the app to your friends and start posting here.\nAny feedback & criticism, but also questions are very welcome, and I promise to personally respond!\nThank you so much!\nBastian`,
           mentioned_users: [resultPrepopulated.ownUser.user_id]
         };
 
