@@ -39,6 +39,7 @@ const automateWelcomeMsgProcess = async (job, done) => {
 
         await chat.stopWatching();
       }
+
       done(null, 'success running auto welcome msg');
     } else {
       done(null, 'auto welcome message is inactive');
