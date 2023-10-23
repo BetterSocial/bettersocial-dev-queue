@@ -65,7 +65,7 @@ const getListData = async () => {
  *   - follow_users : array of text, optional (can be empty), user ids that followed by the user
  */
 const onCreateAccount = async (data) => {
-  console.debug('scoring onCreateAccount');
+  console.debug(`scoring onCreateAccount: ${JSON.stringify(data)}`);
   const {userScoreList} = await getListData();
 
   let userDoc = await userScoreList.findOne({_id: data.user_id});
@@ -97,7 +97,7 @@ const onCreateAccount = async (data) => {
  */
 const onCreatePost = async (data) => {
   const db = await getDb();
-  console.debug('scoring onCreatePost');
+  console.debug(`scoring onCreatePost: ${JSON.stringify(data)}`);
   const {postScoreList, userScoreList} = await getListData();
 
   let userScoreDoc = await userScoreList.findOne({_id: data.user_id});
@@ -215,7 +215,7 @@ const getDataToCalcScore = async (
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onUpvotePost = async (data) => {
-  console.debug('scoring onUpvotePost');
+  console.debug(`scoring onUpvotePost: ${JSON.stringify(data)}`);
   const score = await getDataToCalcScore(data);
   const result = await calcScoreOnUpvotePost(data, score);
   return result;
@@ -228,7 +228,7 @@ const onUpvotePost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onCancelUpvotePost = async (data) => {
-  console.debug('scoring onCancelUpvotePost');
+  console.debug(`scoring onCancelUpvotePost: ${JSON.stringify(data)}`);
   const score = await getDataToCalcScore(data);
 
   const result = await calcScoreOnCancelUpvotePost(data, score);
@@ -242,7 +242,7 @@ const onCancelUpvotePost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onDownvotePost = async (data) => {
-  console.debug('scoring onDownvotePost');
+  console.debug(`scoring onDownvotePost: ${JSON.stringify(data)}`);
   const score = await getDataToCalcScore(data);
 
   const result = await calcScoreOnDownvotePost(data, score);
@@ -256,7 +256,7 @@ const onDownvotePost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onCancelDownvotePost = async (data) => {
-  console.debug('scoring onCancelDownvotePost');
+  console.debug(`scoring onCancelDownvotePost: ${JSON.stringify(data)}`);
   const score = await getDataToCalcScore(data);
 
   const result = await calcScoreOnCancelDownvotePost(data, score);
@@ -271,7 +271,7 @@ const onCancelDownvotePost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onBlockUserPost = async (data) => {
-  console.debug('scoring onBlockUserPost');
+  console.debug(`scoring onBlockUserPost: ${JSON.stringify(data)}`);
   const {userScoreDoc, userScoreList, postScoreList, userPostScoreList} = await getDataToCalcScore(
     data,
     true,
@@ -340,7 +340,7 @@ const onBlockUserPost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onUnblockUser = async (data) => {
-  console.debug('scoring onUnblockUser');
+  console.debug(`scoring onUnblockUser: ${JSON.stringify(data)}`);
   const {userScoreDoc, userScoreList} = await getDataToCalcScore(data, true, false, false, false);
 
   let authorUserScoreDoc;
@@ -375,7 +375,7 @@ const onUnblockUser = async (data) => {
  *   - activity_time : time, when the user comment the post/feed
  */
 const onCommentPost = async (data) => {
-  console.debug('scoring onCommentPost');
+  console.debug(`scoring onCommentPost: ${JSON.stringify(data)}`);
   const {
     postScoreDoc,
     postScoreList,
@@ -406,7 +406,7 @@ const onCommentPost = async (data) => {
  *   - activity_time : time, when the user comment the post/feed
  */
 const onViewPost = async (data) => {
-  console.debug('scoring onViewPost');
+  console.debug(`scoring onViewPost: ${JSON.stringify(data)}`);
   const {
     postScoreDoc,
     postScoreList,
@@ -435,7 +435,7 @@ const onViewPost = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onFollowUser = async (data) => {
-  console.debug('scoring onFollowUser');
+  console.debug(`scoring onFollowUser: ${JSON.stringify(data)}`);
   const {userScoreDoc, userScoreList, followedUserScoreDoc} = await getDataToCalcScore(
     data,
     true,
@@ -463,7 +463,7 @@ const onFollowUser = async (data) => {
  *   - activity_time: text, date and time when activity is done in format "YYYY-MM-DD HH:mm:ss"
  */
 const onUnfollowUser = async (data) => {
-  console.debug('scoring onUnfollowUser');
+  console.debug(`scoring onUnfollowUser: ${JSON.stringify(data)}`);
   const {userScoreDoc, userScoreList, followedUserScoreDoc} = await getDataToCalcScore(
     data,
     true,
