@@ -3,7 +3,9 @@ const {calcUserPostScore} = require('./calc-user-post-score');
 const {calcPostScore} = require('./calc-post-score');
 const {updateLastp3Scores} = require('./calc-user-score');
 const {updateScoreToStream} = require('./update-score-to-stream');
-const {isStringBlankOrNull, postInteractionPoint} = require('../../utils');
+const {postInteractionPoint} = require('../../utils');
+
+const {updateLastUpvotesCounter, updateLastDownvotesCounter} = require('./formula/helper');
 
 const REGULAR_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
@@ -21,93 +23,9 @@ const REGULAR_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
  * 2. Update the counter of downvotes too, if it is downvoted previously.
  */
 function updateLastUpvotes(userScoreDoc, activityTime, isDownvoted) {
-  // Get the activity time in moment object, so it would be easier to count the difference between times.
-  const momentActivityTime = moment.utc(activityTime, REGULAR_TIME_FORMAT, true);
-
-  const lastUpvotes = userScoreDoc.last_upvotes;
-  if (!isStringBlankOrNull(lastUpvotes.last_update)) {
-    const dayDiffLastUpdateAndPostTime = moment
-      .duration(
-        momentActivityTime.diff(moment.utc(lastUpvotes.last_update, REGULAR_TIME_FORMAT, true))
-      )
-      .as('days');
-
-    console.debug('calcScoreOnUpvotePost:updateLastUpvotes -> there is last blocks data');
-
-    // continue, if last_update is earlier from activity time, less than a day.
-    // note: minus duration means last update is later than activity time.
-    if (dayDiffLastUpdateAndPostTime >= 0 && dayDiffLastUpdateAndPostTime <= 1) {
-      console.debug(
-        'calcScoreOnUpvotePost:updateLastUpvotes -> last_update is earlier from activity time and less than a day'
-      );
-
-      // continue, if earliest_time is empty or not more than 7 days earlier from activity time
-      let isUpdate = true;
-      if (!isStringBlankOrNull(lastUpvotes.earliest_time)) {
-        const dayDiffEarliestTimeAndActivityTime = moment
-          .duration(
-            momentActivityTime.diff(
-              moment.utc(lastUpvotes.earliest_time, REGULAR_TIME_FORMAT, true)
-            )
-          )
-          .as('days');
-
-        if (dayDiffEarliestTimeAndActivityTime > 7) {
-          console.debug(
-            'calcScoreOnUpvotePost:updateLastUpvotes -> earliest_time is more than 7 days earlier from activity time'
-          );
-          isUpdate = false;
-        }
-      } else {
-        console.debug('calcScoreOnUpvotePost:updateLastUpvotes -> earliest_time is empty');
-        lastUpvotes.earliest_time = activityTime;
-      }
-
-      if (isUpdate) {
-        const currentCount = lastUpvotes.counter;
-
-        console.debug('calcScoreOnUpvotePost:updateLastUpvotes -> update the counter');
-        lastUpvotes.last_update = activityTime;
-        lastUpvotes.last_time = activityTime;
-        lastUpvotes.counter = currentCount + 1;
-      }
-    }
-  }
-
-  const lastDownvotes = userScoreDoc.last_downvotes;
+  updateLastUpvotesCounter(userScoreDoc, activityTime);
   if (isDownvoted) {
-    const dayDiffLastUpdateDownvoteAndPostTime = moment
-      .duration(
-        momentActivityTime.diff(moment.utc(lastDownvotes.last_update, REGULAR_TIME_FORMAT, true))
-      )
-      .as('days');
-
-    console.debug('calcScoreOnUpvotePost:updateLastUpvotes -> the post is downvoted previously');
-
-    // continue, if last_update is earlier from activity time, less than a day.
-    // note: minus duration means last update is later than activity time.
-    if (dayDiffLastUpdateDownvoteAndPostTime >= 0 && dayDiffLastUpdateDownvoteAndPostTime <= 1) {
-      console.debug(
-        'calcScoreOnUpvotePost:updateLastUpvotes -> last_update of downvotes is earlier from activity time and less than a day'
-      );
-
-      // continue, if earliest_time is empty or not more than 7 days earlier from activity time
-      const dayDiffEarliestTimeDownvotesAndActivityTime = moment
-        .duration(
-          momentActivityTime.diff(
-            moment.utc(lastDownvotes.earliest_time, REGULAR_TIME_FORMAT, true)
-          )
-        )
-        .as('days');
-
-      if (dayDiffEarliestTimeDownvotesAndActivityTime <= 7) {
-        console.debug(
-          'calcScoreOnUpvotePost:updateLastUpvotes -> earliest_time of downvotes is less than 7 days earlier from activity time, update the counter and last update'
-        );
-        lastDownvotes.last_update = activityTime;
-        lastDownvotes.counter -= 1;
-      }
-    }
+    updateLastDownvotesCounter(userScoreDoc, activityTime, isDownvoted);
   }
 }
 
@@ -244,7 +162,7 @@ const calcScoreOnUpvotePost = async (data, score) => {
   userPostScoreDoc.author_id = postScoreDoc.author_id;
   userPostScoreDoc.post_score = postScoreDoc.post_score;
   await calcUserPostScore(userPostScoreDoc);
-  userPostScoreDoc.updated_at = moment().utc().format(REGULAR_TIME_FORMAT); // format current time in utc
+  userPostScoreDoc.updated_at = timestamp; // format current time in utc
 
   const result = await userPostScoreList.updateOne(
     {_id: userPostScoreDoc._id}, // query data to be updated

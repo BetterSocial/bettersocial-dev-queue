@@ -15,7 +15,7 @@ const cancelUpvotePost = async (req, res) => {
     }
     data.activity_time = moment.utc().format('YYYY-MM-DD HH:mm:ss');
     const result = await onCancelUpvotePost(data);
-    return successResponse(res, 'upvote activity sucesfully', result);
+    return successResponse(res, 'cancel upvote activity sucesfully', result);
   } catch (error) {
     console.log(error);
     return errorResponse(res, error.toString(), 500);
