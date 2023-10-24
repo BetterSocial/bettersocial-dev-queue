@@ -3,10 +3,66 @@ const moment = require('moment');
 const {calcUserPostScore} = require('./calc-user-post-score');
 const {calcPostScore} = require('./calc-post-score');
 const {updateLastp3Scores} = require('./calc-user-score');
-const {updateScoreToStream} = require('./update-score-to-stream');
-const {updateLastUpvotesCounter} = require('./formula/helper');
+const {updateLastUpvotesCounter, updateCollection} = require('./formula/helper');
 
 const REGULAR_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+
+const handleCancelUpvotePost = async (
+  userScoreList,
+  postScoreList,
+  userScoreDoc,
+  postScoreDoc,
+  userPostScoreDoc,
+  authorUserScoreDoc,
+  data,
+  timestamp
+) => {
+  if (
+    userPostScoreDoc.upvote_count === 0 &&
+    (userPostScoreDoc.anomaly_activities.cancel_upvote_time === '' ||
+      moment
+        .utc(data.activity_time)
+        .diff(moment.utc(userPostScoreDoc.anomaly_activities.cancel_upvote_time), 'seconds') > 0)
+  ) {
+    // not yet upvoted, but cancel upvote ? Probably this cancel upvote event should be happened
+    // after upvote. Put it in anomaly of cancel upvote event if the anomaly is empty,
+    // or current anomaly time is earlier than this activity time
+    console.debug('calcScoreOnCancelUpvotePost -> set anomaly cancel upvote time');
+    userPostScoreDoc.anomaly_activities.cancel_upvote_time = data.activity_time;
+  } else {
+    console.debug('calcScoreOnCancelUpvotePost -> set upvote count = 0');
+
+    updateLastUpvotesCounter(userScoreDoc, data.activity_time, true);
+    userScoreDoc.updated_at = timestamp; // format current time in utc
+
+    // Update post-score doc:
+    //    1. increment upvote point
+    //    2. decrement downvote point with previous calculated downvote point, if downvoted previously
+    //    3. Recalculate post score
+    const upvotePoint = userPostScoreDoc.upvote_point; // get latest upvote point from user-post score doc
+    postScoreDoc.upvote_point -= upvotePoint;
+    await calcPostScore(postScoreDoc);
+    postScoreDoc.updated_at = timestamp; // format current time in utc
+
+    // 5. Update user-post score doc:
+    //    1. upvote_count = 0
+    //    2. Re-calculate and update the user-post score
+    userPostScoreDoc.upvote_count = 0;
+    userPostScoreDoc.last_updown = '';
+
+    // Update last p3 scores in user score doc
+    updateLastp3Scores(authorUserScoreDoc, postScoreDoc);
+    authorUserScoreDoc.updated_at = timestamp; // format current time in utc
+
+    await updateCollection(
+      userScoreList,
+      postScoreList,
+      authorUserScoreDoc,
+      userScoreDoc,
+      postScoreDoc
+    );
+  }
+};
 
 /**
  * @typedef Score
@@ -58,76 +114,16 @@ const calcScoreOnCancelUpvotePost = async (data, score) => {
       console.debug('calcScoreOnCancelUpvotePost -> reset upvote time');
       userPostScoreDoc.anomaly_activities.upvote_time = '';
     } else {
-      if (userPostScoreDoc.upvote_count === 0) {
-        // not yet upvoted, but cancel upvote ? Probably this cancel upvote event should be happened
-        // after upvote. Put it in anomaly of cancel upvote event if the anomaly is empty,
-        // or current anomaly time is earlier than this activity time
-        if (
-          userPostScoreDoc.anomaly_activities.cancel_upvote_time === '' ||
-          moment
-            .utc(data.activity_time)
-            .diff(moment.utc(userPostScoreDoc.anomaly_activities.cancel_upvote_time), 'seconds') > 0
-        ) {
-          console.debug('calcScoreOnCancelUpvotePost -> set anomaly cancel upvote time');
-          userPostScoreDoc.anomaly_activities.cancel_upvote_time = data.activity_time;
-        }
-      } else {
-        console.debug('calcScoreOnCancelUpvotePost -> set upvote count = 0');
-
-        updateLastUpvotesCounter(userScoreDoc, data.activity_time, true);
-        userScoreDoc.updated_at = timestamp; // format current time in utc
-
-        // Update post-score doc:
-        //    1. increment upvote point
-        //    2. decrement downvote point with previous calculated downvote point, if downvoted previously
-        //    3. Recalculate post score
-        const upvotePoint = userPostScoreDoc.upvote_point; // get latest upvote point from user-post score doc
-        postScoreDoc.upvote_point -= upvotePoint;
-        await calcPostScore(postScoreDoc);
-        postScoreDoc.updated_at = timestamp; // format current time in utc
-
-        // 5. Update user-post score doc:
-        //    1. upvote_count = 0
-        //    2. Re-calculate and update the user-post score
-        userPostScoreDoc.upvote_count = 0;
-        userPostScoreDoc.last_updown = '';
-
-        // Update last p3 scores in user score doc
-        updateLastp3Scores(authorUserScoreDoc, postScoreDoc);
-        authorUserScoreDoc.updated_at = timestamp; // format current time in utc
-
-        await Promise.all([
-          userScoreList.updateOne(
-            {_id: authorUserScoreDoc._id}, // query data to be updated
-            {
-              $set: {
-                last_p3_scores: authorUserScoreDoc.last_p3_scores,
-                updated_at: authorUserScoreDoc.updated_at
-              }
-            }, // updates
-            {upsert: false} // options
-          ),
-
-          userScoreList.updateOne(
-            {_id: userScoreDoc._id}, // query data to be updated
-            {
-              $set: {
-                last_upvotes: userScoreDoc.last_upvotes,
-                updated_at: userScoreDoc.updated_at
-              }
-            }, // updates
-            {upsert: false} // options
-          ),
-
-          postScoreList.updateOne(
-            {_id: postScoreDoc._id}, // query data to be updated
-            {$set: postScoreDoc}, // updates
-            {upsert: false} // options
-          ),
-
-          updateScoreToStream(postScoreDoc)
-        ]);
-      }
+      await handleCancelUpvotePost(
+        userScoreList,
+        postScoreList,
+        userScoreDoc,
+        postScoreDoc,
+        userPostScoreDoc,
+        authorUserScoreDoc,
+        data,
+        timestamp
+      );
     }
   }
 

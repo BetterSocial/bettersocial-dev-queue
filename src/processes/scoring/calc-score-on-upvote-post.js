@@ -2,10 +2,14 @@ const moment = require('moment');
 const {calcUserPostScore} = require('./calc-user-post-score');
 const {calcPostScore} = require('./calc-post-score');
 const {updateLastp3Scores} = require('./calc-user-score');
-const {updateScoreToStream} = require('./update-score-to-stream');
+
 const {postInteractionPoint} = require('../../utils');
 
-const {updateLastUpvotesCounter, updateLastDownvotesCounter} = require('./formula/helper');
+const {
+  updateLastUpvotesCounter,
+  updateLastDownvotesCounter,
+  updateCollection
+} = require('./formula/helper');
 
 const REGULAR_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
@@ -124,37 +128,13 @@ const calcScoreOnUpvotePost = async (data, score) => {
         updateLastp3Scores(authorUserScoreDoc, postScoreDoc);
         authorUserScoreDoc.updated_at = timestamp; // format current time in utc
 
-        await Promise.all([
-          userScoreList.updateOne(
-            {_id: authorUserScoreDoc._id}, // query data to be updated
-            {
-              $set: {
-                last_p3_scores: authorUserScoreDoc.last_p3_scores,
-                updated_at: authorUserScoreDoc.updated_at
-              }
-            }, // updates
-            {upsert: false} // options
-          ),
-
-          userScoreList.updateOne(
-            {_id: userScoreDoc._id}, // query data to be updated
-            {
-              $set: {
-                last_upvotes: userScoreDoc.last_upvotes,
-                last_downvotes: userScoreDoc.last_downvotes,
-                updated_at: userScoreDoc.updated_at
-              }
-            }, // updates
-            {upsert: false} // options
-          ),
-          postScoreList.updateOne(
-            {_id: postScoreDoc._id}, // query data to be updated
-            {$set: postScoreDoc}, // updates
-            {upsert: false} // options
-          ),
-
-          updateScoreToStream(postScoreDoc)
-        ]);
+        await updateCollection(
+          userScoreList,
+          postScoreList,
+          authorUserScoreDoc,
+          userScoreDoc,
+          postScoreDoc
+        );
       }
     }
   }

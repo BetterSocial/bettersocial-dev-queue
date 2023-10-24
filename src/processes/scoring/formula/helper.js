@@ -1,5 +1,6 @@
 const moment = require('moment');
 const {isStringBlankOrNull} = require('../../../utils');
+const {updateScoreToStream} = require('../update-score-to-stream');
 
 const REGULAR_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
@@ -95,7 +96,48 @@ const updateLastDownvotesCounter = (userScoreDoc, activityTime) => {
   }
 };
 
+const updateCollection = async (
+  userScoreList,
+  postScoreList,
+  authorUserScoreDoc,
+  userScoreDoc,
+  postScoreDoc
+) => {
+  await Promise.all([
+    userScoreList.updateOne(
+      {_id: authorUserScoreDoc._id}, // query data to be updated
+      {
+        $set: {
+          last_p3_scores: authorUserScoreDoc.last_p3_scores,
+          updated_at: authorUserScoreDoc.updated_at
+        }
+      }, // updates
+      {upsert: false} // options
+    ),
+
+    userScoreList.updateOne(
+      {_id: userScoreDoc._id}, // query data to be updated
+      {
+        $set: {
+          last_upvotes: userScoreDoc.last_upvotes,
+          last_downvotes: userScoreDoc.last_downvotes,
+          updated_at: userScoreDoc.updated_at
+        }
+      }, // updates
+      {upsert: false} // options
+    ),
+    postScoreList.updateOne(
+      {_id: postScoreDoc._id}, // query data to be updated
+      {$set: postScoreDoc}, // updates
+      {upsert: false} // options
+    ),
+
+    updateScoreToStream(postScoreDoc)
+  ]);
+};
+
 module.exports = {
   updateLastUpvotesCounter,
-  updateLastDownvotesCounter
+  updateLastDownvotesCounter,
+  updateCollection
 };
