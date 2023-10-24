@@ -7,16 +7,15 @@ const {updateLastUpvotesCounter, updateCollection} = require('./formula/helper')
 
 const REGULAR_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
-const handleCancelUpvotePost = async (
-  userScoreList,
-  postScoreList,
-  userScoreDoc,
-  postScoreDoc,
-  userPostScoreDoc,
-  authorUserScoreDoc,
-  data,
-  timestamp
-) => {
+const handleCancelUpvotePost = async (score, data, timestamp) => {
+  const {
+    userScoreDoc,
+    userScoreList,
+    postScoreDoc,
+    postScoreList,
+    userPostScoreDoc,
+    authorUserScoreDoc
+  } = score;
   if (
     userPostScoreDoc.upvote_count === 0 &&
     (userPostScoreDoc.anomaly_activities.cancel_upvote_time === '' ||
@@ -82,15 +81,7 @@ const handleCancelUpvotePost = async (
  */
 const calcScoreOnCancelUpvotePost = async (data, score) => {
   console.debug('Starting calcScoreOnCancelUpvotePost');
-  const {
-    userScoreDoc,
-    userScoreList,
-    postScoreDoc,
-    postScoreList,
-    userPostScoreDoc,
-    userPostScoreList,
-    authorUserScoreDoc
-  } = score;
+  const {postScoreDoc, userPostScoreDoc, userPostScoreList} = score;
   const timestamp = moment().utc().format(REGULAR_TIME_FORMAT);
 
   // add activity log if not exists yet. Assumed the activity is unique by time, it means
@@ -114,16 +105,7 @@ const calcScoreOnCancelUpvotePost = async (data, score) => {
       console.debug('calcScoreOnCancelUpvotePost -> reset upvote time');
       userPostScoreDoc.anomaly_activities.upvote_time = '';
     } else {
-      await handleCancelUpvotePost(
-        userScoreList,
-        postScoreList,
-        userScoreDoc,
-        postScoreDoc,
-        userPostScoreDoc,
-        authorUserScoreDoc,
-        data,
-        timestamp
-      );
+      await handleCancelUpvotePost(score, data, timestamp);
     }
   }
 
