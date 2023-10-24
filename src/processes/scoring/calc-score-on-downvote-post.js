@@ -2,8 +2,9 @@ const moment = require('moment');
 const {calcUserPostScore} = require('./calc-user-post-score');
 const {calcPostScore} = require('./calc-post-score');
 const {updateLastp3Scores} = require('./calc-user-score');
-const {updateScoreToStream} = require('./update-score-to-stream');
 const {isStringBlankOrNull, postInteractionPoint} = require('../../utils');
+const {updateCollection} = require('./formula/helper');
+
 const REGULAR_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 /*
@@ -102,7 +103,7 @@ function updateLastDownvotes(userScoreDoc, activityTime, isUpvoted) {
           'calcScoreOnDownvotePost:updateLastDownvotes -> earliest_time of downvotes is less than 7 days earlier from activity time, update the counter and last update'
         );
         lastUpvotes.last_update = activityTime;
-        lastUpvotes.counter = lastUpvotes.counter - 1;
+        lastUpvotes.counter -= 1;
       }
     }
   }
@@ -126,36 +127,6 @@ function updateLastDownvotes(userScoreDoc, activityTime, isUpvoted) {
  */
 const calcScoreOnDownvotePost = async (data, score) => {
   console.debug('Starting calcScoreOnDownvotePost');
-
-  /*
-    _id: userId+":"+feedId,
-    user_id: userId,
-    feed_id: feedId,
-    author_id: "",
-    topics_followed: 0,
-    author_follower: false,
-    second_degree_follower: false,
-    domain_follower: false,
-    p1_score: 0.0,
-    upvote_count: 0,
-    downvote_count: 0,
-    block_count: 0,
-    seen_count: 0,
-    p_prev_score: 0.0,
-    post_score: 0.0,
-    user_post_score: 0.0,
-    activity_log: {},
-    anomaly_activities: {
-      upvote_time: "",
-      cancel_upvote_time: "",
-      downvote_time: "",
-      cancel_downvote_time: "",
-      block_time: "",
-      unblock_time: "",
-    },
-    created_at: timestamp,
-    updated_at: timestamp,
- */
   const {
     userScoreDoc,
     userScoreList,
@@ -172,8 +143,7 @@ const calcScoreOnDownvotePost = async (data, score) => {
   const existingActivityLog = userPostScoreDoc.activity_log[data.activity_time];
   if (existingActivityLog) {
     console.debug(
-      'calcScoreOnDownvotePost -> skip downvote count since it already exists in the log : ' +
-        existingActivityLog
+      `calcScoreOnDownvotePost -> skip downvote count since it already exists in the log : ${existingActivityLog}`
     );
   } else {
     userPostScoreDoc.activity_log[data.activity_time] = 'downvote';
@@ -217,9 +187,9 @@ const calcScoreOnDownvotePost = async (data, score) => {
         //    2. decrement upvote point with previous calculated upvote point, if upvoted previously
         //    3. Recalculate post score
         const downvotePoint = postInteractionPoint(userScoreDoc.last_downvotes.counter, 'downvote');
-        postScoreDoc.downvote_point = postScoreDoc.downvote_point + downvotePoint;
+        postScoreDoc.downvote_point += downvotePoint;
         if (isUpvoted) {
-          postScoreDoc.upvote_point = postScoreDoc.upvote_point - userPostScoreDoc.upvote_point;
+          postScoreDoc.upvote_point -= userPostScoreDoc.upvote_point;
         }
         await calcPostScore(postScoreDoc);
         postScoreDoc.updated_at = timestamp; // format current time in utc
@@ -237,38 +207,13 @@ const calcScoreOnDownvotePost = async (data, score) => {
         updateLastp3Scores(authorUserScoreDoc, postScoreDoc);
         authorUserScoreDoc.updated_at = timestamp; // format current time in utc
 
-        await Promise.all([
-          userScoreList.updateOne(
-            {_id: authorUserScoreDoc._id}, // query data to be updated
-            {
-              $set: {
-                last_p3_scores: authorUserScoreDoc.last_p3_scores,
-                updated_at: authorUserScoreDoc.updated_at
-              }
-            }, // updates
-            {upsert: false} // options
-          ),
-
-          userScoreList.updateOne(
-            {_id: userScoreDoc._id}, // query data to be updated
-            {
-              $set: {
-                last_upvotes: userScoreDoc.last_upvotes,
-                last_downvotes: userScoreDoc.last_downvotes,
-                updated_at: userScoreDoc.updated_at
-              }
-            }, // updates
-            {upsert: false} // options
-          ),
-
-          postScoreList.updateOne(
-            {_id: postScoreDoc._id}, // query data to be updated
-            {$set: postScoreDoc}, // updates
-            {upsert: false} // options
-          ),
-
-          await updateScoreToStream(postScoreDoc)
-        ]);
+        await updateCollection(
+          userScoreList,
+          postScoreList,
+          authorUserScoreDoc,
+          userScoreDoc,
+          postScoreDoc
+        );
       }
     }
   }
@@ -284,9 +229,9 @@ const calcScoreOnDownvotePost = async (data, score) => {
     {upsert: true} // options
   );
 
-  console.debug('Update on downvote post event: ' + JSON.stringify(result));
+  console.debug(`Update on downvote post event: ${JSON.stringify(result)}`);
   console.debug(
-    'calcScoreOnDownvotePost => user post score doc: ' + JSON.stringify(userPostScoreDoc)
+    `calcScoreOnDownvotePost => user post score doc: ${JSON.stringify(userPostScoreDoc)}`
   );
 
   return result;
