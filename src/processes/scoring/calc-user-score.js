@@ -32,7 +32,7 @@ const calcUserScore = async (userDoc) => {
   const b = blockedPerPostImpression(BPpImpr_un);
   const a = ageScore(ageAccountUser);
   const u1 = userScoreWithoutFollower(f, b, userDoc.r_score, userDoc.q_score, a);
-  const user_score = userScore(u1, userDoc.y_score);
+  const user_score = userScore(u1, userDoc.y_score, userDoc);
   console.debug(
     `Calculation result ageAccountUser=${ageAccountUser}, f=${f}, BPpImpr_un=${BPpImpr_un}, b=${b}, a=${a}, u1=${u1}`
   );

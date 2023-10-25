@@ -141,8 +141,12 @@ const dBench = (dur_min, dur_marg, W) => {
 /*
   @description formula for variable u
 */
-const userScore = (u1, y) => {
-  return u1 * y ** USER_SCORE_WEIGHT.W_Y;
+const userScore = (u1, y, userDoc) => {
+  let user_score = u1 * y ** USER_SCORE_WEIGHT.W_Y;
+  if (userDoc.blocked_by_admin?.status) {
+    user_score *= USER_SCORE_WEIGHT.W_PU;
+  }
+  return user_score;
 };
 
 /*
