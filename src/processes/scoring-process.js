@@ -544,5 +544,9 @@ const scoringProcessJob = async (job, done) => {
 module.exports = {
   scoringProcessJob,
   onBlockUserPost,
-  onUnblockUser
+  onUnblockUser,
+  onUpvotePost,
+  onCancelUpvotePost,
+  onDownvotePost,
+  onCancelDownvotePost
 };
