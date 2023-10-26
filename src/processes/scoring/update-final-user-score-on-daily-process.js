@@ -16,7 +16,7 @@ const scoringProcessQueue = require('../../queues/queueSenderForRedis'); // unco
 const batchSize = process.env.SCORING_DAILY_PROCESS_BATCH_SIZE;
 
 async function checkNotYetDailyProcessedUserScore(userScoreCol, processTime) {
-  // const delayMs = process.env.SCORING_DAILY_PROCESS_CHECK_ALL_PROCESSED_DELAY_MS || 6000;
+  const delayMs = process.env.SCORING_DAILY_PROCESS_CHECK_ALL_PROCESSED_DELAY_MS || 6000;
   const maxLoop = process.env.SCORING_DAILY_PROCESS_CHECK_ALL_PROCESSED_MAX_LOOP || 120;
 
   for (let loopCount = 0; loopCount < maxLoop; loopCount++) {
@@ -36,7 +36,7 @@ async function checkNotYetDailyProcessedUserScore(userScoreCol, processTime) {
       break;
     }
 
-    // await new Promise((resolve) => setTimeout(resolve, delayMs));
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
   }
 }
 
