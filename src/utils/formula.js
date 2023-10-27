@@ -166,7 +166,7 @@ const finalScorePost = (u_score, p1, p2, p3, prev) => {
   @description formula for variable f
 */
 const followerScore = (followersCount) => {
-  return (followersCount / 150) ** 0.05;
+  return ((followersCount + 1) / 150) ** 0.05;
 };
 
 /*
@@ -189,11 +189,11 @@ const blockpointsPerImpression = (all_blockpoints, all_impr) => {
 /*
   @description formula for variable r
 */
-const averagePostScore = (postPerformanceScore, countPosts) => {
+const averagePostScore = (postPerformanceScoreValue, countPosts) => {
   if (countPosts === 0) {
     return 1;
   }
-  return (postPerformanceScore + (10 - Math.min(10, countPosts))) / 10 || 1;
+  return (postPerformanceScoreValue + (10 - Math.min(10, countPosts))) / 10 || 1;
 };
 
 /*
