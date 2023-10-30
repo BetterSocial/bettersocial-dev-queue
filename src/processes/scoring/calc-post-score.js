@@ -15,7 +15,7 @@ const {
 } = require('../../utils');
 
 const calcPostPerformanceScore = (postScoreDoc) => {
-  const impression = postScoreDoc.impr_score;
+  const impression = postScoreDoc.impr_score === 0 ? 1 : postScoreDoc.impr_score;
 
   /*
       @description block point get from table post_blocked
@@ -44,41 +44,6 @@ const calcPostPerformanceScore = (postScoreDoc) => {
 
 const calcPostScore = async (postScoreDoc) => {
   console.debug('Starting calcPostScore');
-
-  /*
-    _id: feedId,
-    foreign_id: "",
-    time: "",
-    author_id: "",
-    has_link: false,
-    expiration_setting: "24",
-    topics: [],
-    privacy: "",
-    rec_score: 1.0, // recency score, based on expiration setting and now
-    att_score: 1.0, // post-attributes score
-    count_weekly_posts: 0.0, // total posts by user A (author) within last 7 days before this post
-    impr_score: 0.0,
-    domain_score: 1.0,
-    longC_score: 0.0,
-    p_longC_score: 1.0,
-    W_score: 0.0,
-    D_bench_score: 0.0,
-    D_score: 0.0,
-    downvote_point: 0.0,
-    upvote_point: 0.0,
-    s_updown_score: 0.0,
-    BP_score: 0.0,
-    WS_updown_score: 0.0,
-    WS_D_score: 0.0,
-    WS_nonBP_score: 1.0,
-    p_perf_score: 1.0,
-    p2_score: 0.0,
-    p3_score: 1.0,
-    u_score: 1.0,
-    post_score: 0.0,
-    created_at: timestamp,
-    updated_at: timestamp,
-  */
 
   const P_REC = process.env.P_REC || 7;
   const WLONGC = process.env.W_LONGC || 1;
