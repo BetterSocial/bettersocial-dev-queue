@@ -4,5 +4,7 @@ module.exports = {
   ...require('./upvotePost'),
   ...require('./cancelUpvotePost'),
   ...require('./downvotePost'),
-  ...require('./cancelDownvotePost')
+  ...require('./cancelDownvotePost'),
+  ...require('./triggerDailyScoring'),
+  ...require('./updateUserScoreOnDailyProcessPhase1')
 };

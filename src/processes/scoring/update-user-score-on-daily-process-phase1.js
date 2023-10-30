@@ -1,15 +1,11 @@
-const moment = require("moment");
-const { calcUserScore } = require("./calc-user-score");
-const { averagePostScore } = require("../../utils");
-const {
-  REGULAR_TIME_FORMAT,
-  EVENT_DAILY_PROCESS_USER_SCORE_PHASE2,
-} = require("../scoring-constant");
-const { USER_SCORE_WEIGHT } = require("./formula/constant");
-const UsersFunction = require("../../databases/functions/users");
+const moment = require('moment');
+const {calcUserScore} = require('./calc-user-score');
+const {averagePostScore} = require('../../utils');
+const {REGULAR_TIME_FORMAT, EVENT_DAILY_PROCESS_USER_SCORE_PHASE2} = require('../scoring-constant');
+const {USER_SCORE_WEIGHT} = require('./formula/constant');
+const UsersFunction = require('../../databases/functions/users');
 
-const scoringProcessQueue = require("../../queues/queueSenderForRedis"); // uncomment this line if using redis as message queue server
-// const scoringProcessQueue = require("../../queues/queueSenderForKafka"); // uncomment this line if using kafka as message queue server
+const scoringProcessQueue = require('../../queues/queueSenderForRedis'); // uncomment this line if using redis as message queue server
 
 const updateUserScoreOnDailyProcessPhase1 = async (
   job,
@@ -18,10 +14,10 @@ const updateUserScoreOnDailyProcessPhase1 = async (
   userIds,
   lastBatch
 ) => {
-  console.debug("Starting updateUserScoreOnDailyProcessPhase1");
+  console.debug('Starting updateUserScoreOnDailyProcessPhase1');
 
   // get complete doc from the db, by given user ids
-  const cursors = await userScoreCol.find({ _id: { $in: userIds } });
+  const cursors = await userScoreCol.find({_id: {$in: userIds}});
 
   // calculate percentage per document. It's going to be used for updating job's progress
   const progressPerDoc = Math.floor(100 / userIds.length);
@@ -36,12 +32,8 @@ const updateUserScoreOnDailyProcessPhase1 = async (
     // update r score, but first need to get sum of p3 score
     let totalPostScores = 0;
     const lastp3Scores = userDoc.last_p3_scores;
-    for (key in lastp3Scores) {
-      if (
-        key !== "_count" &&
-        key !== "_earliest_post_time" &&
-        key !== "_earliest_post_id"
-      ) {
+    for (const key in lastp3Scores) {
+      if (key !== '_count' && key !== '_earliest_post_time' && key !== '_earliest_post_id') {
         totalPostScores += lastp3Scores[key].p3_score;
       }
     }
@@ -64,13 +56,14 @@ const updateUserScoreOnDailyProcessPhase1 = async (
 
     updatedDocs.push({
       updateOne: {
-        filter: { _id: userDoc._id }, // query data to be updated
-        update: { $set: userDoc }, // updates
-        upsert: false,
-      },
+        filter: {_id: userDoc._id}, // query data to be updated
+        update: {$set: userDoc}, // updates
+        upsert: false
+      }
     });
 
     // update job progress
+
     job.progress(counter * progressPerDoc);
   }
 
@@ -82,10 +75,7 @@ const updateUserScoreOnDailyProcessPhase1 = async (
     sendQueue(processTime);
   }
 
-  console.debug(
-    "Done updateUserScoreOnDailyProcessPhase1, with result: ",
-    result
-  );
+  console.debug('Done updateUserScoreOnDailyProcessPhase1, with result: ', result);
 
   return result;
 };
@@ -93,7 +83,7 @@ const updateUserScoreOnDailyProcessPhase1 = async (
 function sendQueue(processTime) {
   // sending queue for scoring process on follow user event
   const scoringProcessData = {
-    process_time: processTime,
+    process_time: processTime
   };
   scoringProcessQueue.sendQueueForDailyProcess(
     EVENT_DAILY_PROCESS_USER_SCORE_PHASE2,
@@ -102,5 +92,5 @@ function sendQueue(processTime) {
 }
 
 module.exports = {
-  updateUserScoreOnDailyProcessPhase1,
+  updateUserScoreOnDailyProcessPhase1
 };
