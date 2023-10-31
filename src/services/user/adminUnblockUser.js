@@ -8,7 +8,11 @@ const adminUnblockUser = async (req, res) => {
     if (!userId) {
       return errorResponse(res, 'userId is required', 400);
     }
-    await UsersFunction.userUnblockByAdmin(userId);
+    try {
+      await UsersFunction.userUnblockByAdmin(userId);
+    } catch (error) {
+      return errorResponse(res, 'Failed to unblock user by admin', 500);
+    }
     const updateResult = await adminUnblockUserProcess(userId);
     return successResponse(res, 'unblock user by admin was successful', updateResult);
   } catch (error) {
