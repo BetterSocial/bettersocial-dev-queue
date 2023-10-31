@@ -1,5 +1,6 @@
 const {successResponse, errorResponse} = require('../../utils');
 const {adminUnblockUserProcess} = require('../../processes/scoring/admin-block-unblock-user');
+const UsersFunction = require('../../databases/functions/users');
 
 const adminUnblockUser = async (req, res) => {
   try {
@@ -7,6 +8,7 @@ const adminUnblockUser = async (req, res) => {
     if (!userId) {
       return errorResponse(res, 'userId is required', 400);
     }
+    await UsersFunction.userUnblockByAdmin(userId);
     const updateResult = await adminUnblockUserProcess(userId);
     return successResponse(res, 'unblock user by admin was successful', updateResult);
   } catch (error) {
