@@ -1,5 +1,5 @@
-"use strict";
-const { Model } = require("sequelize");
+'use strict';
+const {Model} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -22,9 +22,9 @@ module.exports = (sequelize, DataTypes) => {
       // });
 
       models.User.belongsToMany(models.Topics, {
-        through: "user_topics",
-        foreignKey: "user_id",
-        as: "topics",
+        through: 'user_topics',
+        foreignKey: 'user_id',
+        as: 'topics'
       });
 
       // models.User.belongsToMany(models.Locations, {
@@ -41,33 +41,34 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init(
     {
-      user_id: { type: DataTypes.UUID, allowNull: false, primaryKey: true },
-      human_id: { type: DataTypes.STRING, allowNull: false, unique: true },
-      country_code: { type: DataTypes.STRING, allowNull: false },
-      username: { type: DataTypes.STRING, allowNull: false, unique: true },
-      real_name: { type: DataTypes.STRING, allowNull: true },
+      user_id: {type: DataTypes.UUID, allowNull: false, primaryKey: true},
+      human_id: {type: DataTypes.STRING, allowNull: false, unique: true},
+      country_code: {type: DataTypes.STRING, allowNull: false},
+      username: {type: DataTypes.STRING, allowNull: false, unique: true},
+      real_name: {type: DataTypes.STRING, allowNull: true},
       createdAt: {
         type: DataTypes.DATE,
-        field: "created_at",
-        allowNull: false,
+        field: 'created_at',
+        allowNull: false
       },
       updatedAt: {
         type: DataTypes.DATE,
-        field: "updated_at",
-        allowNull: false,
+        field: 'updated_at',
+        allowNull: false
       },
-      last_active_at: { type: DataTypes.DATE, allowNull: false },
-      profile_pic_path: { type: DataTypes.STRING, allowNull: true },
-      profile_pic_asset_id: { type: DataTypes.STRING, allowNull: true },
-      profile_pic_public_id: { type: DataTypes.STRING, allowNull: true },
-      status: { type: DataTypes.BOOLEAN, allowNull: false },
-      bio: { type: DataTypes.TEXT, allowNull: true },
+      last_active_at: {type: DataTypes.DATE, allowNull: false},
+      profile_pic_path: {type: DataTypes.STRING, allowNull: true},
+      profile_pic_asset_id: {type: DataTypes.STRING, allowNull: true},
+      profile_pic_public_id: {type: DataTypes.STRING, allowNull: true},
+      status: {type: DataTypes.BOOLEAN, allowNull: false},
+      bio: {type: DataTypes.TEXT, allowNull: true},
+      blocked_by_admin: {type: DataTypes.BOOLEAN, allowNull: true}
     },
     {
       sequelize,
-      modelName: "User",
-      tableName: "users",
-      underscored: true,
+      modelName: 'User',
+      tableName: 'users',
+      underscored: true
     }
   );
   return User;
