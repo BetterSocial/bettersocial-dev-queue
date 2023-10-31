@@ -128,5 +128,6 @@ const scoringDailyProcessJob = async (job, done) => {
 
 module.exports = {
   scoringDailyProcessJob,
-  onDailyProcessTrigger
+  onDailyProcessTrigger,
+  onDailyProcessUserScorePhase2
 };

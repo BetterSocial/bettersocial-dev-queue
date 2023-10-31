@@ -9,7 +9,8 @@ const {
   cancelUpvotePost,
   cancelDownvotePost,
   triggerDailyScoring,
-  updateUserScorePhase1
+  updateUserScorePhase1,
+  updateUserScorePhase2
 } = require('../services/devHandler');
 
 const env = process.env.NODE_ENV || 'development';
@@ -25,6 +26,7 @@ if (env !== 'production') {
   router.post('/cancel-downvote-post', auth.dev, cancelDownvotePost);
   router.post('/trigger-daily-scoring', auth.dev, triggerDailyScoring);
   router.post('/update-user-score-phase1', auth.dev, updateUserScorePhase1);
+  router.post('/update-user-score-phase2', auth.dev, updateUserScorePhase2);
 }
 
 module.exports = router;
