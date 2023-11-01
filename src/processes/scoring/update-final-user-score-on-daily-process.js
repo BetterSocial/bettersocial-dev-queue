@@ -298,7 +298,7 @@ const updateFinalUserScoreOnDailyProcess = async (userScoreCol, processTime, pos
                     else: '$y_score'
                   }
                 },
-                USER_SCORE_WEIGHT.W_Y
+                parseFloat(USER_SCORE_WEIGHT.W_Y)
               ]
             }
           ]
@@ -365,10 +365,10 @@ const triggerPostScoreDailyProcess = async (postScoreCol) => {
     if (counter >= batchSize) {
       // console.log("Batch size limit");
       if (await cursors.hasNext()) {
-        // console.log("Sending queue");
+        // console.log('Sending queue');
         sendQueuePostScore(postIds, processTime, false, userScoreListByPostId);
       } else {
-        // console.log("Sending queue for last batch");
+        // console.log('Sending queue for last batch');
         sendQueuePostScore(postIds, processTime, true, userScoreListByPostId);
       }
 
@@ -380,7 +380,7 @@ const triggerPostScoreDailyProcess = async (postScoreCol) => {
 
   // send the last batch of the post ids
   if (postIds.length !== 0) {
-    // console.log("Sending queue for last batch outside loop");
+    // console.log('Sending queue for last batch outside loop');
     sendQueuePostScore(postIds, processTime, true, userScoreListByPostId);
   }
 };
