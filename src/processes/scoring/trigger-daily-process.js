@@ -41,12 +41,12 @@ const triggerUserScoreDailyProcess = async (userScoreCol) => {
     console.log(result._id);
 
     if (counter >= batchSize) {
-      // console.log('Batch size limit');
+      console.log('Batch size limit');
       if (await cursors.hasNext()) {
-        // console.log('Sending queue');
+        console.log('Sending queue');
         sendQueueUserScorePhase1(userIds, processTime, false);
       } else {
-        // console.log('Sending queue for last batch');
+        console.log('Sending queue for last batch');
         sendQueueUserScorePhase1(userIds, processTime, true);
       }
 
@@ -57,7 +57,7 @@ const triggerUserScoreDailyProcess = async (userScoreCol) => {
 
   // send the last batch of the user ids
   if (userIds.length !== 0) {
-    // console.log('Sending queue for last batch outside loop');
+    console.log('Sending queue for last batch outside loop');
     sendQueueUserScorePhase1(userIds, processTime, true);
   }
 };
