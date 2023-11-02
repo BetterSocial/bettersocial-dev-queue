@@ -241,8 +241,6 @@ const updateFinalUserScoreOnDailyProcess = async (userScoreCol, processTime, pos
         'last_downvotes.last_update': timestamp,
         'last_blocks.last_update': timestamp,
         'last_posts.last_update': timestamp,
-        y_score: 1,
-        user_score: 1,
         updated_at: timestamp
       }
     },
