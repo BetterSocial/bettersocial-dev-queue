@@ -181,7 +181,7 @@ const blockedPerPostImpression = (blockpointsPerImpression) => {
 */
 const blockpointsPerImpression = (all_blockpoints, all_impr) => {
   if (all_impr === 0) {
-    return 0;
+    return 1;
   }
   return all_blockpoints / all_impr / USER_SCORE_WEIGHT.BP_IMPR_GLOBAL;
 };

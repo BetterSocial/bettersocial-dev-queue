@@ -38,6 +38,15 @@ const calcUserScore = async (userDoc) => {
   );
 
   // Put the calculation result in the user doc
+  userDoc.u1_variable = {
+    f,
+    b,
+    r_score: userDoc.r_score,
+    q_score: userDoc.q_score,
+    a
+  };
+  userDoc.b = b;
+  userDoc.BPpImpr_un = BPpImpr_un;
   userDoc.age_score = ageAccountUser;
   userDoc.u1_score = u1;
   userDoc.user_score = user_score;
