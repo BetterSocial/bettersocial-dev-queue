@@ -54,6 +54,12 @@ const updateUserScoreOnDailyProcessPhase1 = async (
     userDoc.last_daily_process = processTime;
     userDoc.updated_at = moment().utc().format(REGULAR_TIME_FORMAT);
 
+    // set user anonymous
+    const currentUser = await UsersFunction.getUserByUserId(userDoc._id);
+    if (currentUser) {
+      userDoc.is_anonymous = currentUser.is_anonymous;
+    }
+
     updatedDocs.push({
       updateOne: {
         filter: {_id: userDoc._id}, // query data to be updated
