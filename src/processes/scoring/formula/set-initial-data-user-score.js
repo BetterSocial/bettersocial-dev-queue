@@ -22,7 +22,7 @@ const setInitialDataUserScore = async (userId) => {
 
   const scoringProcessData = {
     user_id: userId,
-    register_time: data_user?.dataValues?.createdAt,
+    register_time: data_user?.createdAt,
     emails: [],
     twitter_acc: '',
     topics,
@@ -36,7 +36,7 @@ const setInitialDataUserScore = async (userId) => {
   console.debug(`findOne userDoc result: ${JSON.stringify(userDoc)}`);
   if (!userDoc) {
     console.debug('init user score doc');
-    userDoc = initDataUserScore(userId, data_user?.dataValues?.createdAt);
+    userDoc = initDataUserScore(userId, data_user?.createdAt);
     console.debug(`initUser Score : ${JSON.stringify(userDoc)}`);
   }
 

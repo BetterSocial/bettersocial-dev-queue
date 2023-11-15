@@ -55,8 +55,10 @@ const updateUserScoreOnDailyProcessPhase1 = async (
     userDoc.updated_at = moment().utc().format(REGULAR_TIME_FORMAT);
 
     // set user anonymous
-    const currentUser = await UsersFunction.getUserFollowerList(userDoc._id);
-    userDoc.is_anonymous = currentUser.is_anonymous;
+    const currentUser = await UsersFunction.getUserByUserId(userDoc._id);
+    if (currentUser) {
+      userDoc.is_anonymous = currentUser.is_anonymous;
+    }
 
     updatedDocs.push({
       updateOne: {
