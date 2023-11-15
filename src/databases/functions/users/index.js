@@ -6,6 +6,8 @@ const getUserFollowerList = require('./get-user-follower-list');
 const getUserByUserId = require('./get-user-by-user-id');
 const userBlockByAdmin = require('./user-block-by-admin');
 const userUnblockByAdmin = require('./user-unblock-by-admin');
+const findAnonymousUserId = require('./find-anonymous-user-id');
+const userSetKarmaScore = require('./user-set-karma-score');
 
 const UsersFunction = {
   register,
@@ -15,7 +17,9 @@ const UsersFunction = {
   getUserFollowerList,
   getUserByUserId,
   userBlockByAdmin,
-  userUnblockByAdmin
+  userUnblockByAdmin,
+  findAnonymousUserId,
+  userSetKarmaScore
 };
 
 module.exports = UsersFunction;
