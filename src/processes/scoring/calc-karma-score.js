@@ -10,7 +10,11 @@ const calculateP = (p) => {
   P = P === 0 ? 1 : P;
   return P;
 };
-const combinedUserScore = async (userId, userScoreCol) => {
+
+const getUserScore = (user) => {
+  return typeof user.user_score === 'number' ? user.user_score : 0;
+};
+const combinedUserScore = async (userId, userScoreCol, sign_user_score) => {
   console.log('Start calculating combined user score');
   const userIds = [userId];
   const anonymousUserId = await UsersFunction.findAnonymousUserId(userId);
@@ -24,8 +28,8 @@ const combinedUserScore = async (userId, userScoreCol) => {
   const P1 = userExists1 ? calculateP(users[0].last_posts?.counter) : 1;
   const P2 = userExists2 ? calculateP(users[1].last_posts?.counter) : 1;
 
-  const u_score1 = typeof users[0].user_score === 'number' ? users[0].user_score : 0;
-  const u_score2 = typeof users[1].user_score === 'number' ? users[1].user_score : 0;
+  const u_score1 = sign_user_score || getUserScore(users[0]);
+  const u_score2 = getUserScore(users[1]);
   // return u_score1;
   return (u_score1 * P1 + u_score2 * P2) / (P1 + P2);
 };
@@ -34,8 +38,8 @@ const percentileUserScore = async (targetScore, userScoreCol) => {
   console.log('Start calculating percentile user score');
   // Need to change to combined score and filter to only sign user.
   const [usersWithLowerScore, totalUsers] = await Promise.all([
-    userScoreCol.countDocuments({user_score: {$lte: targetScore}}),
-    userScoreCol.count()
+    userScoreCol.countDocuments({combined_user_score: {$lte: targetScore}, is_anonymous: false}),
+    userScoreCol.countDocuments({is_anonymous: false})
   ]);
   const percentile = totalUsers === 0 ? 0 : (usersWithLowerScore / totalUsers) * 100;
   return percentile;
@@ -59,7 +63,7 @@ const setUserKarmaScore = async (userId, combined_user_score, karma_score, userS
   return updateResult;
 };
 
-const calcKarmaScore = async (userId) => {
+const calcKarmaScore = async (userId, sign_user_score = null) => {
   const db = await getDb();
   const userScoreCol = db.collection(DB_COLLECTION_USER_SCORE);
 
@@ -67,7 +71,7 @@ const calcKarmaScore = async (userId) => {
   if (user.is_anonymous) {
     return null;
   }
-  const combined_user_score = await combinedUserScore(userId, userScoreCol);
+  const combined_user_score = await combinedUserScore(userId, userScoreCol, sign_user_score);
   const percentileScore = await percentileUserScore(combined_user_score, userScoreCol);
   const karma_score = (KARMA_SCORE_MULTIPLIER * percentileScore) ** KARMA_SCORE_EXPONENT;
   await setUserKarmaScore(userId, combined_user_score, karma_score, userScoreCol);

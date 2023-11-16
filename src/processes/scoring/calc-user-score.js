@@ -7,6 +7,7 @@ const {
   blockpointsPerImpression,
   ageScore
 } = require('../../utils');
+const {calcKarmaScore} = require('./calc-karma-score');
 
 const updateLastp3Scores = (userScoreDoc, postScoreDoc) => {
   const p3scoreSubDoc = userScoreDoc.last_p3_scores[postScoreDoc._id];
@@ -51,7 +52,11 @@ const calcUserScore = async (userDoc) => {
   userDoc.u1_score = u1;
   userDoc.user_score = user_score;
 
+  // update combined user score and karma score
+  calcKarmaScore(userDoc._id, user_score);
+
   console.debug(`calcUserScore: Final user doc: ${JSON.stringify(userDoc)}`);
+
   return userDoc;
 };
 
