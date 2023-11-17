@@ -12,7 +12,7 @@ const calculateP = (p) => {
 };
 
 const getUserScore = (user) => {
-  return typeof user?.user_score === 'number' && user ? user.user_score : 0;
+  return user && typeof user?.user_score === 'number' ? user.user_score : 0;
 };
 const combinedUserScore = async (userId, userScoreCol, sign_user_score) => {
   console.log('Start calculating combined user score');
