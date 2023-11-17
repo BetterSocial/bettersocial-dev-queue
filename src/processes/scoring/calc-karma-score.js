@@ -45,7 +45,13 @@ const percentileUserScore = async (targetScore, userScoreCol) => {
   return percentile;
 };
 
-const setUserKarmaScore = async (userId, combined_user_score, karma_score, userScoreCol) => {
+const setUserKarmaScore = async (
+  userId,
+  combined_user_score,
+  karma_score,
+  userScoreCol,
+  percentileScore
+) => {
   // save data to db
   await UsersFunction.userSetKarmaScore(userId, combined_user_score, karma_score);
   // save data to user score doc
@@ -54,7 +60,8 @@ const setUserKarmaScore = async (userId, combined_user_score, karma_score, userS
     {
       $set: {
         combined_user_score,
-        karma_score
+        karma_score,
+        percentileScore
       }
     },
     {upsert: false}
@@ -74,7 +81,7 @@ const calcKarmaScore = async (userId, sign_user_score = null) => {
   const combined_user_score = await combinedUserScore(userId, userScoreCol, sign_user_score);
   const percentileScore = await percentileUserScore(combined_user_score, userScoreCol);
   const karma_score = (KARMA_SCORE_MULTIPLIER * percentileScore) ** KARMA_SCORE_EXPONENT;
-  await setUserKarmaScore(userId, combined_user_score, karma_score, userScoreCol);
+  await setUserKarmaScore(userId, combined_user_score, karma_score, userScoreCol, percentileScore);
   return karma_score;
 };
 
