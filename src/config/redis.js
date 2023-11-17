@@ -43,7 +43,7 @@ const unFollowFeedProcessQueue = new Bull(QUEUE_UNFOLLOW_FEED_PROCESS, redisUrl,
 });
 const removeActivityQueue = new Bull(QUEUE_REMOVE_ACTIVITY, redisUrl, bullConfig, {
   limiter: {
-    max: 300,
+    max: 150,
     duration: 60 * 1000 // 60 second
   }
 });

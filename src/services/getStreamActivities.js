@@ -19,9 +19,24 @@ const getActivityById = async (req, res) => {
 
 const removeActivityProcess = async (feed_group, feed_id, activity_id) => {
   const client = await getStreamClient();
+  // get activity detail
+  const activities = await client.getActivities({ids: [activity_id]});
+  let activity = {};
+  if (activities.results.length > 0) {
+    [activity] = activities.results;
+  } else {
+    console.log('Activity not found');
+    return null;
+  }
+
+  // check if activity is expired
+  if (activity.expired_at !== null && new Date(activity.expired_at) < Date.now()) {
+    // when expired, then remove from its original feed (actor)
+    feed_group = activity?.anonimty ? 'user_anon' : 'user_excl';
+    feed_id = activity.actor.split(':')[1];
+  }
   const feed = client.feed(feed_group, feed_id);
   const result = await feed.removeActivity(activity_id);
-  console.log(result);
   return result;
 };
 
