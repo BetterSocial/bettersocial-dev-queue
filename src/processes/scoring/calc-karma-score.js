@@ -68,7 +68,7 @@ const calcKarmaScore = async (userId, sign_user_score = null) => {
   const userScoreCol = db.collection(DB_COLLECTION_USER_SCORE);
 
   const user = await UsersFunction.getUserByUserId(userId);
-  if (user.is_anonymous) {
+  if (!user || user?.is_anonymous) {
     return null;
   }
   const combined_user_score = await combinedUserScore(userId, userScoreCol, sign_user_score);
