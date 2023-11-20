@@ -90,7 +90,7 @@ const initDataPostScore = (feedId, timestamp) => ({
   downvote_point: 0.0,
   upvote_point: 0.0,
   s_updown_score: 0.0,
-  BP_score: 1.0,
+  BP_score: 0.0,
   WS_updown_score: 0.0,
   WS_D_score: 0.0,
   WS_nonBP_score: 1.0,
