@@ -7,5 +7,6 @@ module.exports = {
   ...require('./cancelDownvotePost'),
   ...require('./triggerDailyScoring'),
   ...require('./updateUserScoreOnDailyProcessPhase1'),
-  ...require('./updateUserScoreOnDailyProcessPhase2')
+  ...require('./updateUserScoreOnDailyProcessPhase2'),
+  ...require('./removeActivity')
 };
