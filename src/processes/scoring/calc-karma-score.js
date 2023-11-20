@@ -80,7 +80,7 @@ const calcKarmaScore = async (userId, sign_user_score = null) => {
   }
   const combined_user_score = await combinedUserScore(userId, userScoreCol, sign_user_score);
   const percentileScore = await percentileUserScore(combined_user_score, userScoreCol);
-  const karma_score = (KARMA_SCORE_MULTIPLIER * percentileScore) ** KARMA_SCORE_EXPONENT;
+  const karma_score = KARMA_SCORE_MULTIPLIER * percentileScore ** KARMA_SCORE_EXPONENT;
   await setUserKarmaScore(userId, combined_user_score, karma_score, userScoreCol, percentileScore);
   return karma_score;
 };
