@@ -80,7 +80,7 @@ const initDataPostScore = (feedId, timestamp) => ({
   rec_score: 1.0, // recency score, based on expiration setting and now
   att_score: 1.0, // post-attributes score
   count_weekly_posts: 0.0, // total posts by user A (author) within last 7 days before this post
-  impr_score: 0.0,
+  impr_score: 1.0,
   domain_score: 1.0,
   longC_score: 1.0,
   p_longC_score: 1.0,
