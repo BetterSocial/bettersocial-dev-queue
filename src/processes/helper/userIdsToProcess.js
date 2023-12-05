@@ -66,8 +66,7 @@ const findRelatedUserIds = async (userId) => {
   return listUniqueUser;
 };
 
-const findUnrelatedUserIds = async (userId) => {
-  const relatedUserIds = await findRelatedUserIds(userId);
+const findUnrelatedUserIds = async (relatedUserIds) => {
   const unrelatedUserIds = await User.findAll({
     where: {
       user_id: {[Op.notIn]: relatedUserIds},
@@ -81,8 +80,7 @@ const findUnrelatedUserIds = async (userId) => {
   return unrelatedUserIds;
 };
 
-const findUnrelatedAnonUserIds = async (userId) => {
-  const relatedUserIds = await findRelatedUserIds(userId);
+const findUnrelatedAnonUserIds = async (relatedUserIds) => {
   const unrelatedUserIds = await User.findAll({
     where: {
       user_id: {[Op.notIn]: relatedUserIds},

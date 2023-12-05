@@ -15,11 +15,11 @@ const requestStream = async (feedType, clientFeed, offset, limit) => {
   let result = {};
   if (feedType === 'following') {
     result = await clientFeed.following({offset, limit});
-  }
-  if (feedType === 'follower') {
+  } else if (feedType === 'follower') {
     result = await clientFeed.followers({offset, limit});
+  } else {
+    result = await clientFeed.get({offset, limit});
   }
-  result = await clientFeed.get({offset, limit});
   return result;
 };
 
@@ -155,8 +155,8 @@ const syncMainFeedF2 = async (userId) => {
 const syncMainFeedBroad = async (userId) => {
   console.log('START sync main_feed_broad');
   const relatedUserIds = await findRelatedUserIds(userId);
-  const unrelatedUserIds = await findUnrelatedUserIds(userId);
-  const unrelatedAnonUserIds = await findUnrelatedAnonUserIds(userId);
+  const unrelatedUserIds = await findUnrelatedUserIds(relatedUserIds);
+  const unrelatedAnonUserIds = await findUnrelatedAnonUserIds(relatedUserIds);
   console.log('***** Start Process Feed Board *****');
   await unFollowMainFeedBroad(userId, relatedUserIds);
   await followMainFeedBroad(userId, unrelatedUserIds);
@@ -211,7 +211,7 @@ const syncFeedPerUserProcess = async (userId) => {
 
 const syncMainFeedBroadPerUser = async (req, res) => {
   try {
-    const {userId} = req.params;
+    const {userId} = req.body;
     await syncMainFeedBroad(userId);
 
     return successResponse(res, 'sync data sucesfully', []);
@@ -222,7 +222,7 @@ const syncMainFeedBroadPerUser = async (req, res) => {
 
 const syncFeedPerUser = async (req, res) => {
   try {
-    const {userId} = req.params;
+    const {userId} = req.body;
     await syncFeedPerUserProcess(userId);
 
     return successResponse(res, 'sync data sucesfully', []);

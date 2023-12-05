@@ -2,7 +2,6 @@ const stream = require('getstream');
 const {unFollowFeedProcessQueue} = require('../config');
 
 const followMainFeedBroad = async (userId, userIds, user_anon = false) => {
-  console.log('Broad Feed => ', userIds);
   if (!userIds || userIds.length === 0) {
     return;
   }

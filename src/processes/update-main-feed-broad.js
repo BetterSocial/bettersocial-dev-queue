@@ -10,8 +10,8 @@ const updateMainFeedBroadProcessJob = async (job, done) => {
     const data = job.data;
     const {userId} = data;
     const relatedUserIds = await findRelatedUserIds(userId);
-    const unrelatedUserIds = await findUnrelatedUserIds(userId);
-    const unrelatedAnonUserIds = await findUnrelatedAnonUserIds(userId);
+    const unrelatedUserIds = await findUnrelatedUserIds(relatedUserIds);
+    const unrelatedAnonUserIds = await findUnrelatedAnonUserIds(relatedUserIds);
     console.log('***** Start Process Feed Board *****');
     await followMainFeedBroad(userId, unrelatedUserIds);
     await followMainFeedBroad(userId, unrelatedAnonUserIds, true);

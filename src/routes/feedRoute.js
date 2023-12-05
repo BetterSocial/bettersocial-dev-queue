@@ -22,8 +22,8 @@ const router = express.Router();
 
 router.get('/refresh-post-view-time', refreshPostViewTime);
 // sync user feed
-router.get('/sync-feed/:userId', syncFeedPerUser);
-router.get('/sync-main-feed-broad/:userId', syncMainFeedBroadPerUser);
+router.post('/sync-feed', syncFeedPerUser);
+router.post('/sync-main-feed-broad', syncMainFeedBroadPerUser);
 
 router.post('/unfollow-feed', unfollowFeed);
 router.post('/feed-following', getFeedFollowing);
