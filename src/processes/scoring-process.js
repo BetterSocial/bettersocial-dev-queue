@@ -31,9 +31,7 @@ const {
   calcScoreOnUnblockUser
 } = require('./scoring');
 
-const {
-  setInitialDataUserScore
-} = require('../processes/scoring/formula/set-initial-data-user-score');
+const {setInitialDataUserScore} = require('./scoring/formula/set-initial-data-user-score');
 const {
   initDataUserScore,
   initDataPostScore,
@@ -341,6 +339,7 @@ const onBlockUserPost = async (data) => {
  */
 const onUnblockUser = async (data) => {
   console.debug(`scoring onUnblockUser: ${JSON.stringify(data)}`);
+
   const {userScoreDoc, userScoreList} = await getDataToCalcScore(data, true, false, false, false);
 
   let authorUserScoreDoc;

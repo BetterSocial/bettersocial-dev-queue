@@ -1,16 +1,29 @@
-const ProcessHelper = {
-    addUserToLocationChannel: require('./addUserToLocationChannel'),
-    addUserToTopicChannel: require('./addUserToTopicChannel'),
-    followAnonymousUser: require('./followAnonymousUser'),
-    followDefaultLocation: require('./followDefaultLocation'),
-    followLocation: require('./followLocation'),
-    followUser: require('./followUser'),
-    followTopic: require('./followTopic'),
-    prepopulatedDm: require('./prepopulatedDm'),
-    followMainFeedTopic: require('./followMainFeedTopic'),
-    followMainFeedFollowing: require('./followMainFeedFollowing'),
-    followMainFeedF2: require("./followMainFeedF2"),
-    unFollowMainFeedF2: require("./unFollowMainFeedF2")
-}
+const addUserToLocationChannel = require('./addUserToLocationChannel');
+const addUserToTopicChannel = require('./addUserToTopicChannel');
+const followAnonymousUser = require('./followAnonymousUser');
+const followDefaultLocation = require('./followDefaultLocation');
+const followLocation = require('./followLocation');
+const followUser = require('./followUser');
+const followTopic = require('./followTopic');
+const prepopulatedDm = require('./prepopulatedDm');
+const followMainFeedTopic = require('./followMainFeedTopic');
+const followMainFeedFollowing = require('./followMainFeedFollowing');
+const followMainFeedF2 = require('./followMainFeedF2');
+const unFollowMainFeedF2 = require('./unFollowMainFeedF2');
 
-module.exports = ProcessHelper
+const ProcessHelper = {
+  addUserToLocationChannel,
+  addUserToTopicChannel,
+  followAnonymousUser,
+  followDefaultLocation,
+  followLocation,
+  followUser,
+  followTopic,
+  prepopulatedDm,
+  followMainFeedTopic,
+  followMainFeedFollowing,
+  followMainFeedF2,
+  unFollowMainFeedF2
+};
+
+module.exports = ProcessHelper;

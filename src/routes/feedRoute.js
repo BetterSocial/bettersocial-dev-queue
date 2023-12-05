@@ -13,7 +13,8 @@ const {
   activityScore,
   getWeightValue,
   lastP3Score,
-  updatePostScoreGetstream
+  updatePostScoreGetstream,
+  syncMainFeedBroadPerUser
 } = require('../services');
 const auth = require('../middlewares/dev-auth');
 
@@ -22,6 +23,8 @@ const router = express.Router();
 router.get('/refresh-post-view-time', refreshPostViewTime);
 // sync user feed
 router.get('/sync-feed/:userId', syncFeedPerUser);
+router.get('/sync-main-feed-broad/:userId', syncMainFeedBroadPerUser);
+
 router.post('/unfollow-feed', unfollowFeed);
 router.post('/feed-following', getFeedFollowing);
 router.post('/feed-follower', getFeedFollower);
