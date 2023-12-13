@@ -1,36 +1,9 @@
-const { UserFollowUser, UserBlockedUser } = require("../databases/models");
-const { followMainFeedF2, unFollowMainFeedF2 } = require("../processes/helper");
-const { updateMainFeedBroadProcessQueue } = require("../config");
-
-const processFollow = async (job, done) => {
-  console.log("Process follow f2");
-  const { data } = job;
-  const userId = data.data.userId;
-  const targetUserId = data.data.targetUserId;
-  // find userIds followed by each userId and targetedUserId
-  // follow not followed user(s) by userId to getStream
-  const idsToFollow = await _findUserIdsToProcess(userId, targetUserId);
-  await followMainFeedF2(userId, idsToFollow);
-  // create job to update broad feed
-  // updateMainFeedBroadProcessQueue.add({userId})
-  done();
-};
-
-const processUnfollow = async (job, done) => {
-  console.log("Process unfollow f2");
-  const { data } = job;
-  const userId = data.data.userId;
-  const targetUserId = data.data.targetUserId;
-  // find userIds followed by each userId and targetedUserId
-  // un follow not followed user(s) by userId to getStream
-  const idsToUnfollow = await _findUserIdsToProcess(userId, targetUserId);
-  await unFollowMainFeedF2(userId, idsToUnfollow);
-  // create job to update broad feed
-  // updateMainFeedBroadProcessQueue.add({userId})
-  done();
-};
+const {UserFollowUser, UserBlockedUser} = require('../databases/models');
+const {followMainFeedF2, unFollowMainFeedF2} = require('./helper');
+const {updateMainFeedBroadProcessQueue} = require('../config');
 
 const userIdsToProcessByMainFeedF2 = (
+  userId,
   followersIdByUserId,
   followersIdByTargetUserId,
   blockedUsersIdByUserId
@@ -39,49 +12,44 @@ const userIdsToProcessByMainFeedF2 = (
     const findIdx = followersIdByUserId.findIndex((fid) => id === fid);
     const findIdfromBlockedUser = blockedUsersIdByUserId.findIndex((fid) => id === fid);
     // user followed this user
-    return findIdx < 0 && findIdfromBlockedUser < 0 ? true: false;
+    return !!(findIdx < 0 && findIdfromBlockedUser < 0 && id !== userId);
   });
 };
 
-const _findUserIdsToProcess = async (userId, targetUserId) => {
+const findUserIdsToProcess = async (userId, targetUserId) => {
   const findFollowersByUserId = UserFollowUser.findAll({
     where: {
-      user_id_follower: userId,
+      user_id_follower: userId
     },
-    limit: 1000,
+    limit: 1000
   });
 
   const findFollowersByTargetUserId = UserFollowUser.findAll({
     where: {
-      user_id_follower: targetUserId,
+      user_id_follower: targetUserId
     },
-    limit: 1000,
+    limit: 1000
   });
 
   const findBlockedUsersByUserId = UserBlockedUser.findAll({
     where: {
-      user_id_blocker: userId,
+      user_id_blocker: userId
     },
-    limit: 1000,
+    limit: 1000
   });
 
   const [followersByUserId, followersByTargetUserId, blockedUsersByUserId] = await Promise.all([
     findFollowersByUserId,
     findFollowersByTargetUserId,
-    findBlockedUsersByUserId,
+    findBlockedUsersByUserId
   ]);
 
-  const followersIdByUserId = followersByUserId.map(
-    (el) => el.user_id_followed
-  );
-  const followersIdByTargetUserId = followersByTargetUserId.map(
-    (el) => el.user_id_followed
-  );
-  const blockedUsersIdByUserId = blockedUsersByUserId.map(
-    (el) => el.user_id_blocked
-  );
+  const followersIdByUserId = followersByUserId.map((el) => el.user_id_followed);
+  const followersIdByTargetUserId = followersByTargetUserId.map((el) => el.user_id_followed);
+  const blockedUsersIdByUserId = blockedUsersByUserId.map((el) => el.user_id_blocked);
 
   const idsToProcess = userIdsToProcessByMainFeedF2(
+    userId,
     followersIdByUserId,
     followersIdByTargetUserId,
     blockedUsersIdByUserId
@@ -90,7 +58,35 @@ const _findUserIdsToProcess = async (userId, targetUserId) => {
   return idsToProcess;
 };
 
+const processFollow = async (job, done) => {
+  console.log('Process follow f2');
+  const {data} = job;
+  const userId = data.data.userId;
+  const targetUserId = data.data.targetUserId;
+  // find userIds followed by each userId and targetedUserId
+  // follow not followed user(s) by userId to getStream
+  const idsToFollow = await findUserIdsToProcess(userId, targetUserId);
+  await followMainFeedF2(userId, idsToFollow);
+  // create job to update broad feed
+  updateMainFeedBroadProcessQueue.add({userId});
+  done();
+};
+
+const processUnfollow = async (job, done) => {
+  console.log('Process unfollow f2');
+  const {data} = job;
+  const userId = data.data.userId;
+  const targetUserId = data.data.targetUserId;
+  // find userIds followed by each userId and targetedUserId
+  // un follow not followed user(s) by userId to getStream
+  const idsToUnfollow = await findUserIdsToProcess(userId, targetUserId);
+  await unFollowMainFeedF2(userId, idsToUnfollow);
+  // create job to update broad feed
+  updateMainFeedBroadProcessQueue.add({userId});
+  done();
+};
+
 module.exports = {
   processFollow,
-  processUnfollow,
+  processUnfollow
 };
