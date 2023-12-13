@@ -1,5 +1,5 @@
-"use strict";
-const { Model } = require("sequelize");
+'use strict';
+const {Model} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class UserFollowUser extends Model {
     /**
@@ -16,16 +16,20 @@ module.exports = (sequelize, DataTypes) => {
       follow_action_id: {
         type: DataTypes.STRING,
         allowNull: false,
-        primaryKey: true,
+        primaryKey: true
       },
-      user_id_follower: { type: DataTypes.UUID, allowNull: false },
-      user_id_followed: { type: DataTypes.UUID, allowNull: false },
+      user_id_follower: {type: DataTypes.UUID, allowNull: false},
+      user_id_followed: {type: DataTypes.UUID, allowNull: false},
+      is_anonymous: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      }
     },
     {
       sequelize,
-      modelName: "UserFollowUser",
-      tableName: "user_follow_user",
-      timestamps: false,
+      modelName: 'UserFollowUser',
+      tableName: 'user_follow_user',
+      timestamps: false
     }
   );
   return UserFollowUser;

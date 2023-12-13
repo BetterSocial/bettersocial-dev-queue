@@ -1,4 +1,5 @@
 module.exports = {
   ...require('./adminBlockUser'),
-  ...require('./adminUnblockUser')
+  ...require('./adminUnblockUser'),
+  ...require('./autoFollowUserAnon')
 };
