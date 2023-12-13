@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.post('/admin-block-user', auth.dev, adminBlockUser);
 router.post('/admin-unblock-user', auth.dev, adminUnblockUser);
-router.post('/auto-follow-users-anon', autoFollowUserAnon);
+router.post('/auto-follow-users-anon', auth.dev, autoFollowUserAnon);
 
 module.exports = router;
