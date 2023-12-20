@@ -1,4 +1,4 @@
-const {successResponse} = require('../../utils');
+const {successResponse, errorResponse} = require('../../utils');
 const {v4: uuidv4} = require('uuid');
 const {UserFollowUser, UserFollowUserHistory} = require('../../databases/models');
 const UsersFunction = require('../../databases/functions/users');
@@ -17,37 +17,39 @@ const autoFollowUserAnon = async (req, res) => {
       userFollowUserList.map(async (followUser) => {
         const anonId = await UsersFunction.findAnonymousUserId(followUser.user_id_followed);
 
-        const [followAnonUser, isUnfollowByUser] = await Promise.all([
-          UserFollowUser.findOne({
-            where: {
+        if (anonId) {
+          const [followAnonUser, isUnfollowByUser] = await Promise.all([
+            UserFollowUser.findOne({
+              where: {
+                user_id_follower: followUser.user_id_follower,
+                user_id_followed: anonId,
+                is_anonymous: true
+              }
+            }),
+            UserFollowUserHistory.findOne({
+              where: {
+                user_id_follower: followUser.user_id_follower,
+                user_id_followed: anonId,
+                action: 'out'
+              }
+            })
+          ]);
+
+          if (!followAnonUser && !isUnfollowByUser) {
+            userFollowerAnonData.push({
+              follow_action_id: uuidv4(),
               user_id_follower: followUser.user_id_follower,
               user_id_followed: anonId,
               is_anonymous: true
-            }
-          }),
-          UserFollowUserHistory.findOne({
-            where: {
+            });
+
+            userFollowerAnonDataHistory.push({
               user_id_follower: followUser.user_id_follower,
               user_id_followed: anonId,
-              action: 'out'
-            }
-          })
-        ]);
-
-        if (!followAnonUser && !isUnfollowByUser) {
-          userFollowerAnonData.push({
-            follow_action_id: uuidv4(),
-            user_id_follower: followUser.user_id_follower,
-            user_id_followed: anonId,
-            is_anonymous: true
-          });
-
-          userFollowerAnonDataHistory.push({
-            user_id_follower: followUser.user_id_follower,
-            user_id_followed: anonId,
-            action: 'in',
-            source: `script`
-          });
+              action: 'in',
+              source: `script`
+            });
+          }
         }
       })
     );
