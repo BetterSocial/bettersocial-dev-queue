@@ -24,14 +24,15 @@ const deleteExpiredPostProcess = async (job, done, queueInjection) => {
             expired_posts[doc.author_id] = [doc._id];
           }
         });
+        // eslint-disable-next-line eqeqeq
         if (expired_posts != {}) {
           // Remove from getstream
           for (const [key, value] of Object.entries(expired_posts)) {
             value.forEach(async (act_id) => {
               queueInjection?.add({
-                feedName: 'user_excl',
-                userId: key,
-                activityId: act_id
+                feed_group: 'user_excl',
+                feed_id: key,
+                activity_id: act_id
               });
               await db.collection(DB_COLLECTION_POST_SCORE).deleteOne({_id: act_id});
             });
