@@ -22,7 +22,7 @@ const {EVENT_DAILY_PROCESS_TRIGGER} = require('../processes/scoring-constant');
 /**
  * @typedef {Object} BetterSocialCronQueueInjection
  * @property {Bull.Queue} credderScoreQueue
- * @property {Bull.Queue} deleteActivityProcessQueue
+ * @property {Bull.Queue} removeActivityQueue
  */
 
 class BetterSocialCronQueue extends BetterSocialQueue {
@@ -64,7 +64,7 @@ class BetterSocialCronQueue extends BetterSocialQueue {
     }
 
     if (flag === 'dailyDeleteExpiredPost') {
-      return deleteExpiredPostProcess(job, done, queueInjection?.deleteActivityProcessQueue);
+      return deleteExpiredPostProcess(job, done, queueInjection?.removeActivityQueue);
     }
 
     if (flag === 'dailyRssUpdate') {

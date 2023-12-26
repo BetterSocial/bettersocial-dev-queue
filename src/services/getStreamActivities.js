@@ -32,7 +32,7 @@ const removeActivityProcess = async (feed_group, feed_id, activity_id) => {
   // check if activity is expired
   if (activity.expired_at !== null && new Date(activity.expired_at) < Date.now()) {
     // when expired, then remove from its original feed (actor)
-    feed_group = activity?.anonimty ? 'user_anon' : 'user_excl';
+    feed_group = activity?.anonimity ? 'user_anon' : 'user_excl';
     feed_id = activity.actor.split(':')[1];
   }
   const feed = client.feed(feed_group, feed_id);

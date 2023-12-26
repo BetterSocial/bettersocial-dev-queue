@@ -1,7 +1,6 @@
 const {newsJob} = require('../processes/news-process');
 const {scoringProcessJob} = require('../processes/scoring-process');
 const {scoringDailyProcessJob} = require('../processes/scoring-daily-process');
-const {deleteActivityProcessJob} = require('../processes/delete-activity-process');
 const {unFollowFeedProcessJob} = require('../processes/unfollow-main-feed');
 const {updateMainFeedBroadProcessJob} = require('../processes/update-main-feed-broad');
 const {syncUserFeedProcessJob} = require('../processes/sync-user-feed');
@@ -85,7 +84,7 @@ const initQueue = () => {
   });
 
   console.info('deleteActivityProcessQueue job is working!');
-  deleteActivityProcessQueue.process(deleteActivityProcessJob);
+  deleteActivityProcessQueue.process(removeActivityProcessJob);
   deleteActivityProcessQueue.on('failed', handlerFailure);
   deleteActivityProcessQueue.on('completed', handlerCompleted);
   deleteActivityProcessQueue.on('stalled', handlerStalled);
@@ -151,7 +150,7 @@ const initQueue = () => {
   BetterSocialCronQueue.setCronCallback(generalDailyQueue, (job, done) =>
     BetterSocialCronQueue.process(job, done, {
       credderScoreQueue,
-      deleteActivityProcessQueue
+      removeActivityQueue
     })
   );
   BetterSocialCronQueue.addCron(generalDailyQueue, '0 0,12,18 * * *', 'dailyRssUpdate');
