@@ -1,7 +1,6 @@
 const {newsJob} = require('../processes/news-process');
 const {scoringProcessJob} = require('../processes/scoring-process');
 const {scoringDailyProcessJob} = require('../processes/scoring-daily-process');
-// const {deleteActivityProcessJob} = require('../processes/delete-activity-process');
 const {unFollowFeedProcessJob} = require('../processes/unfollow-main-feed');
 const {updateMainFeedBroadProcessJob} = require('../processes/update-main-feed-broad');
 const {syncUserFeedProcessJob} = require('../processes/sync-user-feed');
