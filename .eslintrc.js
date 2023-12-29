@@ -21,20 +21,6 @@ module.exports = {
     ecmaVersion: 'latest'
   },
   rules: {
-    'linebreak-style': 'off',
-    'no-console': 'off',
-    'import/prefer-default-export': 'off',
-    'no-use-before-define': 'warn',
-    'no-param-reassign': 'off',
-    'react/prop-types': 'off',
-    camelcase: 'off',
-    'import/no-extraneous-dependencies': 'off',
-    'no-useless-escape': 'warn',
-    'no-nested-ternary': 'off',
-    'no-case-declarations': 'warn',
-    'comma-dangle': 'off',
-    'global-require': 'warn',
-    'no-underscore-dangle': ['error', {allow: ['_id', '_count']}], // because we use mongo and its id start with underscore
-    semi: ['error', 'always']
+    'no-unused-vars': ['error', {argsIgnorePattern: '^_', varsIgnorePattern: '^_'}]
   }
 };
