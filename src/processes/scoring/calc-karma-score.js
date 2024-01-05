@@ -14,10 +14,9 @@ const calculateP = (p) => {
 const getUserScore = (user) => {
   return user && typeof user?.user_score === 'number' ? user.user_score : 0;
 };
-const combinedUserScore = async (userId, userScoreCol, sign_user_score) => {
+const combinedUserScore = async (userId, userScoreCol, sign_user_score, anonymousUserId = null) => {
   console.log('Start calculating combined user score');
   const userIds = [userId];
-  const anonymousUserId = await UsersFunction.findAnonymousUserId(userId);
   if (anonymousUserId) {
     userIds.push(anonymousUserId);
   }
@@ -78,10 +77,25 @@ const calcKarmaScore = async (userId, sign_user_score = null) => {
   if (!user || user?.is_anonymous) {
     return null;
   }
-  const combined_user_score = await combinedUserScore(userId, userScoreCol, sign_user_score);
+  const anonymousUserId = await UsersFunction.findAnonymousUserId(userId);
+  const combined_user_score = await combinedUserScore(
+    userId,
+    userScoreCol,
+    sign_user_score,
+    anonymousUserId
+  );
   const percentileScore = await percentileUserScore(combined_user_score, userScoreCol);
   const karma_score = KARMA_SCORE_MULTIPLIER * percentileScore ** KARMA_SCORE_EXPONENT;
   await setUserKarmaScore(userId, combined_user_score, karma_score, userScoreCol, percentileScore);
+  if (anonymousUserId) {
+    await setUserKarmaScore(
+      anonymousUserId,
+      combined_user_score,
+      karma_score,
+      userScoreCol,
+      percentileScore
+    );
+  }
   return karma_score;
 };
 
