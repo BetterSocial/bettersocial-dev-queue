@@ -31,7 +31,7 @@ const automateWelcomeMsgProcess = async (job, done) => {
           resultPrepopulated.ownUser.username[0].toUpperCase() +
           resultPrepopulated.ownUser.username.slice(1);
         const toBeSent = {
-          text: `Hi ${newOwnUser}\nThis is Bastian, Founder of Better Social (I’m not a bot, I promise!). Thanks for signing up as one of our first users, the team & I really appreciates your support and I hope you will give us a chance in our fight to improve the broken social media landscape.\nThis is an uphill battle against giant corporations – I would love to hear from you how we can improve this app, and what would make it more likely for you to recommend the app to your friends and start posting here.\nAny feedback & criticism, but also questions are very welcome, and I promise to personally respond!\nThank you so much!\nBastian`,
+          text: `Hi ${newOwnUser}\n\nWelcome to ${process.env.BRAND_NAME}.\nWe’re here to help you navigate the app. If you have any questions, ideas or criticism, feel free to message us.\nMessages will be replied by a mix of AI and human review, so we promise to get you a satisfying answer. Every ideas or feedback will be reviewed by our Product team!\nIn our mission to build a better, healthier social internet, we’re here to help, and to learn from you!\n\nAny questions to start with?`,
           mentioned_users: [resultPrepopulated.ownUser.user_id]
         };
 
