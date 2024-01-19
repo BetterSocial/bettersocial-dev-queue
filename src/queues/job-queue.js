@@ -39,10 +39,29 @@ const {addUserPostCommentProcess} = require('../processes/add-user-post-comment'
 const {deleteUserPostCommentProcess} = require('../processes/delete-user-post-comment-process');
 const BetterSocialCronQueue = require('../redis/BetterSocialCronQueue');
 
+const Sentry = require('@sentry/node');
+const SentryProfiling = require('@sentry/profiling-node');
+
 /*
   @description initial all job queue
 */
 const initQueue = () => {
+  // Setup sentry
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    integrations: [
+      // enable HTTP calls tracing
+      new Sentry.Integrations.Http({
+        tracing: true
+      }),
+      new SentryProfiling.ProfilingIntegration()
+    ],
+    environment: process.env.NODE_ENV,
+    // Performance Monitoring
+    tracesSampleRate: 0.1, // Capture 100% of the transactions, reduce in production!,
+    profilesSampleRate: 0.1
+  });
+
   console.info('newsQueue job is working!');
   newsQueue.process(newsJob);
   newsQueue.on('failed', handlerFailure);
