@@ -58,7 +58,7 @@ const calcUserScore = async (userDoc) => {
 
   // checking and sync date_created
   if (userDoc.created_at === null || userDoc.register_time === null) {
-    // if created_at or register_tim is null, set it to created_at in db
+    // if created_at or register_time is null, set it to created_at in db
     const user = await UsersFunction.getUserByUserId(userDoc._id);
     if (user) {
       userDoc.created_at = user.created_at;
