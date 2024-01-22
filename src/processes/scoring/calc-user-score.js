@@ -8,6 +8,7 @@ const {
   ageScore
 } = require('../../utils');
 const {calcKarmaScore} = require('./calc-karma-score');
+const UsersFunction = require('../../databases/functions/users');
 
 const updateLastp3Scores = (userScoreDoc, postScoreDoc) => {
   const p3scoreSubDoc = userScoreDoc.last_p3_scores[postScoreDoc._id];
@@ -54,6 +55,15 @@ const calcUserScore = async (userDoc) => {
 
   // update combined user score and karma score
   calcKarmaScore(userDoc._id, user_score);
+
+  // checking and sync date_created
+  if (userDoc.created_at === null) {
+    // if created_at is null, set it to created_at in db
+    const user = await UsersFunction.getUserByUserId(userDoc._id);
+    if (user) {
+      userDoc.created_at = user.created_at;
+    }
+  }
 
   console.debug(`calcUserScore: Final user doc: ${JSON.stringify(userDoc)}`);
 
