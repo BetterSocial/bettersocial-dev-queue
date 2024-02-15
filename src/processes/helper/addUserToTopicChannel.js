@@ -9,7 +9,7 @@ const addUserToTopicChannel = async (user_id, topics) => {
     topics.map(async (topic) => {
       const newTopic = convertString(topic, '-', '').toLowerCase();
       const token = serverClient.createToken(userId);
-      console.log(':::token', token);
+
       await serverClient.connectUser({id: userId}, token);
       const members = [];
       members.push(userId);
