@@ -69,6 +69,7 @@ const registerProcess = async (job, done) => {
     }
 
     await ProcessHelper.followUser(userId, follows);
+    await ProcessHelper.createEmptyChannel(userId, follows);
     await ProcessHelper.followAnonymousUser(anonUserId, follows);
     await ProcessHelper.followTopic(userId, topics);
     await ProcessHelper.followLocation(userId, result?.locations);
