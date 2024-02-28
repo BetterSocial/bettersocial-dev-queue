@@ -4,6 +4,7 @@ const followAnonymousUser = require('./followAnonymousUser');
 const followDefaultLocation = require('./followDefaultLocation');
 const followLocation = require('./followLocation');
 const followUser = require('./followUser');
+const createEmptyChannel = require('./createEmptyChannel');
 const followTopic = require('./followTopic');
 const prepopulatedDm = require('./prepopulatedDm');
 const followMainFeedTopic = require('./followMainFeedTopic');
@@ -23,7 +24,8 @@ const ProcessHelper = {
   followMainFeedTopic,
   followMainFeedFollowing,
   followMainFeedF2,
-  unFollowMainFeedF2
+  unFollowMainFeedF2,
+  createEmptyChannel
 };
 
 module.exports = ProcessHelper;
