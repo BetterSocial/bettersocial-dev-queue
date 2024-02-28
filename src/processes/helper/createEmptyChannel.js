@@ -14,7 +14,8 @@ const createEmptyChannel = async (userId, usersFollowed) => {
           created_by_id: userId
         });
 
-        await channel.create();
+        const createdChannel = await channel.create();
+        console.info('Created Channel:', createdChannel.channel.id);
       })
     );
   } catch (error) {
