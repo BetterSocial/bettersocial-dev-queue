@@ -48,7 +48,8 @@ module.exports = async (id, users) => {
             other_text: textTargetUser,
             own_text: textOwnUser,
             system_user: id,
-            isSystem: true
+            isSystem: true,
+            type: 'system'
           },
           {
             skip_push: true
