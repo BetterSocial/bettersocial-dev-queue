@@ -1,5 +1,5 @@
+const {StreamChat} = require('stream-chat');
 const {generateRandomId} = require('../../utils');
-const StreamChat = require('stream-chat').StreamChat;
 const UserService = require('../postgres/UserService');
 const {LogError} = require('../../databases/models');
 
@@ -8,25 +8,24 @@ module.exports = async (id, users) => {
 
   console.log('prepopulated child function is called');
   try {
-    let userService = new UserService();
-    let ownUser = await userService.getUserById(id);
+    const userService = new UserService();
+    const ownUser = await userService.getUserById(id);
 
-    let res = await Promise.all(
+    const res = await Promise.all(
       users.map(async (user) => {
         const channelName = [];
         channelName.push(user.username);
         channelName.push(ownUser.username);
-        let generatedChannelId = generateRandomId();
-        console.log('generatedChannelId');
-        console.log(generatedChannelId);
+        const generatedChannelId = generateRandomId();
 
-        let chat = serverClient.channel('messaging', generatedChannelId, {
+        const chat = serverClient.channel('messaging', {
           name: channelName.join(', '),
           type_channel: 0,
-          created_by_id: ownUser.user_id
+          members: [id, user?.user_id],
+          created_by_id: id
         });
 
-        let status = await chat.create();
+        const status = await chat.create();
         /**
          * usup mengikuti fajar
          * jadi ketika mengikuti fajar
@@ -39,28 +38,22 @@ module.exports = async (id, users) => {
 
         const textTargetUser = `${ownUser.username} started following you. Send them a message now`;
         const textOwnUser = `You started following ${user.username}. Send them a message now.`;
-        await chat.addMembers([id], {
-          text: textOwnUser,
-          user_id: id,
-          only_to_user_show: id,
-          disable_to_user: false,
-          channel_role: 'channel_moderator',
-          is_add: true,
-          system_user: id,
-          is_from_prepopulated: true,
-          other_text: textTargetUser
-        });
-        await chat.addMembers([user.user_id], {
-          text: textTargetUser,
-          user_id: user.user_id,
-          only_to_user_show: false,
-          disable_to_user: id,
-          channel_role: 'channel_moderator',
-          is_add: false,
-          system_user: id,
-          is_from_prepopulated: true,
-          other_text: textOwnUser
-        });
+        await chat.sendMessage(
+          {
+            user_id: id,
+            text: textOwnUser,
+            only_to_user_show: id,
+            disable_to_user: false,
+            is_from_prepopulated: true,
+            other_text: textTargetUser,
+            own_text: textOwnUser,
+            system_user: id,
+            is_system_message: true
+          },
+          {
+            skip_push: true
+          }
+        );
 
         return {
           generatedChannelId,
