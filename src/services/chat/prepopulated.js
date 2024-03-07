@@ -48,7 +48,7 @@ module.exports = async (id, users) => {
             other_text: textTargetUser,
             own_text: textOwnUser,
             system_user: id,
-            is_system_message: true
+            isSystem: true
           },
           {
             skip_push: true
