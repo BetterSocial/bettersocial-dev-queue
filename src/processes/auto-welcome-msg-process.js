@@ -19,28 +19,25 @@ const automateWelcomeMsgProcess = async (job, done) => {
       let chat = serverClient.channel('messaging', channelId, {
         name: channelName.join(', '),
         type_channel: 0,
+        members: [resultPrepopulated.targetUser.user_id, resultPrepopulated.ownUser.user_id],
         created_by_id: resultPrepopulated.ownUser.user_id
       });
       await chat.create();
 
       const channelState = await chat.watch();
-
       // channelState.messages.length <= 2 mean only 2 message about admin follow the newUsers and newUsers following newUsers
       if (channelState.messages.length <= 2) {
         const newOwnUser =
           resultPrepopulated.ownUser.username[0].toUpperCase() +
           resultPrepopulated.ownUser.username.slice(1);
         const toBeSent = {
-          text: `Hi ${newOwnUser}\n\nWelcome to ${process.env.BRAND_NAME}.\nWe’re here to help you navigate the app. If you have any questions, ideas or criticism, feel free to message us.\nMessages will be replied by a mix of AI and human review, so we promise to get you a satisfying answer. Every ideas or feedback will be reviewed by our Product team!\nIn our mission to build a better, healthier social internet, we’re here to help, and to learn from you!\n\nAny questions to start with?`,
-          mentioned_users: [resultPrepopulated.ownUser.user_id]
+          text: `Hi ${newOwnUser}\n\nWelcome to ${process.env.BRAND_NAME}.\nWe’re here to help you navigate the app. If you have any questions, ideas or criticism, feel free to message us.\nMessages will be replied by a mix of AI and human review, so we promise to get you a satisfying answer. Every ideas or feedback will be reviewed by our Product team!\nIn our mission to build a better, healthier social internet, we’re here to help, and to learn from you!\n\nAny questions to start with?`
         };
 
         await chat.sendMessage({
           ...toBeSent,
           user_id: resultPrepopulated.targetUser.user_id
         });
-
-        await chat.stopWatching();
       }
 
       done(null, 'success running auto welcome msg');
