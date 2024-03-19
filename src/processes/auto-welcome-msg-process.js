@@ -38,6 +38,12 @@ const automateWelcomeMsgProcess = async (job, done) => {
           ...toBeSent,
           user_id: resultPrepopulated.targetUser.user_id
         });
+
+        try {
+          await chat.stopWatching();
+        } catch (error) {
+          console.log('::: Error on stopWatching :::', error);
+        }
       }
 
       done(null, 'success running auto welcome msg');
