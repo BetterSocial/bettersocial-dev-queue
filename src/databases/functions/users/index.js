@@ -8,6 +8,7 @@ const userBlockByAdmin = require('./user-block-by-admin');
 const userUnblockByAdmin = require('./user-unblock-by-admin');
 const findAnonymousUserId = require('./find-anonymous-user-id');
 const userSetKarmaScore = require('./user-set-karma-score');
+const setAllFollowerCount = require('./set-all-follower-count');
 
 const UsersFunction = {
   register,
@@ -19,7 +20,8 @@ const UsersFunction = {
   userBlockByAdmin,
   userUnblockByAdmin,
   findAnonymousUserId,
-  userSetKarmaScore
+  userSetKarmaScore,
+  setAllFollowerCount
 };
 
 module.exports = UsersFunction;
