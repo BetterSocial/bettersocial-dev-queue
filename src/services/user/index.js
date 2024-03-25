@@ -1,5 +1,6 @@
 module.exports = {
   ...require('./adminBlockUser'),
   ...require('./adminUnblockUser'),
-  ...require('./autoFollowUserAnon')
+  ...require('./autoFollowUserAnon'),
+  ...require('./setFollowerCount')
 };
