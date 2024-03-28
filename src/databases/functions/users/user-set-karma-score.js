@@ -23,7 +23,7 @@ module.exports = async (userId, combined_user_score, karma_score) => {
       raw: true
     });
 
-    if (queryTotalFollower) {
+    if (queryTotalFollower.length > 0) {
       total_follower = resultTotalFollower[0]?.follower_count;
     }
 
