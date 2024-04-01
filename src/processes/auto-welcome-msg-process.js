@@ -7,7 +7,7 @@ const automateWelcomeMsgProcess = async (job, done) => {
       let data = job.data;
 
       const resultPrepopulated = data.resultPrepopulated[0];
-      const channelId = resultPrepopulated.generatedChannelId;
+      const channelId = resultPrepopulated?.status?.channel?.id;
 
       console.log('channelId');
       console.log(channelId);
