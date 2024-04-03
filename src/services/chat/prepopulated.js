@@ -41,17 +41,17 @@ module.exports = async (id, users) => {
             better_channel_member: [
               {
                 user: {
-                  ...ownUser
+                  ...ownUser.defaulValues
                 },
-                user_id: ownUser?.id,
+                user_id: ownUser?.user_id,
                 is_anonymous: false,
                 updated_at: new Date().toISOString()
               },
               {
                 user: {
-                  ...user
+                  ...user.defaulValues
                 },
-                user_id: ownUser?.id,
+                user_id: user?.user_id,
                 is_anonymous: false,
                 updated_at: new Date().toISOString()
               }
