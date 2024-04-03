@@ -41,7 +41,7 @@ module.exports = async (id, users) => {
         await chat.sendMessage(
           {
             user_id: id,
-            text: textOwnUser,
+            text: textTargetUser,
             only_to_user_show: id,
             disable_to_user: false,
             is_from_prepopulated: true,
