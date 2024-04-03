@@ -41,7 +41,14 @@ module.exports = async (id, users) => {
             better_channel_member: [
               {
                 user: {
-                  ...ownUser.defaulValues
+                  updated_at: ownUser?.updated_at,
+                  is_anonymous: ownUser?.is_anonymous,
+                  name: ownUser?.username,
+                  image: ownUser?.profile_pic_path,
+                  last_active: ownUser?.last_active_at,
+                  username: ownUser?.username,
+                  id: ownUser?.user_id,
+                  created_at: ownUser?.created_at
                 },
                 user_id: ownUser?.user_id,
                 is_anonymous: false,
@@ -49,7 +56,14 @@ module.exports = async (id, users) => {
               },
               {
                 user: {
-                  ...user.defaulValues
+                  updated_at: user?.updated_at,
+                  is_anonymous: user?.is_anonymous,
+                  name: user?.username,
+                  image: user?.profile_pic_path,
+                  last_active: user?.last_active_at,
+                  username: user?.username,
+                  id: user?.user_id,
+                  created_at: user?.created_at
                 },
                 user_id: user?.user_id,
                 is_anonymous: false,
