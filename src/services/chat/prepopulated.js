@@ -36,6 +36,29 @@ module.exports = async (id, users) => {
          * boleh tampil kecuali untuk user usup
          */
 
+        await chat.updatePartial({
+          set: {
+            better_channel_member: [
+              {
+                user: {
+                  ...ownUser
+                },
+                user_id: ownUser?.id,
+                is_anonymous: false,
+                updated_at: new Date().toISOString()
+              },
+              {
+                user: {
+                  ...user
+                },
+                user_id: ownUser?.id,
+                is_anonymous: false,
+                updated_at: new Date().toISOString()
+              }
+            ]
+          }
+        });
+
         const textTargetUser = `${ownUser.username} started following you. Send them a message now`;
         const textOwnUser = `You started following ${user.username}. Send them a message now.`;
         await chat.sendMessage(
