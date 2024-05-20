@@ -30,7 +30,7 @@ if (env !== 'production') {
   router.post('/update-user-score-phase1', auth.dev, updateUserScorePhase1);
   router.post('/update-user-score-phase2', auth.dev, updateUserScorePhase2);
   router.post('/remove-activity', auth.dev, removeActivity);
-  router.post('/news-process', newsProcessDevProcess);
+  router.post('/news-process', auth.dev, newsProcessDevProcess);
 }
 
 module.exports = router;
