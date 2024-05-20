@@ -1,4 +1,5 @@
 const moment = require('moment');
+const {v4: uuidv4} = require('uuid');
 const {postStream} = require('../services/postStream');
 const {
   DOMAIN,
@@ -9,7 +10,6 @@ const {
 const constant = require('../utils/constant');
 
 const postToGetstream = async (activity) => {
-  const {v4: uuidv4} = require('uuid');
   try {
     const activityId = uuidv4();
     const randomizer = randomBetweenPositiveAndNegative(constant.DAY_IN_SECONDS);
@@ -37,7 +37,7 @@ const postToGetstream = async (activity) => {
       returnActivityId: activityId
     };
   } catch (error) {
-    console.info(error);
+    console.info('error', error);
     return error;
   }
 };

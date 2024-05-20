@@ -8,5 +8,6 @@ module.exports = {
   ...require('./triggerDailyScoring'),
   ...require('./updateUserScoreOnDailyProcessPhase1'),
   ...require('./updateUserScoreOnDailyProcessPhase2'),
-  ...require('./removeActivity')
+  ...require('./removeActivity'),
+  ...require('./newsProcessDevProcess')
 };

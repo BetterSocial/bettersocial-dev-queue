@@ -13,6 +13,7 @@ const {
   updateUserScorePhase2,
   removeActivity
 } = require('../services/devHandler');
+const newsProcessDevProcess = require('../services/devHandler/newsProcessDevProcess');
 
 const env = process.env.NODE_ENV || 'development';
 const router = express.Router();
@@ -29,6 +30,7 @@ if (env !== 'production') {
   router.post('/update-user-score-phase1', auth.dev, updateUserScorePhase1);
   router.post('/update-user-score-phase2', auth.dev, updateUserScorePhase2);
   router.post('/remove-activity', auth.dev, removeActivity);
+  router.post('/news-process', newsProcessDevProcess);
 }
 
 module.exports = router;

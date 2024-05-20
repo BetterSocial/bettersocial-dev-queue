@@ -10,7 +10,6 @@ const checkIfValidURL = (str) => {
         // const urlRegex = /^(https?:\/\/[a-zA-Z0-9_+%-]+(\.[a-zA-Z0-9+\_%-]+)*(:[0-9]{1,5})?(\/[a-zA-Z0-9+()?#~=&\._%-]*)*)?$/
         const urlRegex = /(https?:\/\/[^ %\n]*)/;
         const urlValidation = str.match(urlRegex);
-        console.log(`urlvalidation ${urlValidation}`)
         if (urlValidation) return str.match(urlRegex)[1];
 
         var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
@@ -20,7 +19,6 @@ const checkIfValidURL = (str) => {
             '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
             '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
         const isDomainOnly = pattern.test(str);
-        console.log(`isDomainOnly ${isDomainOnly}`)
         if (isDomainOnly) {
             const newStr = `https://${str}`;
             return newStr.match(urlRegex)[1];
