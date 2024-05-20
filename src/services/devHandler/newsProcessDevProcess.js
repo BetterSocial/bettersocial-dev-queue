@@ -34,4 +34,6 @@ const newsProcessDevProcess = async (req, res) => {
   return errorResponse(res, 'Failed to create news job', 400);
 };
 
-module.exports = newsProcessDevProcess;
+module.exports = {
+  newsProcessDevProcess
+};

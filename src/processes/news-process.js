@@ -162,7 +162,7 @@ const saveNewsLink = async (data, name, info, job, logo, created_domain) => {
         ...data,
         ...dateCreted,
         post_id: result.id,
-        created_article: data.contentPublishedAt
+        created_article: data.content_published_at
       });
       await new ElasticNewsLink().putToIndexFromGetstreamObject(newsLink);
       message = 'news link created';
@@ -230,7 +230,7 @@ const newsJob = async (job, done) => {
       keyword,
       author,
       url_compact,
-      contentPublishedAt
+      content_published_at: contentPublishedAt
     };
 
     /*

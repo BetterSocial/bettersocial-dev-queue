@@ -11,9 +11,9 @@ const {
   triggerDailyScoring,
   updateUserScorePhase1,
   updateUserScorePhase2,
-  removeActivity
+  removeActivity,
+  newsProcessDevProcess
 } = require('../services/devHandler');
-const newsProcessDevProcess = require('../services/devHandler/newsProcessDevProcess');
 
 const env = process.env.NODE_ENV || 'development';
 const router = express.Router();
