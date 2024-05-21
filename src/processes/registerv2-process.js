@@ -61,7 +61,7 @@ const registerProcess = async (job, done) => {
       locations: convertingUserFormatForLocation(locationResult)
     };
 
-    await ProcessHelper.followDefaultLocation(userId);
+    // await ProcessHelper.followDefaultLocation(userId);
     const returnPrepopulatedDm = await ProcessHelper.prepopulatedDm(userId, follows);
 
     if (process.env.AUTO_WLCM_MSG === 'true') {
