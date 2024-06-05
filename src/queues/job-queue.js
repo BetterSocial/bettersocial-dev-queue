@@ -177,6 +177,7 @@ const initQueue = () => {
   BetterSocialCronQueue.addCron(generalDailyQueue, '0 0 * * *', 'dailyDeleteExpiredPost');
   BetterSocialCronQueue.addCron(generalDailyQueue, '30 11 * * *', 'dailyScoring');
   BetterSocialCronQueue.addCron(generalDailyQueue, '0 * * * *', 'refreshMaterializedView');
+  BetterSocialCronQueue.addCron(generalDailyQueue, '0 8 * * *', 'topicAutoMessage');
   /**
    * (END) General Queue
    */
