@@ -18,6 +18,7 @@ const {
   addUserPostCommentQueue,
   deleteUserPostCommentQueue,
   registerV2Queue,
+  followTopicQueue,
   automateWelcomeMsgQueue,
   followMainFeedF2,
   unFollowMainFeedF2,
@@ -29,6 +30,7 @@ const {
 } = require('../config');
 
 const {registerProcess: registerV2Process} = require('../processes/registerv2-process');
+const {followTopicProcess} = require('../processes/follow-topic-process');
 const {
   automateWelcomeMsgProcess: autoWelcomeMsgProcess
 } = require('../processes/auto-welcome-msg-process');
@@ -77,6 +79,12 @@ const initQueue = () => {
   registerV2Queue.on('failed', handlerFailure);
   registerV2Queue.on('completed', handlerCompleted);
   registerV2Queue.on('stalled', handlerStalled);
+
+  console.log('Follow topic job is working');
+  followTopicQueue.process(followTopicProcess);
+  followTopicQueue.on('failed', handlerFailure);
+  followTopicQueue.on('completed', handlerCompleted);
+  followTopicQueue.on('stalled', handlerStalled);
 
   console.log('Automate Welcome Msg is working');
   automateWelcomeMsgQueue.process(autoWelcomeMsgProcess);
