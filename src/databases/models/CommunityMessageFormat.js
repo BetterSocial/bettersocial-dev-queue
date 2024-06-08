@@ -1,7 +1,7 @@
 'use strict';
 const {Model} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class UserTopic extends Model {
+  class CommunityMessageFormat extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,17 +11,17 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  UserTopic.init(
+  CommunityMessageFormat.init(
     {
-      user_topics_id: {
+      community_message_format_id: {
         type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true
       },
       user_id: {type: DataTypes.STRING, allowNull: false},
       topic_id: {type: DataTypes.BIGINT, allowNull: false},
-      notify_user: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
-      is_anonymous: {type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false},
+      message: {type: DataTypes.TEXT, allowNull: false},
+      delay_time: {type: DataTypes.INTEGER, allowNull: false},
       createdAt: {
         type: DataTypes.DATE,
         field: 'created_at',
@@ -35,9 +35,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'UserTopic',
-      tableName: 'user_topics'
+      modelName: 'CommunityMessageFormat',
+      tableName: 'community_message_format'
     }
   );
-  return UserTopic;
+  return CommunityMessageFormat;
 };

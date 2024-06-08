@@ -11,7 +11,7 @@ const {scoringDailyProcessJob} = require('../processes/scoring-daily-process');
 const {EVENT_DAILY_PROCESS_TRIGGER} = require('../processes/scoring-constant');
 
 /**
- * @typedef {"dailyCredderUpdate" | "dailyDeleteExpiredPost" | "dailyRssUpdate" | "dailyScoring" | "hourlyRefreshMaterializedView"} CronFlag
+ * @typedef {"dailyCredderUpdate" | "dailyDeleteExpiredPost" | "dailyRssUpdate" | "dailyScoring" | "topicAutoMessage" | "hourlyRefreshMaterializedView"} CronFlag
  */
 
 /**
@@ -78,6 +78,10 @@ class BetterSocialCronQueue extends BetterSocialQueue {
 
     if (flag === 'hourlyRefreshMaterializedView') {
       return refreshAllMaterializedViewProcess(job, done);
+    }
+
+    if (flag === 'topicAutoMessage') {
+      return topicAutoMessageProcess(job, done);
     }
 
     return done(null, 'No process found');

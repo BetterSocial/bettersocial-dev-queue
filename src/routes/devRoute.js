@@ -12,7 +12,8 @@ const {
   updateUserScorePhase1,
   updateUserScorePhase2,
   removeActivity,
-  newsProcessDevProcess
+  newsProcessDevProcess,
+  triggerTopicAutoMessage
 } = require('../services/devHandler');
 
 const env = process.env.NODE_ENV || 'development';
@@ -31,6 +32,7 @@ if (env !== 'production') {
   router.post('/update-user-score-phase2', auth.dev, updateUserScorePhase2);
   router.post('/remove-activity', auth.dev, removeActivity);
   router.post('/news-process', auth.dev, newsProcessDevProcess);
+  router.post('/trigger-topic-auto-message', triggerTopicAutoMessage);
 }
 
 module.exports = router;
