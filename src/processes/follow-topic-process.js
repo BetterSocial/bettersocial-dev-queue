@@ -9,6 +9,7 @@ const {
 } = require('../databases/models');
 const BetterSocialConstantListUtils = require('../utils/constantList/utils');
 const CHANNEL_TYPE_ANONYMOUS = require('../utils/constant');
+const updateBetterChannelMembers = require('../getstream/updateBetterChannelMembers');
 
 const generate_channel_id_for_anon_chat = (owner, member, context = null, source_id = null) => {
   const hash = crypto.createHash('sha256');
@@ -69,8 +70,12 @@ const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data
     members,
     created_by_id: communityMessageFormat.user_id
   });
-  await newChannel.create();
+  const createdChannel = await newChannel.create();
   const channelState = await newChannel.watch();
+
+  await updateBetterChannelMembers(newChannel, createdChannel, true, {
+    channel_type: CHANNEL_TYPE_ANONYMOUS
+  });
 
   if (channelState.messages.length === 0) {
     await newChannel.sendMessage({
@@ -84,11 +89,6 @@ const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data
       console.log('::: Error on stopWatching :::', error);
     }
   }
-
-  // const {betterChannelMember, betterChannelMemberObject, updatedChannel} =
-  //   await BetterSocialCore.chat.updateBetterChannelMembers(newChannel, createdChannel, true, {
-  //     channel_type: CHANNEL_TYPE_ANONYMOUS
-  //   });
 };
 const followTopicProcess = async (job, done) => {
   try {
