@@ -5,6 +5,7 @@ module.exports = {
   CHANNEL_TYPE_GROUP: 1,
   CHANNEL_TYPE_GROUP_LOCATION: 2,
   CHANNEL_TYPE_TOPIC: 3,
+  CHANNEL_TYPE_ANONYMOUS: 4,
 
   ICON_TOPIC_CHANNEL:
     'https://res.cloudinary.com/hpjivutj2/image/upload/v1636632905/vdg8solozeepgvzxyfbv.png',
