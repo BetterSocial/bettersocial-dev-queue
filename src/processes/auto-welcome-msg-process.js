@@ -32,7 +32,7 @@ const automateWelcomeMsgProcess = async (job, done) => {
           resultPrepopulated.ownUser.username.slice(1);
 
         const toBeSent = {
-          text: `Hi ${newOwnUser},\nWelcome to ${process.env.BRAND_NAME}! 🎉\n\nGot questions, ideas, or feedback? Share away! We’re all ears. Your input fuels our mission to make the internet a healthier, happier place.\n\nReady to dive in? Let’s chat! 🚀`
+          text: `Hi ${newOwnUser},\n\nWelcome to ${process.env.BRAND_NAME}! 🎉\nGot questions, ideas, or feedback? Share away! We’re all ears. Your input fuels our mission to make the internet a healthier, happier place.\n\nReady to dive in? Let’s chat! 🚀`
         };
 
         await chat.sendMessage({
