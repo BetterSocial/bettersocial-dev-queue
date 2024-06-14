@@ -30,9 +30,6 @@ const automateWelcomeMsgProcess = async (job, done) => {
         const newOwnUser =
           resultPrepopulated.ownUser.username[0].toUpperCase() +
           resultPrepopulated.ownUser.username.slice(1);
-        // const toBeSent = {
-        //   text: `Hi ${newOwnUser}\n\nWelcome to ${process.env.BRAND_NAME}.\nWe’re here to help you navigate the app. If you have any questions, ideas or criticism, feel free to message us.\nMessages will be replied by a mix of AI and human review, so we promise to get you a satisfying answer. Every ideas or feedback will be reviewed by our Product team!\nIn our mission to build a better, healthier social internet, we’re here to help, and to learn from you!\n\nAny questions to start with?`
-        // };
 
         const toBeSent = {
           text: `Hi ${newOwnUser},\nWelcome to ${process.env.BRAND_NAME}! 🎉\n\nGot questions, ideas, or feedback? Share away! We’re all ears. Your input fuels our mission to make the internet a healthier, happier place.\n\nReady to dive in? Let’s chat! 🚀`
