@@ -1,4 +1,7 @@
 const {StreamChat} = require('stream-chat');
+const FcmTokenFunction = require('../databases/functions/fcmToken');
+const FcmToken = require('../databases/models/FCMToken');
+const {messaging} = require('firebase-admin');
 
 const automateWelcomeMsgProcess = async (job, done) => {
   const serverClient = StreamChat.getInstance(process.env.API_KEY, process.env.SECRET);
@@ -37,8 +40,26 @@ const automateWelcomeMsgProcess = async (job, done) => {
 
         await chat.sendMessage({
           ...toBeSent,
-          user_id: resultPrepopulated.targetUser.user_id
+          user_id: resultPrepopulated.targetUser.user_id,
+          skip_push: true
         });
+
+        // send to multiple token
+        const userTargetTokens = await FcmTokenFunction.findAllTokenByUserId(
+          FcmToken,
+          resultPrepopulated.targetUser.user_id
+        );
+
+        await Promise.all(
+          userTargetTokens.map(async (user) => {
+            const payload = {
+              notification: {
+                body: toBeSent
+              }
+            };
+            await messaging().sendToDevice(user?.token, payload);
+          })
+        );
 
         try {
           await chat.stopWatching();
