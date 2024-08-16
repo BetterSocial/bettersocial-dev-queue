@@ -92,10 +92,10 @@ const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data
 };
 const followTopicProcess = async (job, done) => {
   try {
-    console.info('running job register process ! with id ' + job.id);
+    console.info(`running job register process ! with id ${job.id}`);
     const serverClient = StreamChat.getInstance(process.env.API_KEY, process.env.SECRET);
     if (process.env.AUTO_WLCM_MSG === 'true') {
-      let data = job.data;
+      const {data} = job;
       // check if user is following a topic
       const userTopic = await UserTopic.findOne({
         where: {
@@ -134,11 +134,11 @@ const followTopicProcess = async (job, done) => {
 
         await chat.create();
         const channelState = await chat.watch();
-
         if (channelState.messages.length === 0) {
           await chat.sendMessage({
             text: communityMessageFormat.message,
-            user_id: communityMessageFormat.user_id
+            user_id: communityMessageFormat.user_id,
+            is_auto_message: true
           });
 
           try {
@@ -146,6 +146,18 @@ const followTopicProcess = async (job, done) => {
           } catch (error) {
             console.log('::: Error on stopWatching :::', error);
           }
+        } else if (
+          channelState.messages.length === 1 &&
+          channelState.messages[0]?.is_auto_message
+        ) {
+          // add new condition based on ticket ping-4227
+          // check if first message is auto message from sender
+          await chat.sendMessage({
+            text: communityMessageFormat.message,
+            user_id: communityMessageFormat.user_id
+          });
+        } else {
+          console.log(':::  Channel not eligible to receive auto message :::');
         }
       }
 
