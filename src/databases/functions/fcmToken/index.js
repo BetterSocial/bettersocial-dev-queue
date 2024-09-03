@@ -1,7 +1,7 @@
-import findAllTokenByUserId from './findAllTokenByUserId';
+const findAllTokenByUserId = require('./findAllTokenByUserId');
 
 const FcmTokenFunction = {
   findAllTokenByUserId
 };
 
-export default FcmTokenFunction;
+module.exports = FcmTokenFunction;
