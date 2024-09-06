@@ -136,7 +136,7 @@ const followTopicProcess = async (job, done) => {
           console.log('::: Error on create chat :::', error);
         }
         const channelState = await chat.watch();
-        console.log('::: channelState.messages :::', channelState);
+        // console.log('::: channelState.messages :::', channelState);
         if (channelState.messages.length === 0) {
           await chat.sendMessage({
             text: communityMessageFormat.message,
