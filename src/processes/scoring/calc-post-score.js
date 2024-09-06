@@ -82,7 +82,7 @@ const calcPostScore = async (postScoreDoc) => {
   postScoreDoc.p3_score = p3;
   postScoreDoc.post_score = final_score;
 
-  console.debug(`calcPostScore => Final post score doc: ${JSON.stringify(postScoreDoc)}`);
+  // console.debug(`calcPostScore => Final post score doc: ${JSON.stringify(postScoreDoc)}`);
   return postScoreDoc;
 };
 
