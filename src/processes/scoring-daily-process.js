@@ -97,7 +97,7 @@ const onDailyProcessPostScore = async (data, job) => {
  * Main function of scoring daily process job
  */
 const scoringDailyProcessJob = async (job, done) => {
-  console.log(`scoringProcessJob: ${JSON.stringify(job.data)}`);
+  // console.log(`scoringProcessJob: ${JSON.stringify(job.data)}`);
   try {
     console.info(`running job scoring with id: ${job.id}`);
     const messageData = job.data;
