@@ -1,4 +1,4 @@
-const StreamChat = require('stream-chat').StreamChat;
+const {StreamChat} = require('stream-chat');
 const crypto = require('crypto');
 const {
   LogError,
@@ -31,31 +31,30 @@ const anon_to_sign_user = async (client, user, targetUser) => {
   });
   if (channel) {
     return channel;
-  } else {
-    const channel_id = generate_channel_id_for_anon_chat(user, targetUser, 'autoMessage');
-    const emoji = BetterSocialConstantListUtils.getRandomEmoji();
-    const color = BetterSocialConstantListUtils.getRandomColor();
-    const anon_init_data = {
-      anon_user_info_color_code: color.code,
-      anon_user_info_color_name: color.color,
-      anon_user_info_emoji_code: emoji.emoji,
-      anon_user_info_emoji_name: emoji.name
-    };
-
-    const new_channel = await ChatAnonUserInfo.create({
-      channel_id: channel_id,
-      my_anon_user_id: user,
-      target_user_id: targetUser,
-      anon_user_info_color_code: anon_init_data.anon_user_info_color_code,
-      anon_user_info_color_name: anon_init_data.anon_user_info_color_name,
-      anon_user_info_emoji_code: anon_init_data.anon_user_info_emoji_code,
-      anon_user_info_emoji_name: anon_init_data.anon_user_info_emoji_name,
-      context: 'auto message',
-      initiator: user,
-      source_id: ''
-    });
-    return new_channel;
   }
+  const channel_id = generate_channel_id_for_anon_chat(user, targetUser, 'autoMessage');
+  const emoji = BetterSocialConstantListUtils.getRandomEmoji();
+  const color = BetterSocialConstantListUtils.getRandomColor();
+  const anon_init_data = {
+    anon_user_info_color_code: color.code,
+    anon_user_info_color_name: color.color,
+    anon_user_info_emoji_code: emoji.emoji,
+    anon_user_info_emoji_name: emoji.name
+  };
+
+  const new_channel = await ChatAnonUserInfo.create({
+    channel_id,
+    my_anon_user_id: user,
+    target_user_id: targetUser,
+    anon_user_info_color_code: anon_init_data.anon_user_info_color_code,
+    anon_user_info_color_name: anon_init_data.anon_user_info_color_name,
+    anon_user_info_emoji_code: anon_init_data.anon_user_info_emoji_code,
+    anon_user_info_emoji_name: anon_init_data.anon_user_info_emoji_name,
+    context: 'auto message',
+    initiator: user,
+    source_id: ''
+  });
+  return new_channel;
 };
 const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data) => {
   const members = [communityMessageFormat.user_id, data.user_id];
@@ -131,9 +130,13 @@ const followTopicProcess = async (job, done) => {
           members: [communityMessageFormat.user_id, data.user_id],
           created_by_id: communityMessageFormat.user_id
         });
-
-        await chat.create();
+        try {
+          await chat.create();
+        } catch (error) {
+          console.log('::: Error on create chat :::', error);
+        }
         const channelState = await chat.watch();
+        console.log('::: channelState.messages :::', channelState);
         if (channelState.messages.length === 0) {
           await chat.sendMessage({
             text: communityMessageFormat.message,
@@ -146,18 +149,21 @@ const followTopicProcess = async (job, done) => {
           } catch (error) {
             console.log('::: Error on stopWatching :::', error);
           }
-        } else if (
-          channelState.messages.length === 1 &&
-          channelState.messages[0]?.is_auto_message
-        ) {
-          // add new condition based on ticket ping-4227
-          // check if first message is auto message from sender
+          // } else if (channelState.messages.length <= 1 && channelState.messages[0]?.is_auto_message) {
+          //   // add new condition based on ticket ping-4227
+          //   // check if first message is auto message from sender
+          //   await chat.sendMessage({
+          //     text: communityMessageFormat.message,
+          //     user_id: communityMessageFormat.user_id,
+          //     is_auto_message: true
+          //   });
+        } else {
+          // console.log(':::  Channel not eligible to receive auto message :::');
           await chat.sendMessage({
             text: communityMessageFormat.message,
-            user_id: communityMessageFormat.user_id
+            user_id: communityMessageFormat.user_id,
+            is_auto_message: true
           });
-        } else {
-          console.log(':::  Channel not eligible to receive auto message :::');
         }
       }
 
