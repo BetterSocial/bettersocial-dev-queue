@@ -4,8 +4,6 @@ const {LogError} = require('../databases/models');
 const UserLocationFunction = require('../databases/functions/userLocation');
 const UserTopicFunction = require('../databases/functions/userTopic');
 const UserFollowUserFunction = require('../databases/functions/userFollowUser');
-const momentTz = require('moment-timezone');
-const {sample} = require('lodash');
 
 const {
   Locations,
@@ -19,16 +17,15 @@ const {
 const LocationFunction = require('../databases/functions/location');
 const {addUserToTopicChannel} = require('./helper');
 const ProcessHelper = require('./helper');
-const {automateWelcomeMsgQueue} = require('../config');
 const {preAutomateWelcomeMsgProcess} = require('./helper/preAutoWelcomeMsg');
 
 const {syncFeedPerUserProcess} = require('../services/syncFeedPerUser');
 
 const registerProcess = async (job, done) => {
   try {
-    console.info('running job register process ! with id ' + job.id);
-    let data = job.data;
-    let {userId, follows, topics, anonUserId, locations} = data;
+    console.info(`running job register process ! with id ${job.id}`);
+    const {data} = job;
+    const {userId, follows, topics, anonUserId, locations} = data;
 
     const locationIds = locations.map((item) => item?.location_id);
     await UserLocationFunction.registerUserLocation(
@@ -76,6 +73,7 @@ const registerProcess = async (job, done) => {
     await ProcessHelper.addUserToTopicChannel(userId, topicNames);
     await ProcessHelper.followMainFeedTopic(userId, topicNames);
     await ProcessHelper.followMainFeedFollowing(userId, follows);
+    await ProcessHelper.sendTopicAutoMessage(userId, topicIds);
     await syncFeedPerUserProcess(userId);
     await LogError.create({
       message: `done register process userId: ${userId}`
