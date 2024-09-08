@@ -11,6 +11,7 @@ const followMainFeedTopic = require('./followMainFeedTopic');
 const followMainFeedFollowing = require('./followMainFeedFollowing');
 const followMainFeedF2 = require('./followMainFeedF2');
 const unFollowMainFeedF2 = require('./unFollowMainFeedF2');
+const sendTopicAutoMessage = require('./sendTopicAutoMessage');
 
 const ProcessHelper = {
   addUserToLocationChannel,
@@ -25,7 +26,8 @@ const ProcessHelper = {
   followMainFeedFollowing,
   followMainFeedF2,
   unFollowMainFeedF2,
-  createEmptyChannel
+  createEmptyChannel,
+  sendTopicAutoMessage
 };
 
 module.exports = ProcessHelper;
