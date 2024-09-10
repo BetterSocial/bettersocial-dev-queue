@@ -95,18 +95,6 @@ const followTopicProcess = async (job, done) => {
     const serverClient = StreamChat.getInstance(process.env.API_KEY, process.env.SECRET);
     if (process.env.AUTO_WLCM_MSG === 'true') {
       const {data} = job;
-      // check if user is following a topic
-      const userTopic = await UserTopic.findOne({
-        where: {
-          topic_id: data.topic_id,
-          user_id: data.user_id,
-          is_anonymous: false
-        }
-      });
-      if (!userTopic) {
-        done(null, 'user is not following the topic');
-        return;
-      }
       // check if community message format is active
       const communityMessageFormat = await CommunityMessageFormat.findOne({
         where: {
@@ -118,7 +106,18 @@ const followTopicProcess = async (job, done) => {
         done(null, 'community message format is inactive or not found');
         return;
       }
-
+      // check if user is following a topic
+      const userTopic = await UserTopic.findOne({
+        where: {
+          topic_id: communityMessageFormat.topic_id,
+          user_id: data.user_id,
+          is_anonymous: false
+        }
+      });
+      if (!userTopic) {
+        done(null, 'user is not following the topic');
+        return;
+      }
       // check if user is anonymous
       const senderUser = await User.findByPk(communityMessageFormat.user_id);
       if (senderUser.is_anonymous) {
