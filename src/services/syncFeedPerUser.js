@@ -152,13 +152,15 @@ const syncMainFeedF2 = async (userId) => {
   console.log('END sync main_feed_f2');
 };
 
-const syncMainFeedBroad = async (userId) => {
+const syncMainFeedBroad = async (userId, source = '') => {
   console.log('START sync main_feed_broad');
   const relatedUserIds = await findRelatedUserIds(userId);
   const unrelatedUserIds = await findUnrelatedUserIds(relatedUserIds);
   const unrelatedAnonUserIds = await findUnrelatedAnonUserIds(relatedUserIds);
   console.log('***** Start Process Feed Board *****');
-  await unFollowMainFeedBroad(userId, relatedUserIds);
+  if (source !== 'registerUser') {
+    await unFollowMainFeedBroad(userId, relatedUserIds);
+  }
   await followMainFeedBroad(userId, unrelatedUserIds);
   await followMainFeedBroad(userId, unrelatedAnonUserIds, true);
   console.log('END sync main_feed_broad');
@@ -199,14 +201,14 @@ const resetAndSyncFeed = async (req, res) => {
   }
 };
 
-const syncFeedPerUserProcess = async (userId) => {
+const syncFeedPerUserProcess = async (userId, source = '') => {
   console.log(userId);
   // Get following user to follow
   await syncMainFeedFollowing(userId);
   // Get f2 user to follow
   await syncMainFeedF2(userId);
   // Get broad user to follow
-  await syncMainFeedBroad(userId);
+  await syncMainFeedBroad(userId, source);
 };
 
 const syncMainFeedBroadPerUser = async (req, res) => {
