@@ -26,6 +26,7 @@ const registerProcess = async (job, done) => {
     console.info(`running job register process ! with id ${job.id}`);
     const {data} = job;
     const {userId, follows, topics, anonUserId, locations} = data;
+    console.log(`::: Start registerProcess for user_id ${userId} :::`);
 
     const locationIds = locations.map((item) => item?.location_id);
     await UserLocationFunction.registerUserLocation(
@@ -64,16 +65,23 @@ const registerProcess = async (job, done) => {
     if (process.env.AUTO_WLCM_MSG === 'true') {
       await preAutomateWelcomeMsgProcess(returnPrepopulatedDm);
     }
-
+    console.log('::: Start followUser :::');
     await ProcessHelper.followUser(userId, follows);
+    console.log('::: Start createEmptyChannel :::');
     await ProcessHelper.createEmptyChannel(userId, follows);
+    console.log('::: Start followAnonymousUser :::');
     await ProcessHelper.followAnonymousUser(anonUserId, follows);
+    console.log('::: Start followTopic :::');
     await ProcessHelper.followTopic(userId, topics);
+    console.log('::: Start followLocation :::');
     await ProcessHelper.followLocation(userId, result?.locations);
+    console.log('::: Start sendTopicAutoMessage :::');
     await ProcessHelper.sendTopicAutoMessage(userId, topicIds);
-
+    console.log('::: Start followMainFeedTopic :::');
     await ProcessHelper.followMainFeedTopic(userId, topicNames);
+    console.log('::: Start followMainFeedFollowing :::');
     await ProcessHelper.followMainFeedFollowing(userId, follows);
+    console.log('::: Start addUserToTopicChannel :::');
     await ProcessHelper.addUserToTopicChannel(userId, topicNames);
     await syncFeedPerUserProcess(userId);
     await LogError.create({
