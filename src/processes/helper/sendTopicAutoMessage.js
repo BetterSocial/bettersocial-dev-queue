@@ -6,9 +6,9 @@ const {CommunityMessageFormat, LogError} = require('../../databases/models');
 
 const followTopicServiceQueue = async (userId, topicId, communityMessageFormatId, delay) => {
   const data = {
-    userId,
-    topicId,
-    communityMessageFormatId
+    user_id: userId,
+    topic_id: topicId,
+    community_message_format_id: communityMessageFormatId
   };
   const currentTime = momentTz().tz('America/Los_Angeles');
   const randomTime = sample([6, 7, 8]);
