@@ -27,7 +27,10 @@ const followTopicServiceQueue = async (userId, topicId, communityMessageFormatId
     delay: diffTime
   };
   try {
-    await followTopicQueue.add(data, options);
+    const queueRegistered = await followTopicQueue.add(data, options);
+    console.log(
+      `::: followTopicServiceQueue for user_id ${userId} and communityMessageFormatId ${communityMessageFormatId} :::  ${queueRegistered.id}`
+    );
   } catch (e) {
     console.log('error', e);
   }
