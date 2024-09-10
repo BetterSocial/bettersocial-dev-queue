@@ -33,12 +33,13 @@ const followTopicServiceQueue = async (userId, topicId, communityMessageFormatId
   }
 };
 const sendTopicAutoMessage = async (userId, topicIds) => {
+  console.log('::: sendTopicAutoMessage when register :::', userId);
   try {
     topicIds.forEach(async (topicId) => {
       const communityMessageFormats = await CommunityMessageFormat.findAll({
         where: {topic_id: topicId, status: '1'}
       });
-
+      console.log('::: Total communityMessageFormats :::', communityMessageFormats.length);
       if (communityMessageFormats.length > 0) {
         communityMessageFormats.forEach(async (communityMessageFormat) => {
           followTopicServiceQueue(
