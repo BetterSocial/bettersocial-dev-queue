@@ -37,6 +37,7 @@ const getAllChatAnonimityUserInfo = async (channelId, userIds = []) => {
   }
 };
 
+// eslint-disable-next-line no-underscore-dangle
 const __getAnonUserInfoPriority = (memberDataFromDb, member) => {
   if (memberDataFromDb.anon_user_info_color_code) {
     return {
@@ -45,25 +46,35 @@ const __getAnonUserInfoPriority = (memberDataFromDb, member) => {
       emoji_name: memberDataFromDb.anon_user_info_emoji_name,
       emoji_code: memberDataFromDb.anon_user_info_emoji_code
     };
-  } else if (member.anon_user_info_color_code) {
+  }
+  if (member.anon_user_info_color_code) {
     return {
       color_name: member.anon_user_info_color_name,
       color_code: member.anon_user_info_color_code,
       emoji_name: member.anon_user_info_emoji_name,
       emoji_code: member.anon_user_info_emoji_code
     };
-  } else {
-    const emoji = BetterSocialConstantListUtils.getRandomEmoji();
-    const color = BetterSocialConstantListUtils.getRandomColor();
-    return {
-      color_name: color.color,
-      color_code: color.code,
-      emoji_name: emoji.name,
-      emoji_code: emoji.emoji
-    };
   }
+  const emoji = BetterSocialConstantListUtils.getRandomEmoji();
+  const color = BetterSocialConstantListUtils.getRandomColor();
+  return {
+    color_name: color.color,
+    color_code: color.code,
+    emoji_name: emoji.name,
+    emoji_code: emoji.emoji
+  };
 };
 
+const removeDisabledDevice = (member) => {
+  const newMemberInfo = member;
+  const userDevices = newMemberInfo?.user?.devices;
+  if (!userDevices) return newMemberInfo;
+  const validUserDevices = userDevices.filter((device) => !device.disabled);
+  newMemberInfo.user.devices = validUserDevices;
+  return newMemberInfo;
+};
+
+// eslint-disable-next-line no-underscore-dangle
 const __helperProcessBetterChannelMember = (members, membersDataFromDbMap) => {
   let newChannelName = '';
   const better_channel_member = members.map((member) => {
@@ -78,13 +89,13 @@ const __helperProcessBetterChannelMember = (members, membersDataFromDbMap) => {
       : username;
 
     newChannelName += `${updatedUsername}${SEPARATOR}`;
-
+    member = removeDisabledDevice(member);
     const defaultUser = {
       ...member,
       is_anonymous,
       user: {
         ...member.user,
-        is_anonymous: is_anonymous,
+        is_anonymous,
         username: updatedUsername,
         name: updatedUsername
       }
