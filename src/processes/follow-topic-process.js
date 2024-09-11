@@ -8,31 +8,33 @@ const {
   ChatAnonUserInfo
 } = require('../databases/models');
 const BetterSocialConstantListUtils = require('../utils/constantList/utils');
-const CHANNEL_TYPE_ANONYMOUS = require('../utils/constant');
+const {CHANNEL_TYPE_ANONYMOUS} = require('../utils/constant');
 const updateBetterChannelMembers = require('../getstream/updateBetterChannelMembers');
 
-const generate_channel_id_for_anon_chat = (owner, member, context = null, source_id = null) => {
+const generate_channel_id_for_anon_chat = (owner, member, context = null, sourceId = null) => {
   const hash = crypto.createHash('sha256');
   hash.update(owner);
   hash.update(member);
   if (context) hash.update(context);
-  if (source_id) hash.update(source_id);
+  if (sourceId) hash.update(sourceId);
 
   return hash.digest('hex');
 };
-const anon_to_sign_user = async (client, user, targetUser) => {
+const anon_to_sign_user = async (client, user, targetUser, sourceId = '') => {
   const channel = await ChatAnonUserInfo.findOne({
     where: {
       my_anon_user_id: user,
       target_user_id: targetUser,
       context: 'auto message',
+      source_id: sourceId,
       initiator: user
     }
   });
   if (channel) {
     return channel;
   }
-  const channel_id = generate_channel_id_for_anon_chat(user, targetUser, 'autoMessage');
+
+  const channel_id = generate_channel_id_for_anon_chat(user, targetUser, 'autoMessage', sourceId);
   const emoji = BetterSocialConstantListUtils.getRandomEmoji();
   const color = BetterSocialConstantListUtils.getRandomColor();
   const anon_init_data = {
@@ -41,7 +43,6 @@ const anon_to_sign_user = async (client, user, targetUser) => {
     anon_user_info_emoji_code: emoji.emoji,
     anon_user_info_emoji_name: emoji.name
   };
-
   const new_channel = await ChatAnonUserInfo.create({
     channel_id,
     my_anon_user_id: user,
@@ -52,7 +53,7 @@ const anon_to_sign_user = async (client, user, targetUser) => {
     anon_user_info_emoji_name: anon_init_data.anon_user_info_emoji_name,
     context: 'auto message',
     initiator: user,
-    source_id: ''
+    source_id: sourceId
   });
   return new_channel;
 };
@@ -61,7 +62,8 @@ const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data
   const channel_info = await anon_to_sign_user(
     serverClient,
     communityMessageFormat.user_id,
-    data.user_id
+    data.user_id,
+    communityMessageFormat.topic_id
   );
 
   const newChannel = serverClient.channel('messaging', channel_info.channel_id, {
@@ -70,24 +72,25 @@ const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data
     created_by_id: communityMessageFormat.user_id
   });
   const createdChannel = await newChannel.create();
-  const channelState = await newChannel.watch();
+  // const channelState = await newChannel.watch();
 
   await updateBetterChannelMembers(newChannel, createdChannel, true, {
     channel_type: CHANNEL_TYPE_ANONYMOUS
   });
 
-  if (channelState.messages.length === 0) {
-    await newChannel.sendMessage({
-      text: communityMessageFormat.message,
-      user_id: communityMessageFormat.user_id
-    });
+  // if (channelState.messages.length === 0) {
+  await newChannel.sendMessage({
+    text: communityMessageFormat.message,
+    user_id: communityMessageFormat.user_id,
+    is_auto_message: true
+  });
 
-    try {
-      // await chat.stopWatching();
-    } catch (error) {
-      console.log('::: Error on stopWatching :::', error);
-    }
+  try {
+    // await chat.stopWatching();
+  } catch (error) {
+    console.log('::: Error on stopWatching :::', error);
   }
+  // }
 };
 const followTopicProcess = async (job, done) => {
   try {
