@@ -4,6 +4,21 @@ const {sample} = require('lodash');
 const {followTopicQueue} = require('../../config/redis');
 const {CommunityMessageFormat, LogError} = require('../../databases/models');
 
+const setRequiredTime = (delay) => {
+  let requiredTime = momentTz().tz('America/Los_Angeles');
+  if (delay === 0) {
+    const randomTime = Math.floor(Math.random() * (40 - 10 + 1)) + 10;
+    requiredTime = momentTz().tz('America/Los_Angeles').add(randomTime, 'minutes');
+  } else {
+    const randomTime = sample([6, 7, 8]);
+    const additionalDays = delay;
+    requiredTime = momentTz()
+      .tz('America/Los_Angeles')
+      .set({hour: randomTime})
+      .add(additionalDays, 'days');
+  }
+  return requiredTime;
+};
 const followTopicServiceQueue = async (userId, topicId, communityMessageFormatId, delay) => {
   const data = {
     user_id: userId,
@@ -11,14 +26,7 @@ const followTopicServiceQueue = async (userId, topicId, communityMessageFormatId
     community_message_format_id: communityMessageFormatId
   };
   const currentTime = momentTz().tz('America/Los_Angeles');
-  const randomTime = sample([6, 7, 8]);
-  const additionalDays = delay;
-
-  const requiredTime = momentTz()
-    .tz('America/Los_Angeles')
-    .set({hour: randomTime})
-    .add(additionalDays, 'days');
-
+  const requiredTime = setRequiredTime(delay);
   const diffTime = requiredTime.diff(currentTime, 'milliseconds');
 
   const options = {
