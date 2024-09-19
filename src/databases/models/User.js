@@ -63,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
       status: {type: DataTypes.BOOLEAN, allowNull: false},
       bio: {type: DataTypes.TEXT, allowNull: true},
       blocked_by_admin: {type: DataTypes.BOOLEAN, defaultValue: 0, allowNull: true},
-      w_pu_user: {type: DataTypes.INTEGER, defaultValue: 1, allowNull: true},
+      w_pu_user: {type: DataTypes.DOUBLE, defaultValue: 1, allowNull: true},
       is_anonymous: {type: DataTypes.BOOLEAN, allowNull: false},
       combined_user_score: {type: DataTypes.DOUBLE, defaultValue: 0, allowNull: false},
       karma_score: {type: DataTypes.DOUBLE, defaultValue: 0, allowNull: false},
