@@ -6,6 +6,7 @@ const getUserFollowerList = require('./get-user-follower-list');
 const getUserByUserId = require('./get-user-by-user-id');
 const userBlockByAdmin = require('./user-block-by-admin');
 const userUnblockByAdmin = require('./user-unblock-by-admin');
+const setWPUUser = require('./set-w-pu-user');
 const findAnonymousUserId = require('./find-anonymous-user-id');
 const userSetKarmaScore = require('./user-set-karma-score');
 const setAllFollowerCount = require('./set-all-follower-count');
@@ -21,7 +22,8 @@ const UsersFunction = {
   userUnblockByAdmin,
   findAnonymousUserId,
   userSetKarmaScore,
-  setAllFollowerCount
+  setAllFollowerCount,
+  setWPUUser
 };
 
 module.exports = UsersFunction;

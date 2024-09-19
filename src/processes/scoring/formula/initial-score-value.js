@@ -60,6 +60,7 @@ const initDataUserScore = (userId, timestamp) => ({
   last_daily_process: '',
   created_at: timestamp,
   updated_at: timestamp,
+  w_pu_user: 1,
   blocked_by_admin: {
     status: false,
     last_update: ''

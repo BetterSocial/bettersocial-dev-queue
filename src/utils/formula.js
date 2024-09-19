@@ -144,7 +144,7 @@ const dBench = (dur_min, dur_marg, W) => {
 const userScore = (u1, y, userDoc) => {
   let user_score = u1 * y ** USER_SCORE_WEIGHT.W_Y;
   if (userDoc.blocked_by_admin?.status) {
-    user_score *= USER_SCORE_WEIGHT.W_PU;
+    user_score *= USER_SCORE_WEIGHT.W_PU * (userDoc.w_pu_user || 1);
   }
   return user_score;
 };
