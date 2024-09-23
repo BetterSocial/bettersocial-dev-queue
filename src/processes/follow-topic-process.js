@@ -38,37 +38,68 @@ const anon_to_sign_user = async (client, user, targetUser, sourceId = '') => {
   const channel_id = generate_channel_id_for_anon_chat(user, targetUser, 'autoMessage', sourceId);
   const emoji = BetterSocialConstantListUtils.getRandomEmoji();
   const color = BetterSocialConstantListUtils.getRandomColor();
-  const anon_init_data = {
+  const anonInitData = {
     anon_user_info_color_code: color.code,
     anon_user_info_color_name: color.color,
     anon_user_info_emoji_code: emoji.emoji,
     anon_user_info_emoji_name: emoji.name
   };
-  const new_channel = await ChatAnonUserInfo.create({
+  const newChannel = await ChatAnonUserInfo.create({
     channel_id,
     my_anon_user_id: user,
     target_user_id: targetUser,
-    anon_user_info_color_code: anon_init_data.anon_user_info_color_code,
-    anon_user_info_color_name: anon_init_data.anon_user_info_color_name,
-    anon_user_info_emoji_code: anon_init_data.anon_user_info_emoji_code,
-    anon_user_info_emoji_name: anon_init_data.anon_user_info_emoji_name,
+    anon_user_info_color_code: anonInitData.anon_user_info_color_code,
+    anon_user_info_color_name: anonInitData.anon_user_info_color_name,
+    anon_user_info_emoji_code: anonInitData.anon_user_info_emoji_code,
+    anon_user_info_emoji_name: anonInitData.anon_user_info_emoji_name,
     context: 'auto message',
     initiator: user,
     source_id: sourceId
   });
-  return new_channel;
+
+  return newChannel;
 };
+
+async function sendPushNotification({
+  serverChannel,
+  serverMessage,
+  targetUserId,
+  senderUsername,
+  text
+}) {
+  const notificationPayload = {
+    title: senderUsername,
+    body: `${text?.substring(0, 100)}`
+  };
+
+  const dataPayload = {
+    type: 'message.new',
+    channel_id: serverChannel?.id,
+    message: text,
+    message_schema: 'text',
+    attachment: '',
+    created_at: serverMessage?.message?.created_at || new Date().toISOString(),
+    is_annoymous: 'false',
+    priority: 'high',
+    content_available: 'true'
+  };
+
+  sendChatNotificationByChannelMembers([targetUserId], {
+    notification: notificationPayload,
+    data: dataPayload
+  });
+}
 
 const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data) => {
   const members = [communityMessageFormat.user_id, data.user_id];
-  const channel_info = await anon_to_sign_user(
+  const channelInfo = await anon_to_sign_user(
     serverClient,
     communityMessageFormat.user_id,
     data.user_id,
     communityMessageFormat.topic_id
   );
 
-  const newChannel = serverClient.channel('messaging', channel_info.channel_id, {
+  const newChannel = serverClient.channel('messaging', channelInfo.channel_id, {
     type_channel: CHANNEL_TYPE_ANONYMOUS,
     members,
     created_by_id: communityMessageFormat.user_id
@@ -81,10 +112,21 @@ const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data
   });
 
   // if (channelState.messages.length === 0) {
-  await newChannel.sendMessage({
-    text: communityMessageFormat.message,
-    user_id: communityMessageFormat.user_id,
-    is_auto_message: true
+  const serverMessage = await newChannel.sendMessage(
+    {
+      text: communityMessageFormat.message,
+      user_id: communityMessageFormat.user_id,
+      is_auto_message: true
+    },
+    {skip_push: true}
+  );
+
+  sendPushNotification({
+    serverChannel: newChannel,
+    serverMessage,
+    targetUserId: data?.user_id,
+    senderUsername: `${channelInfo?.anon_user_info_color_name} ${channelInfo?.anon_user_info_emoji_name}`,
+    text: communityMessageFormat?.message
   });
 
   try {
@@ -111,26 +153,12 @@ const sendSignedMessage = async ({
     {skip_push: true}
   );
 
-  const notificationPayload = {
-    title: senderUsername,
-    body: `${text?.substring(0, 100)}`
-  };
-
-  const dataPayload = {
-    type: 'message.new',
-    channel_id: serverChannel?.id,
-    message: text,
-    message_schema: 'text',
-    attachment: '',
-    created_at: message?.message?.created_at || new Date().toISOString(),
-    is_annoymous: 'false',
-    priority: 'high',
-    content_available: 'true'
-  };
-
-  sendChatNotificationByChannelMembers([targetUserId], {
-    notification: notificationPayload,
-    data: dataPayload
+  sendPushNotification({
+    serverChannel,
+    serverMessage: message,
+    targetUserId,
+    senderUsername,
+    text
   });
 };
 
@@ -163,6 +191,7 @@ const followTopicProcess = async (job, done) => {
         done(null, 'user is not following the topic');
         return;
       }
+
       // check if user is anonymous
       const [senderUser] = await Promise.all([User.findByPk(communityMessageFormat.user_id)]);
 
