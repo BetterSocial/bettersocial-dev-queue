@@ -98,7 +98,7 @@ const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data
 const sendSignedMessage = async ({
   serverChannel,
   targetUserId,
-  targetUsername,
+  senderUsername,
   communityMessageFormatUserId,
   text
 }) => {
@@ -112,7 +112,7 @@ const sendSignedMessage = async ({
   );
 
   const notificationPayload = {
-    title: targetUsername,
+    title: senderUsername,
     body: `${text?.substring(0, 100)}`
   };
 
@@ -164,10 +164,7 @@ const followTopicProcess = async (job, done) => {
         return;
       }
       // check if user is anonymous
-      const [senderUser, receiverUser] = await Promise.all([
-        User.findByPk(communityMessageFormat.user_id),
-        User.findByPk(data.user_id)
-      ]);
+      const [senderUser] = await Promise.all([User.findByPk(communityMessageFormat.user_id)]);
 
       if (senderUser.is_anonymous) {
         await sendMessageAsAnonymous(serverClient, communityMessageFormat, data);
@@ -189,7 +186,7 @@ const followTopicProcess = async (job, done) => {
           await sendSignedMessage({
             serverChannel: chat,
             targetUserId: data?.user_id,
-            targetUsername: receiverUser?.username,
+            senderUsername: senderUser?.username,
             communityMessageFormatUserId: communityMessageFormat.user_id,
             text: communityMessageFormat?.message
           });
@@ -212,7 +209,7 @@ const followTopicProcess = async (job, done) => {
           await sendSignedMessage({
             serverChannel: chat,
             targetUserId: data?.user_id,
-            targetUsername: receiverUser?.username,
+            senderUsername: senderUser?.username,
             communityMessageFormatUserId: communityMessageFormat.user_id,
             text: communityMessageFormat?.message
           });
