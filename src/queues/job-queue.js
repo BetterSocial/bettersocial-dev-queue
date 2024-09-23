@@ -1,3 +1,6 @@
+const Sentry = require('@sentry/node');
+const SentryProfiling = require('@sentry/profiling-node');
+const {initializeApp, cert} = require('firebase-admin/app');
 const {newsJob} = require('../processes/news-process');
 const {scoringProcessJob} = require('../processes/scoring-process');
 const {scoringDailyProcessJob} = require('../processes/scoring-daily-process');
@@ -41,8 +44,8 @@ const {addUserPostCommentProcess} = require('../processes/add-user-post-comment'
 const {deleteUserPostCommentProcess} = require('../processes/delete-user-post-comment-process');
 const BetterSocialCronQueue = require('../redis/BetterSocialCronQueue');
 
-const Sentry = require('@sentry/node');
-const SentryProfiling = require('@sentry/profiling-node');
+const serviceAccount = Buffer.from(process.env.SERVICE_ACCOUNT, 'base64').toString();
+initializeApp({credential: cert(JSON.parse(serviceAccount))});
 
 /*
   @description initial all job queue

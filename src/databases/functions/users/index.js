@@ -7,6 +7,7 @@ const getUserByUserId = require('./get-user-by-user-id');
 const userBlockByAdmin = require('./user-block-by-admin');
 const userUnblockByAdmin = require('./user-unblock-by-admin');
 const findAnonymousUserId = require('./find-anonymous-user-id');
+const findSignedUserId = require('./find-signed-user-id');
 const userSetKarmaScore = require('./user-set-karma-score');
 const setAllFollowerCount = require('./set-all-follower-count');
 
@@ -20,6 +21,7 @@ const UsersFunction = {
   userBlockByAdmin,
   userUnblockByAdmin,
   findAnonymousUserId,
+  findSignedUserId,
   userSetKarmaScore,
   setAllFollowerCount
 };

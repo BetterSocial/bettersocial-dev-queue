@@ -6,8 +6,12 @@ const cors = require('cors');
 const compress = require('compression');
 const methodOverride = require('method-override');
 const helmet = require('helmet');
+const {initializeApp, cert} = require('firebase-admin/app');
 const routing = require('./routes');
 const {notFoundHandler, errorHandler} = require('./utils');
+
+const serviceAccount = Buffer.from(process.env.SERVICE_ACCOUNT, 'base64').toString();
+initializeApp({credential: cert(JSON.parse(serviceAccount))});
 
 const app = express();
 app.use(compress()); // gzip compression

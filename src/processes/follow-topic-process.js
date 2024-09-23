@@ -10,6 +10,7 @@ const {
 const BetterSocialConstantListUtils = require('../utils/constantList/utils');
 const {CHANNEL_TYPE_ANONYMOUS} = require('../utils/constant');
 const updateBetterChannelMembers = require('../getstream/updateBetterChannelMembers');
+const sendChatNotificationByChannelMembers = require('../services/fcmToken/sendChatNotificationByChannelMembers');
 
 const generate_channel_id_for_anon_chat = (owner, member, context = null, sourceId = null) => {
   const hash = crypto.createHash('sha256');
@@ -57,6 +58,7 @@ const anon_to_sign_user = async (client, user, targetUser, sourceId = '') => {
   });
   return new_channel;
 };
+
 const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data) => {
   const members = [communityMessageFormat.user_id, data.user_id];
   const channel_info = await anon_to_sign_user(
@@ -92,9 +94,49 @@ const sendMessageAsAnonymous = async (serverClient, communityMessageFormat, data
   }
   // }
 };
+
+const sendSignedMessage = async ({
+  serverChannel,
+  targetUserId,
+  targetUsername,
+  communityMessageFormatUserId,
+  text
+}) => {
+  const message = await serverChannel?.sendMessage(
+    {
+      text,
+      user_id: communityMessageFormatUserId,
+      is_auto_message: true
+    },
+    {skip_push: true}
+  );
+
+  const notificationPayload = {
+    title: targetUsername,
+    body: `${text?.substring(0, 100)}`
+  };
+
+  const dataPayload = {
+    type: 'message.new',
+    channel_id: serverChannel?.id,
+    message: text,
+    message_schema: 'text',
+    attachment: '',
+    created_at: message?.message?.created_at || new Date().toISOString(),
+    is_annoymous: 'false',
+    priority: 'high',
+    content_available: 'true'
+  };
+
+  sendChatNotificationByChannelMembers([targetUserId], {
+    notification: notificationPayload,
+    data: dataPayload
+  });
+};
+
 const followTopicProcess = async (job, done) => {
   try {
-    console.info(`running job register process ! with id ${job.id}`);
+    console.info(`running job follow topic process ! with id ${job.id}`);
     const serverClient = StreamChat.getInstance(process.env.API_KEY, process.env.SECRET);
     if (process.env.AUTO_WLCM_MSG === 'true') {
       const {data} = job;
@@ -122,7 +164,11 @@ const followTopicProcess = async (job, done) => {
         return;
       }
       // check if user is anonymous
-      const senderUser = await User.findByPk(communityMessageFormat.user_id);
+      const [senderUser, receiverUser] = await Promise.all([
+        User.findByPk(communityMessageFormat.user_id),
+        User.findByPk(data.user_id)
+      ]);
+
       if (senderUser.is_anonymous) {
         await sendMessageAsAnonymous(serverClient, communityMessageFormat, data);
       } else {
@@ -139,11 +185,13 @@ const followTopicProcess = async (job, done) => {
         }
         const channelState = await chat.watch();
         // console.log('::: channelState.messages :::', channelState);
-        if (channelState.messages.length === 0) {
-          await chat.sendMessage({
-            text: communityMessageFormat.message,
-            user_id: communityMessageFormat.user_id,
-            is_auto_message: true
+        if (channelState.messages.length > 0) {
+          await sendSignedMessage({
+            serverChannel: chat,
+            targetUserId: data?.user_id,
+            targetUsername: receiverUser?.username,
+            communityMessageFormatUserId: communityMessageFormat.user_id,
+            text: communityMessageFormat?.message
           });
 
           try {
@@ -161,10 +209,12 @@ const followTopicProcess = async (job, done) => {
           //   });
         } else {
           // console.log(':::  Channel not eligible to receive auto message :::');
-          await chat.sendMessage({
-            text: communityMessageFormat.message,
-            user_id: communityMessageFormat.user_id,
-            is_auto_message: true
+          await sendSignedMessage({
+            serverChannel: chat,
+            targetUserId: data?.user_id,
+            targetUsername: receiverUser?.username,
+            communityMessageFormatUserId: communityMessageFormat.user_id,
+            text: communityMessageFormat?.message
           });
         }
       }
