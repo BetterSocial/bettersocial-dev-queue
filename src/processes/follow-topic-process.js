@@ -185,7 +185,7 @@ const followTopicProcess = async (job, done) => {
         }
         const channelState = await chat.watch();
         // console.log('::: channelState.messages :::', channelState);
-        if (channelState.messages.length > 0) {
+        if (channelState.messages.length === 0) {
           await sendSignedMessage({
             serverChannel: chat,
             targetUserId: data?.user_id,
