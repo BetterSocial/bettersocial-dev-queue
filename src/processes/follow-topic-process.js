@@ -191,16 +191,22 @@ const followTopicProcess = async (job, done) => {
         return;
       }
 
+      // use dummy sender user id if provided (for testing purpose)
+      const senderUserId = data?.dummy_sender_user_id || communityMessageFormat.user_id;
       // check if user is anonymous
-      const [senderUser] = await Promise.all([User.findByPk(communityMessageFormat.user_id)]);
+      const [senderUser] = await Promise.all([User.findByPk(senderUserId)]);
+      const communityMessageFormatObject = {
+        user_id: senderUserId,
+        message: communityMessageFormat.message
+      };
 
       if (senderUser.is_anonymous) {
-        await sendMessageAsAnonymous(serverClient, communityMessageFormat, data);
+        await sendMessageAsAnonymous(serverClient, communityMessageFormatObject, data);
       } else {
         // check user already received the message from admin
         const chat = serverClient.channel('messaging', {
           type_channel: 0,
-          members: [communityMessageFormat.user_id, data.user_id],
+          members: [senderUserId, data.user_id],
           created_by_id: communityMessageFormat.user_id
         });
         try {
@@ -215,7 +221,7 @@ const followTopicProcess = async (job, done) => {
             serverChannel: chat,
             targetUserId: data?.user_id,
             senderUsername: senderUser?.username,
-            communityMessageFormatUserId: communityMessageFormat.user_id,
+            communityMessageFormatUserId: senderUserId,
             text: communityMessageFormat?.message
           });
 
@@ -238,7 +244,7 @@ const followTopicProcess = async (job, done) => {
             serverChannel: chat,
             targetUserId: data?.user_id,
             senderUsername: senderUser?.username,
-            communityMessageFormatUserId: communityMessageFormat.user_id,
+            communityMessageFormatUserId: senderUserId,
             text: communityMessageFormat?.message
           });
         }
