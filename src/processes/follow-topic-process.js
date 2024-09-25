@@ -183,8 +183,7 @@ const followTopicProcess = async (job, done) => {
       const userTopic = await UserTopic.findOne({
         where: {
           topic_id: communityMessageFormat.topic_id,
-          user_id: data.user_id,
-          is_anonymous: false
+          user_id: data.user_id
         }
       });
       if (!userTopic) {
