@@ -183,7 +183,7 @@ const initQueue = () => {
       removeActivityQueue
     })
   );
-  BetterSocialCronQueue.addCron(generalDailyQueue, '0 0,12,18 * * *', 'dailyRssUpdate');
+  // BetterSocialCronQueue.addCron(generalDailyQueue, '0 0,12,18 * * *', 'dailyRssUpdate');
   BetterSocialCronQueue.addCron(generalDailyQueue, '0 12 * * *', 'dailyCredderUpdate');
   BetterSocialCronQueue.addCron(generalDailyQueue, '0 0 * * *', 'dailyDeleteExpiredPost');
   BetterSocialCronQueue.addCron(generalDailyQueue, '30 11 */2 * *', 'dailyScoring');
