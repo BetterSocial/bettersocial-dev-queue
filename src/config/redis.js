@@ -50,11 +50,12 @@ const removeActivityQueue = new Bull(QUEUE_REMOVE_ACTIVITY, redisUrl, bullConfig
   }
 });
 
-const updateMainFeedBroadProcessQueue = new Bull(
-  QUEUE_UPDATE_MAIN_FEED_BROAD_PROCESS,
-  redisUrl,
-  bullConfig
-);
+// const updateMainFeedBroadProcessQueue = new Bull(
+//   QUEUE_UPDATE_MAIN_FEED_BROAD_PROCESS,
+//   redisUrl,
+//   bullConfig
+// );
+
 const syncUserFeedQueue = new Bull(QUEUE_SYNC_USER_FEED, redisUrl, bullConfig);
 /**
  * (END) of list of queues that uses scoring redis
@@ -89,7 +90,7 @@ module.exports = {
   followMainFeedF2,
   unFollowMainFeedF2,
   unFollowFeedProcessQueue,
-  updateMainFeedBroadProcessQueue,
+  // updateMainFeedBroadProcessQueue,
   syncUserFeedQueue,
   generalDailyQueue,
   removeActivityQueue
