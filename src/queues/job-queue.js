@@ -5,7 +5,7 @@ const {newsJob} = require('../processes/news-process');
 const {scoringProcessJob} = require('../processes/scoring-process');
 const {scoringDailyProcessJob} = require('../processes/scoring-daily-process');
 const {unFollowFeedProcessJob} = require('../processes/unfollow-main-feed');
-const {updateMainFeedBroadProcessJob} = require('../processes/update-main-feed-broad');
+// const {updateMainFeedBroadProcessJob} = require('../processes/update-main-feed-broad');
 const {syncUserFeedProcessJob} = require('../processes/sync-user-feed');
 const processFollowMainFeedF2 = require('../processes/follow-main-feed-f2-process');
 const {removeActivityProcessJob} = require('../processes/remove-activity-process');
@@ -26,7 +26,7 @@ const {
   followMainFeedF2,
   unFollowMainFeedF2,
   unFollowFeedProcessQueue,
-  updateMainFeedBroadProcessQueue,
+  // updateMainFeedBroadProcessQueue,
   syncUserFeedQueue,
   generalDailyQueue,
   removeActivityQueue
@@ -131,14 +131,16 @@ const initQueue = () => {
     console.error('unFollowFeedProcessQueue error : ', err);
   });
 
-  console.info('updateMainFeedBroadProcessQueue job is working!');
-  updateMainFeedBroadProcessQueue.process(updateMainFeedBroadProcessJob);
-  updateMainFeedBroadProcessQueue.on('failed', handlerFailure);
-  updateMainFeedBroadProcessQueue.on('completed', handlerCompleted);
-  updateMainFeedBroadProcessQueue.on('stalled', handlerStalled);
-  updateMainFeedBroadProcessQueue.on('error', (err) => {
-    console.error('updateMainFeedBroadProcessQueue error : ', err);
-  });
+  // Disable updateMainFeedBroadProcessQueue
+
+  // console.info('updateMainFeedBroadProcessQueue job is working!');
+  // updateMainFeedBroadProcessQueue.process(updateMainFeedBroadProcessJob);
+  // updateMainFeedBroadProcessQueue.on('failed', handlerFailure);
+  // updateMainFeedBroadProcessQueue.on('completed', handlerCompleted);
+  // updateMainFeedBroadProcessQueue.on('stalled', handlerStalled);
+  // updateMainFeedBroadProcessQueue.on('error', (err) => {
+  //   console.error('updateMainFeedBroadProcessQueue error : ', err);
+  // });
 
   console.info('syncUserFeedQueue job is working!');
   syncUserFeedQueue.process(syncUserFeedProcessJob);
