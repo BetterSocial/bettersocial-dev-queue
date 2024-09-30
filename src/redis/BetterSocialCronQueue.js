@@ -59,17 +59,17 @@ class BetterSocialCronQueue extends BetterSocialQueue {
   static process(job, done, queueInjection) {
     const {flag} = job.data;
     console.log(`============= DOING CRON JOB (${flag})  =============`);
-    if (flag === 'dailyCredderUpdate') {
-      return credderDailyScoreProcess(job, done, queueInjection?.credderScoreQueue);
-    }
+    // if (flag === 'dailyCredderUpdate') {
+    //   return credderDailyScoreProcess(job, done, queueInjection?.credderScoreQueue);
+    // }
 
     if (flag === 'dailyDeleteExpiredPost') {
       return deleteExpiredPostProcess(job, done, queueInjection?.removeActivityQueue);
     }
 
-    if (flag === 'dailyRssUpdate') {
-      return rssProcess(job, done);
-    }
+    // if (flag === 'dailyRssUpdate') {
+    //   return rssProcess(job, done);
+    // }
 
     if (flag === 'dailyScoring') {
       job.data.event = EVENT_DAILY_PROCESS_TRIGGER;
