@@ -174,7 +174,7 @@ const initQueue = () => {
   /**
    * (START) General Queue
    */
-  BetterSocialQueue.setEventCallback(credderScoreQueue, credderScoreProcess);
+  // BetterSocialQueue.setEventCallback(credderScoreQueue, credderScoreProcess);
 
   BetterSocialQueue.setEventCallback(addUserPostCommentQueue, addUserPostCommentProcess);
   BetterSocialQueue.setEventCallback(deleteUserPostCommentQueue, deleteUserPostCommentProcess);
@@ -186,7 +186,7 @@ const initQueue = () => {
     })
   );
   // BetterSocialCronQueue.addCron(generalDailyQueue, '0 0,12,18 * * *', 'dailyRssUpdate');
-  BetterSocialCronQueue.addCron(generalDailyQueue, '0 12 * * *', 'dailyCredderUpdate');
+  // BetterSocialCronQueue.addCron(generalDailyQueue, '0 12 * * *', 'dailyCredderUpdate');
   BetterSocialCronQueue.addCron(generalDailyQueue, '0 0 * * *', 'dailyDeleteExpiredPost');
   BetterSocialCronQueue.addCron(generalDailyQueue, '30 11 */2 * *', 'dailyScoring');
   BetterSocialCronQueue.addCron(generalDailyQueue, '0 * * * *', 'refreshMaterializedView');
